@@ -397,7 +397,7 @@
     input.disabled = true;
 
     try {
-      const res = await fetch('https://ops-academy-backend.vercel.app/api/waitlist', {
+      const res = await fetch('https://api.itopsacademy.com/api/waitlist', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ email, source: 'coming_soon' }),
