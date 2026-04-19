@@ -323,29 +323,51 @@ function show(id) {
 
 /* ══ INIT ══ */
 async function init() {
-  const { data: { session } } = await sb.auth.getSession();
-  if (!session) { window.location.href = 'ops-academy-login-v3.html'; return; }
-  S.user = session.user;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.href = 'ops-academy-login-v3.html'; return; }
+    S.user = session.user;
 
-  document.getElementById('loading-text').textContent = 'LOADING PROFILE...';
+    // Use auth metadata for name — no extra DB call needed
+    S.profile = {
+      full_name: S.user.user_metadata?.full_name || S.user.email || 'Operator'
+    };
 
-  const [profRes, xpRes, strRes] = await Promise.all([
-    sb.from('users').select('full_name,plan').eq('id', S.user.id).single(),
-    sb.from('xp_events').select('amount').eq('user_id', S.user.id),
-    sb.from('streaks').select('current_streak').eq('user_id', S.user.id).single()
-  ]);
+    document.getElementById('loading-text').textContent = 'LOADING STATS...';
 
-  S.profile  = profRes.data || {};
-  S.totalXP  = (xpRes.data || []).reduce((sum, e) => sum + (e.amount || 0), 0);
-  S.streak   = strRes.data?.current_streak || 0;
+    // Load XP + streak with a 6-second timeout fallback
+    try {
+      const withTimeout = (promise, ms) => Promise.race([
+        promise,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+      ]);
 
-  buildDashboard();
-  show('dashboard');
+      const [xpRes, strRes] = await withTimeout(
+        Promise.all([
+          sb.from('xp_events').select('amount').eq('user_id', S.user.id),
+          sb.from('streaks').select('current_streak').eq('user_id', S.user.id).single()
+        ]),
+        6000
+      );
+
+      S.totalXP = (xpRes.data || []).reduce((sum, e) => sum + (e.amount || 0), 0);
+      S.streak  = strRes.data?.current_streak || 0;
+    } catch (e) {
+      // Stats failed — proceed anyway, XP/streak shows as 0
+      console.warn('Stats load skipped:', e.message);
+    }
+
+    buildDashboard();
+    show('dashboard');
+  } catch (err) {
+    console.error('Init error:', err);
+    window.location.href = 'ops-academy-login-v3.html';
+  }
 }
 
 /* ══ DASHBOARD ══ */
 function buildDashboard() {
-  const first = (S.profile.full_name || S.user.email || '').split(' ')[0] || 'Operator';
+  const first = (S.profile?.full_name || S.user?.email || 'Operator').split(' ')[0];
   document.getElementById('nav-username').textContent = first;
   document.getElementById('stat-xp').textContent = S.totalXP.toLocaleString();
   document.getElementById('stat-streak').textContent = S.streak;
