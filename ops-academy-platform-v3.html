@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ops Academy | Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@700;900&family=Barlow:wght@300;400&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #060c1e; --dark: #0b1228; --panel: #101830; --border: #1a2444; --border-l: #243060;
+      --cyan: #00e5cc; --cyan-dim: rgba(0,229,204,0.08); --cyan-glow: rgba(0,229,204,0.18);
+      --blue: #1a6dff; --blue-dim: rgba(26,109,255,0.08);
+      --white: #f0f4f8; --off: #ccd6f6; --muted: #4a6080; --text: #7a90b8;
+      --green: #00e090; --red: #ff5a5a; --amber: #ff9f43;
+      --mono: 'Share Tech Mono', monospace; --cond: 'Barlow Condensed', sans-serif; --body: 'Barlow', sans-serif;
+    }
+    html, body { min-height: 100%; background: var(--black); color: var(--white); font-family: var(--body); }
+    body { background-image: radial-gradient(rgba(26,109,255,0.12) 1px, transparent 1px); background-size: 40px 40px; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── LOADING ── */
+    #screen-loading {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; gap: 20px;
+    }
+    .loading-logo { font-family: var(--cond); font-size: 28px; font-weight: 900; letter-spacing: 6px; text-transform: uppercase; }
+    .loading-logo span { color: var(--cyan); }
+    .loading-bar { width: 200px; height: 2px; background: var(--border); position: relative; overflow: hidden; }
+    .loading-bar::after {
+      content: ''; position: absolute; left: -40%; width: 40%; height: 100%;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      animation: loadBar 1.2s ease-in-out infinite;
+    }
+    @keyframes loadBar { to { left: 140%; } }
+    .loading-text { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 3px; }
+
+    /* ── NAV ── */
+    .platform-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(6,12,30,0.94); border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; height: 60px;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 12px;
+      font-family: var(--cond); font-size: 18px; font-weight: 900;
+      letter-spacing: 4px; text-transform: uppercase; color: var(--white); text-decoration: none;
+    }
+    .nav-brand .accent { color: var(--cyan); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .stat-pill {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 11px; color: var(--text);
+      background: var(--panel); border: 1px solid var(--border);
+      padding: 6px 12px; border-radius: 2px; letter-spacing: 1px;
+    }
+    .stat-pill .val { color: var(--white); font-weight: 700; }
+    .stat-pill.amber .val { color: var(--amber); }
+    .nav-signout {
+      font-family: var(--mono); font-size: 11px; color: var(--muted);
+      background: transparent; border: 1px solid var(--border); border-radius: 2px;
+      padding: 6px 14px; cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+    }
+    .nav-signout:hover { border-color: var(--red); color: var(--red); }
+
+    /* ── DASHBOARD ── */
+    .dash-wrap { max-width: 1100px; margin: 0 auto; padding: 60px 32px 80px; }
+    .eyebrow {
+      font-family: var(--mono); font-size: 10px; color: var(--cyan);
+      letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .eyebrow::before { content: ''; width: 24px; height: 1px; background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+    .dash-title { font-family: var(--cond); font-size: clamp(40px,6vw,64px); font-weight: 900; text-transform: uppercase; line-height: 0.95; margin-bottom: 16px; }
+    .dash-title .cyan { color: var(--cyan); }
+    .dash-sub { font-size: 15px; font-weight: 300; color: var(--text); max-width: 480px; line-height: 1.7; margin-bottom: 48px; }
+
+    /* CERT GRID */
+    .cert-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+
+    .cert-card {
+      background: var(--dark); border: 1px solid var(--border);
+      padding: 28px; position: relative; overflow: hidden; transition: border-color 0.2s;
+    }
+    .cert-card:hover { border-color: var(--border-l); }
+    .cert-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--cc); }
+    .cert-card-glow { position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; pointer-events: none; background: radial-gradient(ellipse, var(--cg) 0%, transparent 70%); }
+    .cert-code { font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: var(--cc); margin-bottom: 8px; text-transform: uppercase; }
+    .cert-name { font-family: var(--cond); font-size: 26px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; }
+    .cert-desc { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 20px; }
+    .cert-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .cert-badge { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; border: 1px solid var(--border); color: var(--muted); padding: 3px 8px; border-radius: 2px; }
+    .cert-qcount { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+    .cert-drills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .drill-btn {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      padding: 9px 16px; border: 1px solid var(--border); background: transparent;
+      color: var(--text); cursor: pointer; border-radius: 2px; transition: all 0.18s;
+    }
+    .drill-btn:hover { background: var(--cc); color: var(--black); border-color: var(--cc); box-shadow: 0 0 16px var(--cg); }
+    .drill-btn.all { background: var(--cc); color: var(--black); border-color: var(--cc); font-weight: 700; }
+    .drill-btn.all:hover { box-shadow: 0 0 20px var(--cg); opacity: 0.9; }
+    .drill-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── DRILL ── */
+    .drill-wrap { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; min-height: 100vh; }
+    .drill-header {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(6,12,30,0.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px);
+      padding: 16px 24px; margin: 0 -24px;
+      display: flex; align-items: center; gap: 20px;
+    }
+    .drill-back {
+      font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px;
+      background: none; border: 1px solid var(--border); padding: 8px 12px; cursor: pointer;
+      transition: all 0.2s; border-radius: 2px; white-space: nowrap;
+    }
+    .drill-back:hover { color: var(--red); border-color: var(--red); }
+    .drill-prog-wrap { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .drill-prog-labels { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+    .drill-prog-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .drill-prog-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); border-radius: 2px; transition: width 0.4s ease; }
+    .drill-xp-live { font-family: var(--mono); font-size: 11px; color: var(--amber); white-space: nowrap; letter-spacing: 1px; }
+
+    /* Question */
+    .q-area { padding: 40px 0 24px; }
+    .q-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .q-tag { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; border: 1px solid var(--border); color: var(--muted); padding: 3px 8px; border-radius: 2px; }
+    .q-tag.easy { color: var(--cyan); border-color: rgba(0,229,204,0.3); }
+    .q-tag.medium { color: #6699ff; border-color: rgba(102,153,255,0.3); }
+    .q-tag.hard { color: #ff7080; border-color: rgba(255,112,128,0.3); }
+    .q-number { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-bottom: 16px; }
+    .q-text { font-family: var(--cond); font-size: clamp(22px,3.5vw,30px); font-weight: 700; line-height: 1.3; color: var(--white); text-transform: uppercase; margin-bottom: 36px; }
+
+    /* Answers */
+    .answers { display: flex; flex-direction: column; gap: 12px; }
+    .ans-btn {
+      display: flex; align-items: flex-start; gap: 16px;
+      background: var(--panel); border: 1px solid var(--border);
+      padding: 16px 20px; cursor: pointer; transition: all 0.18s; border-radius: 2px;
+      text-align: left; width: 100%; color: var(--white);
+    }
+    .ans-btn:hover:not(:disabled) { border-color: var(--border-l); background: rgba(255,255,255,0.03); }
+    .ans-btn:disabled { cursor: default; }
+    .ans-key { font-family: var(--mono); font-size: 12px; color: var(--muted); min-width: 20px; padding-top: 1px; flex-shrink: 0; letter-spacing: 1px; }
+    .ans-text { font-size: 15px; font-weight: 400; line-height: 1.5; }
+    .ans-btn.correct { background: rgba(0,224,144,0.1); border-color: var(--green); }
+    .ans-btn.correct .ans-key { color: var(--green); }
+    .ans-btn.wrong { background: rgba(255,90,90,0.1); border-color: var(--red); }
+    .ans-btn.wrong .ans-key { color: var(--red); }
+
+    /* Explanation */
+    .expl-wrap { margin-top: 24px; background: var(--dark); border: 1px solid var(--border); border-left: 3px solid var(--cyan); padding: 20px 24px; border-radius: 2px; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .expl-tag { font-family: var(--mono); font-size: 9px; color: var(--cyan); letter-spacing: 3px; margin-bottom: 10px; }
+    .expl-tag.wrong-tag { color: var(--red); }
+    .expl-text { font-size: 14px; color: var(--off); line-height: 1.7; }
+    .expl-xp { margin-top: 12px; font-family: var(--mono); font-size: 11px; color: var(--amber); letter-spacing: 1px; }
+
+    .next-wrap { display: flex; justify-content: flex-end; margin-top: 28px; }
+    .drill-next {
+      font-family: var(--mono); font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+      background: var(--cyan); color: var(--black); border: none;
+      padding: 16px 32px; cursor: pointer; transition: all 0.2s; border-radius: 2px; font-weight: 700;
+    }
+    .drill-next:hover { background: #1ffce3; box-shadow: 0 0 24px var(--cyan-glow); }
+
+    /* ── RESULTS ── */
+    .results-wrap { max-width: 620px; margin: 0 auto; padding: 60px 24px 80px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .results-eye { font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: 4px; margin-bottom: 20px; }
+    .results-pct { font-family: var(--cond); font-size: clamp(80px,18vw,140px); font-weight: 900; line-height: 1; margin-bottom: 4px; }
+    .results-pct.perfect { color: var(--cyan); text-shadow: 0 0 60px var(--cyan-glow); }
+    .results-pct.good { color: var(--green); }
+    .results-pct.ok { color: var(--amber); }
+    .results-pct.poor { color: var(--red); }
+    .results-grade { font-family: var(--mono); font-size: 13px; letter-spacing: 4px; color: var(--muted); margin-bottom: 40px; }
+    .results-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; width: 100%; margin-bottom: 40px; }
+    .res-stat { background: var(--panel); border: 1px solid var(--border); padding: 20px 16px; border-radius: 2px; }
+    .res-stat-val { font-family: var(--cond); font-size: 36px; font-weight: 900; margin-bottom: 4px; }
+    .res-stat-lbl { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+    .res-xp-banner { width: 100%; background: rgba(255,159,67,0.08); border: 1px solid rgba(255,159,67,0.2); padding: 16px 24px; border-radius: 2px; margin-bottom: 40px; font-family: var(--mono); font-size: 13px; color: var(--amber); letter-spacing: 2px; }
+    .results-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .res-btn { font-family: var(--mono); font-size: 12px; letter-spacing: 3px; text-transform: uppercase; padding: 16px 32px; cursor: pointer; transition: all 0.2s; border-radius: 2px; }
+    .res-btn.primary { background: var(--cyan); color: var(--black); border: none; font-weight: 700; }
+    .res-btn.primary:hover { background: #1ffce3; box-shadow: 0 0 24px var(--cyan-glow); }
+    .res-btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .res-btn.secondary:hover { border-color: var(--border-l); color: var(--white); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      .cert-grid { grid-template-columns: 1fr; }
+      .dash-wrap { padding: 40px 20px 60px; }
+      .platform-nav { padding: 0 16px; }
+      .stat-pill { display: none; }
+      .stat-pill.streak { display: flex; }
+      .drill-wrap { padding: 0 16px 60px; }
+      .q-text { font-size: 20px; }
+    }
+    @media (max-width: 480px) {
+      .cert-drills { gap: 6px; }
+      .drill-btn { padding: 8px 12px; font-size: 9px; }
+      .results-btns { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════ LOADING ════════ -->
+<div id="screen-loading" class="screen active">
+  <div class="loading-logo">OPS <span>ACADEMY</span></div>
+  <div class="loading-bar"></div>
+  <div class="loading-text" id="loading-text">AUTHENTICATING...</div>
+</div>
+
+<!-- ════════ DASHBOARD ════════ -->
+<div id="screen-dashboard" class="screen">
+  <nav class="platform-nav">
+    <a class="nav-brand" href="#">
+      <svg width="28" height="28" viewBox="0 0 44 44" fill="none">
+        <path fill-rule="evenodd" d="M7,0 L37,0 L44,7 L44,37 L37,44 L7,44 L0,37 L0,7 Z M15,11 L29,11 L33,15 L33,29 L29,33 L15,33 L11,29 L11,15 Z" fill="#00e5cc"/>
+        <polyline points="17,16 26,22 17,28" stroke="#060c1e" stroke-width="2.8" fill="none" stroke-linejoin="round"/>
+      </svg>
+      OPS <span class="accent">ACADEMY</span>
+    </a>
+    <div class="nav-right">
+      <div class="stat-pill">XP <span class="val" id="stat-xp">—</span></div>
+      <div class="stat-pill amber streak">🔥 <span class="val" id="stat-streak">0</span></div>
+      <button class="nav-signout" onclick="handleSignOut()">
+        <span id="nav-username">—</span> · Sign Out
+      </button>
+    </div>
+  </nav>
+
+  <div class="dash-wrap">
+    <div class="eyebrow">Select Cert</div>
+    <h1 class="dash-title">CHOOSE YOUR<br><span class="cyan">DRILL</span></h1>
+    <p class="dash-sub">Pick a certification and difficulty. 10 questions. Real exam style. Your XP and streak update after every session.</p>
+    <div class="cert-grid" id="cert-grid"></div>
+  </div>
+</div>
+
+<!-- ════════ DRILL ════════ -->
+<div id="screen-drill" class="screen">
+  <div class="drill-wrap">
+    <div class="drill-header">
+      <button class="drill-back" onclick="confirmBack()">◂ BACK</button>
+      <div class="drill-prog-wrap">
+        <div class="drill-prog-labels">
+          <span id="prog-label">Q 1 / 10</span>
+          <span id="prog-cert">—</span>
+        </div>
+        <div class="drill-prog-bar">
+          <div class="drill-prog-fill" id="prog-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="drill-xp-live">+<span id="xp-live">0</span> XP</div>
+    </div>
+    <div class="q-area" id="q-area"></div>
+  </div>
+</div>
+
+<!-- ════════ RESULTS ════════ -->
+<div id="screen-results" class="screen">
+  <div class="results-wrap">
+    <div class="results-eye">DRILL COMPLETE</div>
+    <div class="results-pct" id="res-pct">—%</div>
+    <div class="results-grade" id="res-grade">—</div>
+    <div class="results-stats">
+      <div class="res-stat">
+        <div class="res-stat-val" id="res-correct">—</div>
+        <div class="res-stat-lbl">Correct</div>
+      </div>
+      <div class="res-stat">
+        <div class="res-stat-val" id="res-total">—</div>
+        <div class="res-stat-lbl">Attempted</div>
+      </div>
+      <div class="res-stat">
+        <div class="res-stat-val" id="res-time">—</div>
+        <div class="res-stat-lbl">Minutes</div>
+      </div>
+    </div>
+    <div class="res-xp-banner" id="res-xp-banner">⬡ +— XP EARNED</div>
+    <div class="results-btns">
+      <button class="res-btn primary" onclick="drillAgain()">▸ Drill Again</button>
+      <button class="res-btn secondary" onclick="goToDashboard()">← Dashboard</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ CONFIG ══ */
+const SB_URL  = 'https://qhmemmdomhkccahitewl.supabase.co';
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFobWVtbWRvbWhrY2NhaGl0ZXdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjkxMDEsImV4cCI6MjA5MTY0NTEwMX0.DQM11mKaxNutXSJ6WqgH5YnItljRmnV33cbDomYcriU';
+const { createClient } = window.supabase;
+const sb = createClient(SB_URL, SB_ANON);
+
+/* ══ CERT DEFINITIONS ══ */
+const CERTS = [
+  { id:'aplus',         code:'COMPTIA A+',        name:'CompTIA A+',         desc:'Hardware, operating systems, networking, security and troubleshooting fundamentals.', cc:'#ff7f4f', cg:'rgba(255,127,79,0.08)',  q:12 },
+  { id:'netplus',       code:'COMPTIA NETWORK+',   name:'CompTIA Network+',   desc:'Subnetting, routing protocols, switching, VLANs and network troubleshooting.',       cc:'#00e5cc', cg:'rgba(0,229,204,0.08)',  q:12 },
+  { id:'ccna',          code:'CISCO CCNA',          name:'Cisco CCNA',         desc:'Cisco IOS, VLANs, OSPF, STP, ACLs and enterprise network design.',                  cc:'#1a6dff', cg:'rgba(26,109,255,0.08)', q:12 },
+  { id:'security_plus', code:'COMPTIA SECURITY+',  name:'CompTIA Security+',  desc:'Threats, cryptography, risk management, security operations and architecture.',       cc:'#a06fff', cg:'rgba(160,111,255,0.08)',q:18 }
+];
+
+/* ══ STATE ══ */
+const S = {
+  user: null, profile: null, totalXP: 0, streak: 0,
+  cert: null, difficulty: null, questions: [], idx: 0,
+  sessionId: null, sessionStart: null, qStart: null,
+  correct: 0, sessionXP: 0, answered: false
+};
+
+/* ══ SCREEN ══ */
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+/* ══ INIT ══ */
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'ops-academy-login-v3.html'; return; }
+  S.user = session.user;
+
+  document.getElementById('loading-text').textContent = 'LOADING PROFILE...';
+
+  const [profRes, xpRes, strRes] = await Promise.all([
+    sb.from('users').select('full_name,plan').eq('id', S.user.id).single(),
+    sb.from('xp_events').select('amount').eq('user_id', S.user.id),
+    sb.from('streaks').select('current_streak').eq('user_id', S.user.id).single()
+  ]);
+
+  S.profile  = profRes.data || {};
+  S.totalXP  = (xpRes.data || []).reduce((sum, e) => sum + (e.amount || 0), 0);
+  S.streak   = strRes.data?.current_streak || 0;
+
+  buildDashboard();
+  show('dashboard');
+}
+
+/* ══ DASHBOARD ══ */
+function buildDashboard() {
+  const first = (S.profile.full_name || S.user.email || '').split(' ')[0] || 'Operator';
+  document.getElementById('nav-username').textContent = first;
+  document.getElementById('stat-xp').textContent = S.totalXP.toLocaleString();
+  document.getElementById('stat-streak').textContent = S.streak;
+
+  document.getElementById('cert-grid').innerHTML = CERTS.map(c => `
+    <div class="cert-card" style="--cc:${c.cc};--cg:${c.cg}">
+      <div class="cert-card-glow"></div>
+      <div class="cert-code">${c.code}</div>
+      <div class="cert-name">${c.name}</div>
+      <div class="cert-desc">${c.desc}</div>
+      <div class="cert-meta">
+        <span class="cert-badge">LAUNCH</span>
+        <span class="cert-qcount">${c.q} QUESTIONS IN BANK</span>
+      </div>
+      <div class="cert-drills">
+        <button class="drill-btn" onclick="startDrill('${c.id}','easy')">Easy</button>
+        <button class="drill-btn" onclick="startDrill('${c.id}','medium')">Medium</button>
+        <button class="drill-btn" onclick="startDrill('${c.id}','hard')">Hard</button>
+        <button class="drill-btn all" onclick="startDrill('${c.id}','all')">▸ All</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function handleSignOut() {
+  await sb.auth.signOut();
+  window.location.href = 'ops-academy-login-v3.html';
+}
+
+/* ══ START DRILL ══ */
+async function startDrill(certId, difficulty) {
+  show('loading');
+  document.getElementById('loading-text').textContent = 'LOADING QUESTIONS...';
+
+  let q = sb.from('questions').select('*').eq('cert', certId).eq('active', true);
+  if (difficulty !== 'all') q = q.eq('difficulty', difficulty);
+  const { data: rows, error } = await q;
+
+  if (error || !rows?.length) {
+    alert('No questions found for this selection.');
+    show('dashboard');
+    document.getElementById('loading-text').textContent = 'AUTHENTICATING...';
+    return;
+  }
+
+  const questions = shuffle(rows).slice(0, 10);
+
+  // Create session row (non-blocking on error)
+  const { data: sess } = await sb.from('drill_sessions').insert({
+    user_id: S.user.id, cert: certId,
+    domain: difficulty === 'all' ? 'mixed' : difficulty,
+    questions_attempted: 0, questions_correct: 0, xp_earned: 0, completed: false
+  }).select().single();
+
+  Object.assign(S, {
+    cert: certId, difficulty,
+    questions, idx: 0,
+    sessionId: sess?.id || null,
+    sessionStart: Date.now(),
+    correct: 0, sessionXP: 0, answered: false
+  });
+
+  document.getElementById('loading-text').textContent = 'AUTHENTICATING...';
+  renderQ();
+  show('drill');
+  window.scrollTo({ top: 0 });
+}
+
+/* ══ RENDER QUESTION ══ */
+function renderQ() {
+  const q    = S.questions[S.idx];
+  const total = S.questions.length;
+  const cert  = CERTS.find(c => c.id === S.cert);
+
+  S.answered = false;
+  S.qStart   = Date.now();
+
+  document.getElementById('prog-label').textContent = `Q ${S.idx + 1} / ${total}`;
+  document.getElementById('prog-cert').textContent  = cert?.code || S.cert.toUpperCase();
+  document.getElementById('prog-fill').style.width  = `${(S.idx / total) * 100}%`;
+  document.getElementById('xp-live').textContent    = S.sessionXP;
+
+  document.getElementById('q-area').innerHTML = `
+    <div class="q-tags">
+      <span class="q-tag ${q.difficulty}">${q.difficulty.toUpperCase()}</span>
+      <span class="q-tag">${q.domain}</span>
+    </div>
+    <div class="q-number">QUESTION ${S.idx + 1}</div>
+    <div class="q-text">${q.question_text}</div>
+    <div class="answers" id="answers">
+      ${q.options.map(o => `
+        <button class="ans-btn"
+          data-key="${o.key}"
+          onclick="pick('${o.key}','${q.id}','${q.correct_answer}')">
+          <span class="ans-key">${o.key}</span>
+          <span class="ans-text">${o.text}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div id="expl" style="display:none"></div>
+    <div class="next-wrap" id="next-wrap" style="display:none">
+      <button class="drill-next" onclick="advance()">
+        ${S.idx + 1 < total ? 'NEXT QUESTION ▸' : 'FINISH DRILL ▸'}
+      </button>
+    </div>
+  `;
+}
+
+/* ══ PICK ANSWER ══ */
+async function pick(key, qid, correct) {
+  if (S.answered) return;
+  S.answered = true;
+
+  const isCorrect = key === correct;
+  const xp = isCorrect ? 10 : 5;
+  const secs = Math.round((Date.now() - S.qStart) / 1000);
+  S.sessionXP += xp;
+  if (isCorrect) S.correct++;
+
+  // Style buttons
+  document.querySelectorAll('.ans-btn').forEach(b => {
+    b.disabled = true;
+    if (b.dataset.key === correct) b.classList.add('correct');
+    if (b.dataset.key === key && !isCorrect) b.classList.add('wrong');
+  });
+
+  // Explanation
+  const q = S.questions[S.idx];
+  document.getElementById('expl').style.display = 'block';
+  document.getElementById('expl').innerHTML = `
+    <div class="expl-wrap">
+      <div class="expl-tag ${isCorrect ? '' : 'wrong-tag'}">
+        ${isCorrect ? '✓ CORRECT' : `✗ INCORRECT — CORRECT ANSWER: ${correct}`}
+      </div>
+      <div class="expl-text">${q.explanation}</div>
+      <div class="expl-xp">+${xp} XP earned</div>
+    </div>
+  `;
+  document.getElementById('xp-live').textContent = S.sessionXP;
+  document.getElementById('next-wrap').style.display = 'flex';
+
+  // Save to DB (fire-and-forget)
+  if (S.sessionId) {
+    sb.from('question_answers').insert({
+      session_id: S.sessionId, user_id: S.user.id,
+      question_id: qid, answer_given: key,
+      is_correct: isCorrect, time_taken_secs: secs
+    }).then(() => {});
+  }
+}
+
+/* ══ ADVANCE ══ */
+function advance() {
+  S.idx++;
+  if (S.idx >= S.questions.length) finish();
+  else { renderQ(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+}
+
+/* ══ FINISH ══ */
+async function finish() {
+  const dur  = Math.round((Date.now() - S.sessionStart) / 1000);
+  const pct  = Math.round((S.correct / S.questions.length) * 100);
+
+  // Persist session
+  if (S.sessionId) {
+    sb.from('drill_sessions').update({
+      questions_attempted: S.questions.length, questions_correct: S.correct,
+      score_pct: pct, duration_secs: dur, xp_earned: S.sessionXP, completed: true
+    }).eq('id', S.sessionId).then(() => {});
+  }
+  if (S.sessionXP > 0) {
+    sb.from('xp_events').insert({
+      user_id: S.user.id, amount: S.sessionXP, source: 'drill_session',
+      session_id: S.sessionId || null,
+      metadata: { cert: S.cert, difficulty: S.difficulty, score_pct: pct }
+    }).then(() => {});
+  }
+
+  S.totalXP += S.sessionXP;
+  updateStreak();
+
+  // Results UI
+  const el = document.getElementById('res-pct');
+  el.textContent = `${pct}%`;
+  el.className = 'results-pct ' + (pct === 100 ? 'perfect' : pct >= 80 ? 'good' : pct >= 60 ? 'ok' : 'poor');
+
+  const grades = {
+    100: 'PERFECT SCORE — OPERATOR LEVEL',
+    80:  'STRONG PASS — MISSION READY',
+    60:  'PASS — REVIEW WEAK AREAS',
+    0:   'NEEDS WORK — KEEP DRILLING'
+  };
+  document.getElementById('res-grade').textContent    = grades[pct===100?100:pct>=80?80:pct>=60?60:0];
+  document.getElementById('res-correct').textContent  = S.correct;
+  document.getElementById('res-total').textContent    = S.questions.length;
+  document.getElementById('res-time').textContent     = (dur / 60).toFixed(1);
+  document.getElementById('res-xp-banner').textContent = `⬡  +${S.sessionXP} XP EARNED THIS SESSION`;
+
+  show('results');
+  window.scrollTo({ top: 0 });
+}
+
+/* ══ RESULTS ACTIONS ══ */
+function drillAgain() { startDrill(S.cert, S.difficulty); }
+function goToDashboard() {
+  document.getElementById('stat-xp').textContent = S.totalXP.toLocaleString();
+  show('dashboard');
+  window.scrollTo({ top: 0 });
+}
+function confirmBack() {
+  if (S.idx > 0 && !S.answered) {
+    if (!confirm('Leave drill? Progress will not be saved.')) return;
+  }
+  goToDashboard();
+}
+
+/* ══ STREAK ══ */
+async function updateStreak() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const { data: st } = await sb.from('streaks').select('*').eq('user_id', S.user.id).single();
+    if (!st || st.last_activity === today) return;
+    const yest = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+    const newStreak = st.last_activity === yest ? st.current_streak + 1 : 1;
+    S.streak = newStreak;
+    await sb.from('streaks').update({
+      current_streak: newStreak,
+      longest_streak: Math.max(st.longest_streak, newStreak),
+      last_activity: today, updated_at: new Date().toISOString()
+    }).eq('user_id', S.user.id);
+    document.getElementById('stat-streak').textContent = newStreak;
+  } catch (_) {}
+}
+
+/* ══ UTILS ══ */
+function shuffle(a) {
+  const r = [...a];
+  for (let i = r.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [r[i], r[j]] = [r[j], r[i]];
+  }
+  return r;
+}
+
+/* ══ BOOT ══ */
+init();
+</script>
+</body>
+</html>

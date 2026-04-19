@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ops Academy | Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@700;900&family=Barlow:wght@300;400&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #060c1e; --dark: #0b1228; --panel: #101830; --border: #1a2444; --border-l: #243060;
+      --cyan: #00e5cc; --cyan-dim: rgba(0,229,204,0.08); --cyan-glow: rgba(0,229,204,0.18);
+      --blue: #1a6dff; --blue-dim: rgba(26,109,255,0.08);
+      --white: #f0f4f8; --off: #ccd6f6; --muted: #4a6080; --text: #7a90b8;
+      --mono: 'Share Tech Mono', monospace; --cond: 'Barlow Condensed', sans-serif; --body: 'Barlow', sans-serif;
+    }
+    html, body { height: 100%; background: var(--black); color: var(--white); font-family: var(--body); overflow: hidden; }
+
+    .page { height: 100vh; display: grid; grid-template-columns: 1fr 480px; }
+
+    /* LEFT */
+    .left {
+      background: var(--dark); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 40px; position: relative; overflow: hidden;
+    }
+    .left-glow-1 { position: absolute; top: -100px; right: -100px; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(ellipse, rgba(0,229,204,0.06) 0%, transparent 65%); pointer-events: none; }
+    .left-glow-2 { position: absolute; bottom: -100px; left: -100px; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(ellipse, rgba(26,109,255,0.07) 0%, transparent 65%); pointer-events: none; }
+    .left-dots {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(rgba(26,109,255,0.15) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .left-content { position: relative; z-index: 2; }
+    .brand { font-family: var(--cond); font-size: 22px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; }
+    .brand span { color: var(--cyan); }
+    .left-headline {
+      font-family: var(--cond); font-size: clamp(52px, 6vw, 84px); font-weight: 900;
+      text-transform: uppercase; line-height: 0.9; margin-top: 60px;
+    }
+    .left-headline .cyan { color: var(--cyan); }
+    .left-headline .stroke { color: transparent; -webkit-text-stroke: 2px rgba(0,229,204,0.2); }
+    .left-sub { font-size: 15px; font-weight: 300; color: var(--text); line-height: 1.7; max-width: 380px; margin-top: 28px; }
+    .left-footer { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; position: relative; z-index: 2; }
+
+    .sweep {
+      position: absolute; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,229,204,0.5), transparent);
+      animation: sweep 5s linear infinite; pointer-events: none; z-index: 3;
+    }
+    @keyframes sweep { 0% { top: -1px; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+
+    /* RIGHT */
+    .right {
+      background: var(--black); display: flex; flex-direction: column;
+      justify-content: center; padding: 60px 48px; position: relative;
+    }
+    .auth-tag {
+      font-family: var(--mono); font-size: 10px; color: var(--cyan);
+      letter-spacing: 3px; margin-bottom: 36px; display: flex; align-items: center; gap: 10px;
+    }
+    .auth-tag::before { content: ''; width: 20px; height: 1px; background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+    .auth-title { font-family: var(--cond); font-size: 36px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; }
+    .auth-title span { color: var(--cyan); }
+    .auth-sub { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 36px; }
+
+    .tabs { display: flex; gap: 0; margin-bottom: 32px; border: 1px solid var(--border); border-radius: 2px; overflow: hidden; }
+    .tab {
+      flex: 1; padding: 12px; font-family: var(--mono); font-size: 11px;
+      letter-spacing: 2px; text-transform: uppercase; text-align: center;
+      cursor: pointer; color: var(--muted); background: transparent;
+      border: none; transition: all 0.2s; border-right: 1px solid var(--border);
+    }
+    .tab:last-child { border-right: none; }
+    .tab.active { background: var(--cyan-dim); color: var(--cyan); }
+    .tab:hover:not(.active) { color: var(--off); background: rgba(255,255,255,0.02); }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+    .form-label { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+    .form-input {
+      background: var(--panel); border: 1px solid var(--border);
+      color: var(--white); font-family: var(--mono); font-size: 13px;
+      padding: 14px 16px; outline: none; transition: border-color 0.2s; letter-spacing: 0.5px; width: 100%; border-radius: 2px;
+    }
+    .form-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 1px var(--cyan-dim); }
+    .form-input::placeholder { color: var(--muted); }
+
+    .form-submit {
+      width: 100%; background: var(--cyan); color: var(--black);
+      border: none; font-family: var(--mono); font-size: 12px;
+      font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+      padding: 16px; cursor: pointer; transition: all 0.2s; margin-top: 8px; border-radius: 2px;
+    }
+    .form-submit:hover:not(:disabled) { background: #1ffce3; box-shadow: 0 0 32px var(--cyan-glow); }
+    .form-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .auth-error {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.5px;
+      padding: 10px 14px; margin-top: 12px; border-radius: 2px; display: none;
+    }
+    .auth-error.error { color: #ff8080; background: rgba(255,80,80,0.08); border: 1px solid rgba(255,80,80,0.2); }
+    .auth-error.success { color: var(--cyan); background: var(--cyan-dim); border: 1px solid rgba(0,229,204,0.2); }
+
+    .forgot { font-family: var(--mono); font-size: 10px; color: var(--muted); text-align: center; margin-top: 16px; letter-spacing: 1px; }
+    .forgot a { color: var(--text); text-decoration: none; cursor: pointer; }
+    .forgot a:hover { color: var(--cyan); }
+
+    @media (max-width: 768px) {
+      html, body { overflow: auto; height: auto; }
+      .page { grid-template-columns: 1fr; height: auto; min-height: 100vh; }
+      .left { display: none; }
+      .right {
+        padding: 48px 24px 56px;
+        min-height: 100vh;
+        justify-content: flex-start;
+        padding-top: 60px;
+      }
+      .tabs { width: 100%; }
+      .tab { min-height: 44px; }
+      .form-input { padding: 14px 16px; min-height: 44px; font-size: 16px; }
+      .form-submit { min-height: 48px; }
+      .auth-title { font-size: 28px; }
+    }
+    @media (max-width: 480px) {
+      .right { padding: 48px 16px 48px; }
+      .auth-title { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="left">
+    <div class="left-glow-1"></div>
+    <div class="left-glow-2"></div>
+    <div class="left-dots"></div>
+    <div class="sweep"></div>
+    <div class="left-content">
+      <div class="brand">OPS <span>ACADEMY</span></div>
+      <div class="left-headline">
+        <div>Train.</div>
+        <div class="cyan">Drill.</div>
+        <div class="stroke">Certify.</div>
+      </div>
+      <p class="left-sub">Adaptive cert training for IT, Networking, Cybersecurity, Cloud and AI. No passive videos. Just results.</p>
+    </div>
+    <div class="left-footer">ITOPSACADEMY.COM // ELITE IT TRAINING // EST. 2026</div>
+  </div>
+
+  <div class="right">
+    <div class="auth-tag">Account Access</div>
+    <div class="auth-title" id="auth-title">Welcome <span>Back</span></div>
+    <div class="auth-sub" id="auth-sub">Sign in to continue your training</div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="setTab('login', this)">Sign In</button>
+      <button class="tab" onclick="setTab('register', this)">Create Account</button>
+    </div>
+
+    <!-- SIGN IN FORM -->
+    <div id="login-form">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input id="login-email" class="form-input" type="email" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input id="login-password" class="form-input" type="password" placeholder="••••••••••••" autocomplete="current-password"/>
+      </div>
+      <button id="signin-btn" class="form-submit" onclick="handleSignIn()">▸ Sign In</button>
+      <div id="login-error" class="auth-error error"></div>
+      <div class="forgot"><a onclick="handleForgotPassword()">Forgot your password?</a></div>
+    </div>
+
+    <!-- CREATE ACCOUNT FORM -->
+    <div id="register-form" style="display:none;">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input id="reg-name" class="form-input" type="text" placeholder="Your full name" autocomplete="name"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input id="reg-email" class="form-input" type="email" placeholder="you@example.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input id="reg-password" class="form-input" type="password" placeholder="Minimum 8 characters" autocomplete="new-password"/>
+      </div>
+      <button id="signup-btn" class="form-submit" onclick="handleSignUp()">▸ Create Account</button>
+      <div id="reg-error" class="auth-error error"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://qhmemmdomhkccahitewl.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFobWVtbWRvbWhrY2NhaGl0ZXdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjkxMDEsImV4cCI6MjA5MTY0NTEwMX0.DQM11mKaxNutXSJ6WqgH5YnItljRmnV33cbDomYcriU';
+
+  const { createClient } = window.supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  // Check if already logged in — redirect immediately
+  (async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      window.location.href = 'ops-academy-platform-v3.html';
+    }
+  })();
+
+  function setTab(tab, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+    document.getElementById('auth-title').innerHTML = tab === 'login'
+      ? 'Welcome <span style="color:var(--cyan)">Back</span>'
+      : 'Create <span style="color:var(--cyan)">Account</span>';
+    document.getElementById('auth-sub').textContent = tab === 'login'
+      ? 'Sign in to continue your training'
+      : 'Join and start your first drill in minutes';
+    clearErrors();
+  }
+
+  function showError(elId, msg) {
+    const el = document.getElementById(elId);
+    el.textContent = msg;
+    el.className = 'auth-error error';
+    el.style.display = 'block';
+  }
+
+  function showSuccess(elId, msg) {
+    const el = document.getElementById(elId);
+    el.textContent = msg;
+    el.className = 'auth-error success';
+    el.style.display = 'block';
+  }
+
+  function clearErrors() {
+    ['login-error','reg-error'].forEach(id => {
+      const el = document.getElementById(id);
+      el.style.display = 'none';
+      el.textContent = '';
+    });
+  }
+
+  async function handleSignIn() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const btn = document.getElementById('signin-btn');
+
+    if (!email || !password) {
+      showError('login-error', 'Please enter your email and password.');
+      return;
+    }
+
+    btn.textContent = '⟳  Authenticating...';
+    btn.disabled = true;
+    clearErrors();
+
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      showError('login-error', error.message === 'Invalid login credentials'
+        ? 'Incorrect email or password. Try again.'
+        : error.message);
+      btn.textContent = '▸ Sign In';
+      btn.disabled = false;
+    } else {
+      btn.textContent = '✓  Redirecting...';
+      window.location.href = 'ops-academy-platform-v3.html';
+    }
+  }
+
+  async function handleSignUp() {
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const btn = document.getElementById('signup-btn');
+
+    if (!name || !email || !password) {
+      showError('reg-error', 'Please fill in all fields.');
+      return;
+    }
+    if (password.length < 8) {
+      showError('reg-error', 'Password must be at least 8 characters.');
+      return;
+    }
+
+    btn.textContent = '⟳  Creating account...';
+    btn.disabled = true;
+    clearErrors();
+
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: name } }
+    });
+
+    if (error) {
+      showError('reg-error', error.message);
+      btn.textContent = '▸ Create Account';
+      btn.disabled = false;
+    } else if (data.session) {
+      // Email confirmation disabled — immediate login
+      btn.textContent = '✓  Account created!';
+      window.location.href = 'ops-academy-platform-v3.html';
+    } else {
+      // Email confirmation required
+      btn.textContent = '✓  Account created!';
+      showSuccess('reg-error', 'Check your email to confirm your account, then sign in.');
+    }
+  }
+
+  async function handleForgotPassword() {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) {
+      showError('login-error', 'Enter your email address first, then click Forgot Password.');
+      return;
+    }
+
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/ops-academy-login-v3.html'
+    });
+
+    if (error) {
+      showError('login-error', error.message);
+    } else {
+      showSuccess('login-error', 'Password reset email sent. Check your inbox.');
+    }
+  }
+
+  // Allow Enter key to submit
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const loginVisible = document.getElementById('login-form').style.display !== 'none';
+      if (loginVisible) handleSignIn();
+      else handleSignUp();
+    }
+  });
+</script>
+</body>
+</html>
