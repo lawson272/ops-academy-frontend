@@ -322,22 +322,50 @@ function show(id) {
 }
 
 /* ══ INIT ══ */
-async function init() {
+function getLocalSession() {
+  // Supabase JS v2 stores session in localStorage under this key
   try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) { window.location.href = 'ops-academy-login-v3.html'; return; }
-    S.user = session.user;
+    const raw = localStorage.getItem('sb-qhmemmdomhkccahitewl-auth-token');
+    if (raw) return JSON.parse(raw);
+  } catch (_) {}
+  // Fallback: scan all localStorage keys for supabase session
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.includes('supabase') || k && k.includes('sb-')) {
+        const v = JSON.parse(localStorage.getItem(k) || 'null');
+        if (v?.user) return v;
+      }
+    }
+  } catch (_) {}
+  return null;
+}
 
-    // Pull name from auth token — instant, no DB call
-    S.profile = {
-      full_name: S.user.user_metadata?.full_name || S.user.email || 'Operator'
-    };
-
-    // Show dashboard immediately
+async function init() {
+  // 1. Try localStorage first — zero network latency
+  const local = getLocalSession();
+  if (local?.user) {
+    S.user = local.user;
+    S.profile = { full_name: S.user.user_metadata?.full_name || S.user.email || 'Operator' };
     buildDashboard();
     show('dashboard');
+    loadStatsAsync();
+    // Silently refresh session in background (don't await)
+    sb.auth.getSession().catch(() => {});
+    return;
+  }
 
-    // Load XP + streak in background after dashboard is visible
+  // 2. No local session — try network with 5s timeout
+  try {
+    const { data: { session } } = await Promise.race([
+      sb.auth.getSession(),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
+    ]);
+    if (!session) { window.location.href = 'ops-academy-login-v3.html'; return; }
+    S.user = session.user;
+    S.profile = { full_name: S.user.user_metadata?.full_name || S.user.email || 'Operator' };
+    buildDashboard();
+    show('dashboard');
     loadStatsAsync();
   } catch (err) {
     console.error('Init error:', err);
