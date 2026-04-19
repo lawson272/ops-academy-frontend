@@ -322,55 +322,34 @@ function show(id) {
 }
 
 /* ══ INIT ══ */
-function getLocalSession() {
-  // Supabase JS v2 stores session in localStorage under this key
-  try {
-    const raw = localStorage.getItem('sb-qhmemmdomhkccahitewl-auth-token');
-    if (raw) return JSON.parse(raw);
-  } catch (_) {}
-  // Fallback: scan all localStorage keys for supabase session
+function init() {
+  // Read session purely from localStorage — zero network, zero latency
+  let user = null;
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && k.includes('supabase') || k && k.includes('sb-')) {
-        const v = JSON.parse(localStorage.getItem(k) || 'null');
-        if (v?.user) return v;
+      if (!k) continue;
+      const lk = k.toLowerCase();
+      if (lk.includes('sb-') || lk.includes('supabase')) {
+        try {
+          const v = JSON.parse(localStorage.getItem(k) || 'null');
+          if (v?.user?.id) { user = v.user; break; }
+        } catch (_) {}
       }
     }
   } catch (_) {}
-  return null;
-}
 
-async function init() {
-  // 1. Try localStorage first — zero network latency
-  const local = getLocalSession();
-  if (local?.user) {
-    S.user = local.user;
-    S.profile = { full_name: S.user.user_metadata?.full_name || S.user.email || 'Operator' };
-    buildDashboard();
-    show('dashboard');
-    loadStatsAsync();
-    // Silently refresh session in background (don't await)
-    sb.auth.getSession().catch(() => {});
+  if (!user) {
+    // Nothing in browser storage — go log in
+    window.location.href = 'ops-academy-login-v3.html';
     return;
   }
 
-  // 2. No local session — try network with 5s timeout
-  try {
-    const { data: { session } } = await Promise.race([
-      sb.auth.getSession(),
-      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
-    ]);
-    if (!session) { window.location.href = 'ops-academy-login-v3.html'; return; }
-    S.user = session.user;
-    S.profile = { full_name: S.user.user_metadata?.full_name || S.user.email || 'Operator' };
-    buildDashboard();
-    show('dashboard');
-    loadStatsAsync();
-  } catch (err) {
-    console.error('Init error:', err);
-    window.location.href = 'ops-academy-login-v3.html';
-  }
+  S.user = user;
+  S.profile = { full_name: user.user_metadata?.full_name || user.email || 'Operator' };
+  buildDashboard();
+  show('dashboard');
+  loadStatsAsync(); // fire and forget — updates XP/streak in background
 }
 
 async function loadStatsAsync() {
