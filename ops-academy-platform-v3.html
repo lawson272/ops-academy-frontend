@@ -297,7 +297,10 @@
 const SB_URL  = 'https://qhmemmdomhkccahitewl.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFobWVtbWRvbWhrY2NhaGl0ZXdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjkxMDEsImV4cCI6MjA5MTY0NTEwMX0.DQM11mKaxNutXSJ6WqgH5YnItljRmnV33cbDomYcriU';
 const { createClient } = window.supabase;
-const sb = createClient(SB_URL, SB_ANON);
+// autoRefreshToken: false → getSession() reads localStorage only, no network calls
+const sb = createClient(SB_URL, SB_ANON, {
+  auth: { autoRefreshToken: false, persistSession: true, detectSessionInUrl: false }
+});
 
 /* ══ CERT DEFINITIONS ══ */
 const CERTS = [
@@ -322,34 +325,20 @@ function show(id) {
 }
 
 /* ══ INIT ══ */
-function init() {
-  // Read session purely from localStorage — zero network, zero latency
-  let user = null;
+async function init() {
   try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (!k) continue;
-      const lk = k.toLowerCase();
-      if (lk.includes('sb-') || lk.includes('supabase')) {
-        try {
-          const v = JSON.parse(localStorage.getItem(k) || 'null');
-          if (v?.user?.id) { user = v.user; break; }
-        } catch (_) {}
-      }
-    }
-  } catch (_) {}
-
-  if (!user) {
-    // Nothing in browser storage — go log in
+    // With autoRefreshToken:false, getSession() reads localStorage only — instant, no network
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.location.href = 'ops-academy-login-v3.html'; return; }
+    S.user = session.user;
+    S.profile = { full_name: S.user.user_metadata?.full_name || S.user.email || 'Operator' };
+    buildDashboard();
+    show('dashboard');
+    loadStatsAsync();
+  } catch (err) {
+    console.error('Init error:', err);
     window.location.href = 'ops-academy-login-v3.html';
-    return;
   }
-
-  S.user = user;
-  S.profile = { full_name: user.user_metadata?.full_name || user.email || 'Operator' };
-  buildDashboard();
-  show('dashboard');
-  loadStatsAsync(); // fire and forget — updates XP/streak in background
 }
 
 async function loadStatsAsync() {
