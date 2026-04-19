@@ -297,10 +297,7 @@
 const SB_URL  = 'https://qhmemmdomhkccahitewl.supabase.co';
 const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFobWVtbWRvbWhrY2NhaGl0ZXdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYwNjkxMDEsImV4cCI6MjA5MTY0NTEwMX0.DQM11mKaxNutXSJ6WqgH5YnItljRmnV33cbDomYcriU';
 const { createClient } = window.supabase;
-// autoRefreshToken: false → getSession() reads localStorage only, no network calls
-const sb = createClient(SB_URL, SB_ANON, {
-  auth: { autoRefreshToken: false, persistSession: true, detectSessionInUrl: false }
-});
+const sb = createClient(SB_URL, SB_ANON);
 
 /* ══ CERT DEFINITIONS ══ */
 const CERTS = [
@@ -324,21 +321,44 @@ function show(id) {
   document.getElementById('screen-' + id).classList.add('active');
 }
 
-/* ══ INIT ══ */
-async function init() {
+/* ══ INIT ══
+   Pure JS JWT decode — zero Supabase SDK calls, zero network, ~1ms
+   Scans ALL localStorage keys for any Supabase session object           */
+function init() {
+  let user = null;
+
   try {
-    // With autoRefreshToken:false, getSession() reads localStorage only — instant, no network
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) { window.location.href = 'ops-academy-login-v3.html'; return; }
-    S.user = session.user;
-    S.profile = { full_name: S.user.user_metadata?.full_name || S.user.email || 'Operator' };
-    buildDashboard();
-    show('dashboard');
-    loadStatsAsync();
-  } catch (err) {
-    console.error('Init error:', err);
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      let v;
+      try { v = JSON.parse(localStorage.getItem(k) || 'null'); } catch(_) { continue; }
+      // Look for any object with access_token + user
+      if (!v?.access_token || !v?.user?.id) continue;
+      // Decode JWT payload to check expiry
+      try {
+        const b64 = v.access_token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+        const payload = JSON.parse(atob(b64));
+        const now = Math.floor(Date.now() / 1000);
+        // Accept token if not expired (or no exp claim)
+        if (!payload.exp || payload.exp > now) {
+          user = v.user;
+          break;
+        }
+      } catch(_) { continue; }
+    }
+  } catch(_) {}
+
+  if (!user) {
     window.location.href = 'ops-academy-login-v3.html';
+    return;
   }
+
+  S.user = user;
+  S.profile = { full_name: user.user_metadata?.full_name || user.email || 'Operator' };
+  buildDashboard();
+  show('dashboard');
+  loadStatsAsync();
 }
 
 async function loadStatsAsync() {
