@@ -170,13 +170,13 @@
     .dr-name { font-size: 11px; color: var(--text); }
     .dr-score { font-family: var(--mono); font-size: 10px; font-weight: 700; }
     .dr-score.high { color: var(--green); }
-    .dr-score.mid  { color: var(--cyan); }
+    .dr-score.mid  { color: var(--amber); }
     .dr-score.low  { color: var(--red); }
     .dr-score.none { color: var(--muted); }
     .dr-bar { height: 3px; background: var(--border); overflow: hidden; }
     .dr-fill { height: 100%; }
     .dr-fill.high { background: var(--green); }
-    .dr-fill.mid  { background: var(--cyan); }
+    .dr-fill.mid  { background: var(--amber); }
     .dr-fill.low  { background: var(--red); }
     .dr-fill.none { background: var(--muted); }
 
@@ -219,14 +219,14 @@
     .db-row-name { font-size: 12px; color: var(--text); }
     .db-row-score { font-family: var(--mono); font-size: 11px; font-weight: 700; }
     .db-row-score.high { color: var(--green); }
-    .db-row-score.mid  { color: var(--cyan); }
+    .db-row-score.mid  { color: var(--amber); }
     .db-row-score.low  { color: var(--red); }
     .db-row-score.none { color: var(--muted); }
     .db-bar { height: 4px; background: var(--border); overflow: hidden; cursor: pointer; transition: opacity 0.2s; }
     .db-bar:hover { opacity: 0.8; }
     .db-bar-fill { height: 100%; }
     .db-bar-fill.high { background: var(--green); }
-    .db-bar-fill.mid  { background: var(--cyan); }
+    .db-bar-fill.mid  { background: var(--amber); }
     .db-bar-fill.low  { background: var(--red); }
     .db-bar-fill.none { background: var(--muted); width: 0% !important; }
     .db-drill-btn {
@@ -817,7 +817,7 @@ function renderDomainUI(certId, domains) {
   // Sidebar domain list
   document.getElementById('sb-domains').innerHTML = domains.length
     ? domains.map(d => {
-        const cls = d.mastered ? 'high' : d.pct >= 60 ? 'mid' : d.unstarted ? 'none' : 'low';
+        const cls = d.mastered ? 'high' : d.pct >= 65 ? 'mid' : d.unstarted ? 'none' : 'low';
         return `<div class="dr-item">
           <div class="dr-head">
             <span class="dr-name">${d.name}</span>
@@ -839,7 +839,7 @@ function renderDomainUI(certId, domains) {
       </div>`;
   } else {
     document.getElementById('db-content').innerHTML = domains.map(d => {
-      const cls = d.mastered ? 'high' : d.pct >= 60 ? 'mid' : d.unstarted ? 'none' : 'low';
+      const cls = d.mastered ? 'high' : d.pct >= 65 ? 'mid' : d.unstarted ? 'none' : 'low';
       return `<div class="db-row">
         <div class="db-row-head">
           <span class="db-row-name">${d.name}</span>
@@ -864,9 +864,9 @@ function updateGauge(overall, domains) {
   const offset = circumference - (circumference * Math.min(overall, 100) / 100);
   document.getElementById('gauge-fill').style.strokeDashoffset = offset;
   document.getElementById('gauge-pct').textContent  = domains.length ? overall + '%' : '—%';
-  const sub = overall >= 85 ? 'EXAM READY' : overall >= 60 ? 'PROGRESSING' : domains.length ? 'KEEP GOING' : 'NO DATA';
+  const sub = overall >= 85 ? 'EXAM READY' : overall >= 65 ? 'PROGRESSING' : domains.length ? 'KEEP GOING' : 'NO DATA';
   document.getElementById('gauge-sub').textContent  = sub;
-  document.getElementById('gauge-pct').style.color  = overall >= 85 ? 'var(--green)' : 'var(--cyan)';
+  document.getElementById('gauge-pct').style.color  = overall >= 85 ? 'var(--green)' : overall >= 65 ? 'var(--amber)' : domains.length ? 'var(--red)' : 'var(--cyan)';
 
   const weakDomains = domains.filter(d => !d.mastered && !d.unstarted).sort((a,b) => a.pct - b.pct).slice(0,2);
   if (weakDomains.length) {
