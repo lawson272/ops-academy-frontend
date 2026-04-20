@@ -469,7 +469,7 @@ function buildDashboard() {
         <span class="cert-qcount">${c.q} QUESTIONS IN BANK</span>
       </div>
       <button class="cert-action-btn" id="cert-btn-${c.id}" onclick="selectCert('${c.id}')">
-        ▸ START DIAGNOSTIC
+        ▸ ENTER CERT
       </button>
     </div>
   `).join('');
@@ -486,18 +486,18 @@ async function handleSignOut() {
 async function loadCertStatuses() {
   try {
     const { data: sessions } = await sb.from('drill_sessions')
-      .select('cert, domain')
+      .select('cert')
       .eq('user_id', S.user.id)
       .eq('completed', true);
 
     if (!sessions) return;
-    const diagnosed = new Set(sessions.filter(s => s.domain === 'diagnostic').map(s => s.cert));
+    const started = new Set(sessions.map(s => s.cert));
 
     CERTS.forEach(c => {
       const btn = document.getElementById('cert-btn-' + c.id);
       if (!btn) return;
-      if (diagnosed.has(c.id)) {
-        btn.textContent = '▸ VIEW PROGRESS';
+      if (started.has(c.id)) {
+        btn.textContent = '▸ CONTINUE';
         btn.classList.add('secondary');
       }
     });
@@ -507,25 +507,8 @@ async function loadCertStatuses() {
 /* ══ SELECT CERT ══ */
 async function selectCert(certId) {
   show('loading');
-  document.getElementById('loading-text').textContent = 'CHECKING PROGRESS...';
-
-  try {
-    const { data: sessions } = await sb.from('drill_sessions')
-      .select('id')
-      .eq('user_id', S.user.id)
-      .eq('cert', certId)
-      .eq('domain', 'diagnostic')
-      .eq('completed', true)
-      .limit(1);
-
-    if (sessions && sessions.length > 0) {
-      await showDomainDash(certId);
-    } else {
-      await startDrill(certId, 'all', 'diagnostic');
-    }
-  } catch (_) {
-    await startDrill(certId, 'all', 'diagnostic');
-  }
+  document.getElementById('loading-text').textContent = 'LOADING PROGRESS...';
+  await showDomainDash(certId);
 }
 
 /* ══ GET DOMAIN SCORES ══ */
@@ -605,11 +588,19 @@ async function showDomainDash(certId) {
 
   if (!domains.length) {
     document.getElementById('dd-overall-pct').textContent = '—%';
-    document.getElementById('dd-master-count').textContent = 'No data yet';
-    document.getElementById('dd-domain-list').innerHTML =
-      `<div style="padding:48px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:2px;">
-        COMPLETE YOUR DIAGNOSTIC TO SEE DOMAIN BREAKDOWN
-      </div>`;
+    document.getElementById('dd-master-count').textContent = 'No sessions yet';
+    document.getElementById('dd-domain-list').innerHTML = `
+      <div style="background:var(--dark);border:1px solid var(--border);border-left:3px solid var(--cyan);padding:36px 32px;margin-top:4px;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:3px;margin-bottom:12px;">GETTING STARTED</div>
+        <div style="font-family:var(--cond);font-size:22px;font-weight:900;text-transform:uppercase;margin-bottom:10px;">Run your diagnostic first</div>
+        <div style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:28px;max-width:480px;">
+          Take a 10-question diagnostic to gauge your current knowledge. We'll use the results to build your personalised domain breakdown and show you exactly where to focus.
+        </div>
+        <button onclick="startDrill('${certId}','all','diagnostic')" style="font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border:none;background:var(--cyan);color:var(--black);cursor:pointer;font-weight:700;">
+          ▸ START DIAGNOSTIC
+        </button>
+      </div>
+    `;
     document.getElementById('loading-text').textContent = 'AUTHENTICATING...';
     show('domain-dash');
     window.scrollTo({ top: 0 });
