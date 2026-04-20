@@ -246,8 +246,8 @@
   <div class="loading-text" id="loading-text">AUTHENTICATING...</div>
 </div>
 
-<!-- ════════ DASHBOARD ════════ -->
-<div id="screen-dashboard" class="screen">
+<!-- ════════ CERT SELECT ════════ -->
+<div id="screen-cert-select" class="screen">
   <nav class="platform-nav">
     <a class="nav-brand" href="#">
       <svg width="28" height="28" viewBox="0 0 44 44" fill="none">
@@ -257,10 +257,8 @@
       OPS <span class="accent">ACADEMY</span>
     </a>
     <div class="nav-right">
-      <div class="stat-pill">XP <span class="val" id="stat-xp">—</span></div>
-      <div class="stat-pill amber streak">🔥 <span class="val" id="stat-streak">0</span></div>
       <button class="nav-signout" onclick="handleSignOut()">
-        <span id="nav-username">—</span> · Sign Out
+        <span id="cs-nav-username">—</span> · Sign Out
       </button>
     </div>
   </nav>
@@ -268,7 +266,7 @@
   <div class="dash-wrap">
     <div class="eyebrow">Select Certification</div>
     <h1 class="dash-title">CHOOSE YOUR<br><span class="cyan">CERT</span></h1>
-    <p class="dash-sub">Pick a certification. We'll run a 10-question diagnostic first, then target your weak domains until you hit 85% mastery across the board.</p>
+    <p class="dash-sub">Select the certification you're studying for. Your dashboard tracks your progress domain by domain until you hit 85% mastery.</p>
     <div class="cert-grid" id="cert-grid"></div>
   </div>
 </div>
@@ -321,8 +319,8 @@
   </div>
 </div>
 
-<!-- ════════ DOMAIN DASHBOARD ════════ -->
-<div id="screen-domain-dash" class="screen">
+<!-- ════════ DASHBOARD ════════ -->
+<div id="screen-dashboard" class="screen">
   <nav class="platform-nav">
     <a class="nav-brand" href="#">
       <svg width="28" height="28" viewBox="0 0 44 44" fill="none">
@@ -332,32 +330,32 @@
       OPS <span class="accent">ACADEMY</span>
     </a>
     <div class="nav-right">
-      <div class="stat-pill">XP <span class="val" id="dd-stat-xp">—</span></div>
-      <div class="stat-pill amber streak">🔥 <span class="val" id="dd-stat-streak">0</span></div>
+      <div class="stat-pill">XP <span class="val" id="db-stat-xp">—</span></div>
+      <div class="stat-pill amber streak">🔥 <span class="val" id="db-stat-streak">0</span></div>
       <button class="nav-signout" onclick="handleSignOut()">
-        <span id="dd-nav-username">—</span> · Sign Out
+        <span id="db-nav-username">—</span> · Sign Out
       </button>
     </div>
   </nav>
 
   <div class="domain-dash-wrap">
-    <button class="domain-back" onclick="show('dashboard'); window.scrollTo({top:0});">◂ CHOOSE CERT</button>
+    <button class="domain-back" onclick="show('cert-select'); window.scrollTo({top:0});">◂ CHANGE CERT</button>
 
     <!-- Overall score card -->
     <div class="domain-overall">
-      <div class="domain-overall-pct" id="dd-overall-pct">—%</div>
+      <div class="domain-overall-pct" id="db-overall-pct">—%</div>
       <div class="domain-overall-right">
-        <div class="domain-overall-label" id="dd-cert-label">LOADING...</div>
-        <div class="domain-master-count" id="dd-master-count">— domains mastered</div>
+        <div class="domain-overall-label" id="db-cert-label">LOADING...</div>
+        <div class="domain-master-count" id="db-master-count">— domains mastered</div>
         <div class="domain-bar-track" style="max-width:100%;margin-top:6px">
-          <div class="domain-bar-fill" id="dd-overall-bar" style="width:0%;background:var(--cyan)"></div>
+          <div class="domain-bar-fill" id="db-overall-bar" style="width:0%;background:var(--cyan)"></div>
           <div class="domain-bar-target" style="left:85%"></div>
         </div>
       </div>
     </div>
 
     <!-- Per-domain list -->
-    <div class="domain-list" id="dd-domain-list">
+    <div class="domain-list" id="db-domain-list">
       <div style="padding:48px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:2px;">LOADING DOMAINS...</div>
     </div>
   </div>
@@ -427,8 +425,8 @@ function init() {
 
   S.user = user;
   S.profile = { full_name: user.user_metadata?.full_name || user.email || 'Operator' };
-  buildDashboard();
-  show('dashboard');
+  buildCertSelect();
+  show('cert-select');
   if (needsRefresh) sb.auth.refreshSession().catch(() => {});
   loadStatsAsync();
 }
@@ -438,7 +436,9 @@ async function loadStatsAsync() {
     const xpRes = await sb.from('xp_events').select('amount').eq('user_id', S.user.id);
     if (xpRes.data) {
       S.totalXP = xpRes.data.reduce((sum, e) => sum + (e.amount || 0), 0);
-      document.getElementById('stat-xp').textContent = S.totalXP.toLocaleString();
+      const xpText = S.totalXP.toLocaleString();
+      const xpEl = document.getElementById('db-stat-xp');
+      if (xpEl) xpEl.textContent = xpText;
     }
   } catch (_) {}
 
@@ -446,17 +446,16 @@ async function loadStatsAsync() {
     const strRes = await sb.from('streaks').select('current_streak').eq('user_id', S.user.id).single();
     if (strRes.data) {
       S.streak = strRes.data.current_streak || 0;
-      document.getElementById('stat-streak').textContent = S.streak;
+      const strEl = document.getElementById('db-stat-streak');
+      if (strEl) strEl.textContent = S.streak;
     }
   } catch (_) {}
 }
 
-/* ══ DASHBOARD ══ */
-function buildDashboard() {
+/* ══ CERT SELECT ══ */
+function buildCertSelect() {
   const first = (S.profile?.full_name || S.user?.email || 'Operator').split(' ')[0];
-  document.getElementById('nav-username').textContent = first;
-  document.getElementById('stat-xp').textContent = S.totalXP.toLocaleString();
-  document.getElementById('stat-streak').textContent = S.streak;
+  document.getElementById('cs-nav-username').textContent = first;
 
   document.getElementById('cert-grid').innerHTML = CERTS.map(c => `
     <div class="cert-card" style="--cc:${c.cc};--cg:${c.cg}" id="cert-card-${c.id}">
@@ -568,28 +567,26 @@ async function getDomainScores(certId) {
   } catch (_) { return []; }
 }
 
-/* ══ SHOW DOMAIN DASHBOARD ══ */
+/* ══ LOAD DASHBOARD ══ */
 async function showDomainDash(certId) {
   S.cert = certId;
   const cert = CERTS.find(c => c.id === certId);
 
-  // Sync nav stats to domain dash nav
-  document.getElementById('dd-nav-username').textContent =
-    document.getElementById('nav-username').textContent;
-  document.getElementById('dd-stat-xp').textContent =
-    document.getElementById('stat-xp').textContent;
-  document.getElementById('dd-stat-streak').textContent =
-    document.getElementById('stat-streak').textContent;
+  // Sync nav
+  const first = (S.profile?.full_name || S.user?.email || 'Operator').split(' ')[0];
+  document.getElementById('db-nav-username').textContent = first;
+  document.getElementById('db-stat-xp').textContent = S.totalXP.toLocaleString();
+  document.getElementById('db-stat-streak').textContent = S.streak;
 
-  document.getElementById('dd-cert-label').textContent =
+  document.getElementById('db-cert-label').textContent =
     (cert?.code || certId.toUpperCase()) + ' — DOMAIN PROGRESS';
 
   const domains = await getDomainScores(certId);
 
   if (!domains.length) {
-    document.getElementById('dd-overall-pct').textContent = '—%';
-    document.getElementById('dd-master-count').textContent = 'No sessions yet';
-    document.getElementById('dd-domain-list').innerHTML = `
+    document.getElementById('db-overall-pct').textContent = '—%';
+    document.getElementById('db-master-count').textContent = 'No sessions yet';
+    document.getElementById('db-domain-list').innerHTML = `
       <div style="background:var(--dark);border:1px solid var(--border);border-left:3px solid var(--cyan);padding:36px 32px;margin-top:4px;">
         <div style="font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:3px;margin-bottom:12px;">GETTING STARTED</div>
         <div style="font-family:var(--cond);font-size:22px;font-weight:900;text-transform:uppercase;margin-bottom:10px;">Run your diagnostic first</div>
@@ -602,7 +599,7 @@ async function showDomainDash(certId) {
       </div>
     `;
     document.getElementById('loading-text').textContent = 'AUTHENTICATING...';
-    show('domain-dash');
+    show('dashboard');
     window.scrollTo({ top: 0 });
     return;
   }
@@ -613,18 +610,18 @@ async function showDomainDash(certId) {
     : 0;
   const mastered = domains.filter(d => d.mastered).length;
 
-  const pctEl = document.getElementById('dd-overall-pct');
+  const pctEl = document.getElementById('db-overall-pct');
   pctEl.textContent = `${overall}%`;
   pctEl.style.color = overall >= 85 ? 'var(--green)' : overall >= 60 ? 'var(--amber)' : 'var(--cyan)';
 
-  document.getElementById('dd-master-count').textContent =
+  document.getElementById('db-master-count').textContent =
     `${mastered} of ${domains.length} domain${domains.length !== 1 ? 's' : ''} mastered (85%+ target)`;
 
-  document.getElementById('dd-overall-bar').style.width = `${Math.min(overall, 100)}%`;
-  document.getElementById('dd-overall-bar').style.background =
+  document.getElementById('db-overall-bar').style.width = `${Math.min(overall, 100)}%`;
+  document.getElementById('db-overall-bar').style.background =
     overall >= 85 ? 'var(--green)' : 'var(--cyan)';
 
-  document.getElementById('dd-domain-list').innerHTML = domains.map(d => {
+  document.getElementById('db-domain-list').innerHTML = domains.map(d => {
     const barColor = d.mastered ? 'var(--green)' : d.pct >= 60 ? 'var(--cyan)' : 'var(--red)';
     const ctaClass = d.mastered ? 'mastered' : d.unstarted ? 'unstarted' : '';
     const ctaText  = d.mastered ? '✓ MASTERED' : '▸ DRILL';
@@ -654,7 +651,7 @@ async function showDomainDash(certId) {
   }).join('');
 
   document.getElementById('loading-text').textContent = 'AUTHENTICATING...';
-  show('domain-dash');
+  show('dashboard');
   window.scrollTo({ top: 0 });
 }
 
@@ -678,11 +675,10 @@ async function startDrill(certId, difficulty, type='standard', domain=null) {
 
   if (error || !rows?.length) {
     alert('No questions found for this selection.');
-    // Return to appropriate screen
     if (type === 'domain' || type === 'diagnostic') {
       await showDomainDash(certId);
     } else {
-      show('dashboard');
+      show('cert-select');
     }
     document.getElementById('loading-text').textContent = 'AUTHENTICATING...';
     return;
@@ -877,19 +873,24 @@ async function finish() {
 /* ══ RESULTS ACTIONS ══ */
 function drillAgain() { startDrill(S.cert, S.difficulty, S.drillType, S.domain); }
 function goToDashboard() {
-  document.getElementById('stat-xp').textContent = S.totalXP.toLocaleString();
-  show('dashboard');
-  window.scrollTo({ top: 0 });
+  // After a drill, go back to the cert's dashboard (not cert-select)
+  if (S.cert) {
+    showDomainDash(S.cert);
+  } else {
+    show('cert-select');
+    window.scrollTo({ top: 0 });
+  }
 }
 function confirmBack() {
   if (S.idx > 0 && !S.answered) {
     if (!confirm('Leave drill? Progress will not be saved.')) return;
   }
-  // Return to domain dash if that's where we came from, else dashboard
-  if (S.drillType === 'domain') {
+  // Always return to the cert dashboard
+  if (S.cert) {
     showDomainDash(S.cert);
   } else {
-    goToDashboard();
+    show('cert-select');
+    window.scrollTo({ top: 0 });
   }
 }
 
@@ -907,7 +908,8 @@ async function updateStreak() {
       longest_streak: Math.max(st.longest_streak, newStreak),
       last_activity: today, updated_at: new Date().toISOString()
     }).eq('user_id', S.user.id);
-    document.getElementById('stat-streak').textContent = newStreak;
+    const strEl = document.getElementById('db-stat-streak');
+    if (strEl) strEl.textContent = newStreak;
   } catch (_) {}
 }
 
