@@ -129,6 +129,23 @@
   </style>
 </head>
 <body>
+
+<!-- ════════ ACCESS GATE ════════ -->
+<div id="access-gate" style="position:fixed;inset:0;z-index:9999;background:#060c1e;background-image:radial-gradient(rgba(26,109,255,0.12) 1px,transparent 1px);background-size:40px 40px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;letter-spacing:6px;text-transform:uppercase;color:#f0f4f8;">OPS <span style="color:#00e5cc;">ACADEMY</span></div>
+  <div style="width:200px;height:1px;background:linear-gradient(90deg,transparent,#00e5cc,transparent);"></div>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#4a6080;letter-spacing:3px;">RESTRICTED ACCESS</div>
+  <div style="display:flex;flex-direction:column;gap:12px;width:280px;">
+    <input id="gate-input" type="password" placeholder="ENTER ACCESS CODE" style="background:#0b1228;border:1px solid #1a2444;color:#f0f4f8;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;padding:14px 16px;outline:none;width:100%;text-align:center;" onkeydown="if(event.key==='Enter')checkGate()"/>
+    <button onclick="checkGate()" style="background:transparent;border:1px solid #00e5cc;color:#00e5cc;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;padding:12px;cursor:pointer;">ENTER</button>
+    <div id="gate-err" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:#ff5252;letter-spacing:2px;text-align:center;display:none;">INVALID CODE</div>
+  </div>
+</div>
+<script>
+(function(){if(sessionStorage.getItem('oa_gate')==='1'){document.getElementById('access-gate').style.display='none';}})();
+function checkGate(){const val=document.getElementById('gate-input').value.trim();if(val==='OpsTest26'){sessionStorage.setItem('oa_gate','1');document.getElementById('access-gate').style.display='none';}else{const e=document.getElementById('gate-err');e.style.display='block';setTimeout(()=>e.style.display='none',2000);document.getElementById('gate-input').value='';}}
+</script>
+
 <div class="page">
 
   <div class="left">
