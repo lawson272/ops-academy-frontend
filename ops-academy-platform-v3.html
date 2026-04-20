@@ -324,6 +324,39 @@
     .res-btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
     .res-btn.secondary:hover { border-color: var(--border-l); color: var(--white); }
 
+    /* ── REVIEW SECTION ── */
+    .res-review { margin-top: 40px; border-top: 1px solid var(--border); padding-top: 32px; max-width: 640px; }
+    .res-review-label { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
+    .review-perfect { font-family: var(--mono); font-size: 12px; color: var(--green); letter-spacing: 1px; padding: 16px; background: var(--green-dim); border: 1px solid rgba(0,230,118,0.2); }
+    .review-item { margin-bottom: 12px; background: var(--dark); border: 1px solid var(--border); }
+    .review-item.wrong-card { border-left: 3px solid var(--red); }
+    .review-item.right-row { border-left: 3px solid var(--green); display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
+    .review-item-head { display: flex; align-items: center; gap: 8px; padding: 12px 16px 10px; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
+    .review-q-num { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+    .review-domain-tag { font-family: var(--mono); font-size: 9px; color: var(--text); letter-spacing: 1px; background: rgba(255,255,255,0.05); padding: 2px 7px; }
+    .review-diff-tag { font-family: var(--mono); font-size: 9px; letter-spacing: 1px; padding: 2px 7px; }
+    .review-diff-tag.easy   { color: var(--green); background: var(--green-dim); }
+    .review-diff-tag.medium { color: var(--amber); background: var(--amber-dim); }
+    .review-diff-tag.hard   { color: var(--red);   background: var(--red-dim); }
+    .review-badge { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; margin-left: auto; }
+    .review-badge.wrong  { color: var(--red); }
+    .review-badge.right  { color: var(--green); }
+    .review-q-text { font-size: 13px; color: var(--white); line-height: 1.6; padding: 14px 16px 12px; }
+    .review-ans { display: flex; align-items: flex-start; gap: 10px; padding: 8px 16px; font-size: 12px; line-height: 1.5; }
+    .review-ans.wrong-ans { background: var(--red-dim); }
+    .review-ans.right-ans { background: var(--green-dim); }
+    .review-ans-label { font-family: var(--mono); font-size: 9px; letter-spacing: 1px; flex-shrink: 0; margin-top: 2px; min-width: 80px; }
+    .review-ans.wrong-ans .review-ans-label { color: var(--red); }
+    .review-ans.right-ans .review-ans-label { color: var(--green); }
+    .review-ans-key { font-family: var(--mono); font-size: 11px; font-weight: 700; flex-shrink: 0; width: 18px; margin-top: 1px; }
+    .review-ans.wrong-ans .review-ans-key { color: var(--red); }
+    .review-ans.right-ans .review-ans-key { color: var(--green); }
+    .review-ans-text { color: var(--off); }
+    .review-expl { font-size: 12px; color: var(--muted); line-height: 1.6; padding: 10px 16px 14px; border-top: 1px solid var(--border); font-style: italic; }
+    .review-right-icon { color: var(--green); font-size: 13px; flex-shrink: 0; }
+    .review-right-preview { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .review-right-num { font-family: var(--mono); font-size: 10px; color: var(--muted); flex-shrink: 0; min-width: 28px; }
+
     /* ── RIGHT PANEL ── */
     .right-panel { grid-row: 2; background: var(--dark); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
     .rp-section { padding: 20px 18px; border-bottom: 1px solid var(--border); }
@@ -540,6 +573,7 @@
           <button class="res-btn primary" onclick="drillAgain()">▸ DRILL AGAIN</button>
           <button class="res-btn secondary" onclick="goToDashboard()">← DASHBOARD</button>
         </div>
+        <div class="res-review" id="res-review"></div>
       </div>
     </div>
 
@@ -1148,11 +1182,74 @@ async function finish() {
   document.getElementById('tb-xp').textContent     = S.totalXP.toLocaleString();
   document.getElementById('dash-xp').textContent   = S.totalXP.toLocaleString();
 
+  // Build question review before showing results
+  document.getElementById('res-review').innerHTML = buildReviewHTML();
+
   // Apply this drill's results to domain scores immediately (no DB wait needed)
   applyDrillResultsToDomains();
 
   showMain('results');
   document.querySelector('.main').scrollTo({ top: 0 });
+}
+
+/* ══ ANSWER REVIEW ══ */
+function buildReviewHTML() {
+  // Map question_id → { given, is_correct } from the answers we just submitted
+  const ansMap = {};
+  S.pendingAnswers.forEach(a => { ansMap[a.question_id] = { given: a.answer_given, correct: a.is_correct }; });
+
+  const wrongCount = S.pendingAnswers.filter(a => !a.is_correct).length;
+
+  if (wrongCount === 0) {
+    return `
+      <div class="res-review-label">Question Review</div>
+      <div class="review-perfect">✓ Perfect drill — every answer correct</div>`;
+  }
+
+  let html = `<div class="res-review-label">Question Review — ${wrongCount} to revisit</div>`;
+
+  S.questions.forEach((q, i) => {
+    const ans = ansMap[q.id];
+    if (!ans) return;
+
+    if (!ans.correct) {
+      // Wrong answer — full card
+      const givenOpt   = q.options.find(o => o.key === ans.given);
+      const correctOpt = q.options.find(o => o.key === q.correct_answer);
+      html += `
+        <div class="review-item wrong-card">
+          <div class="review-item-head">
+            <span class="review-q-num">Q${i + 1}</span>
+            <span class="review-domain-tag">${q.domain}</span>
+            <span class="review-diff-tag ${q.difficulty}">${q.difficulty.toUpperCase()}</span>
+            <span class="review-badge wrong">✗ INCORRECT</span>
+          </div>
+          <div class="review-q-text">${q.question_text}</div>
+          <div class="review-ans wrong-ans">
+            <span class="review-ans-label">YOUR ANSWER</span>
+            <span class="review-ans-key">${ans.given}</span>
+            <span class="review-ans-text">${givenOpt ? givenOpt.text : '—'}</span>
+          </div>
+          <div class="review-ans right-ans">
+            <span class="review-ans-label">CORRECT</span>
+            <span class="review-ans-key">${q.correct_answer}</span>
+            <span class="review-ans-text">${correctOpt ? correctOpt.text : '—'}</span>
+          </div>
+          ${q.explanation ? `<div class="review-expl">${q.explanation}</div>` : ''}
+        </div>`;
+    } else {
+      // Correct answer — compact row
+      const preview = q.question_text.length > 80 ? q.question_text.slice(0, 80) + '…' : q.question_text;
+      html += `
+        <div class="review-item right-row">
+          <span class="review-right-num">Q${i + 1}</span>
+          <span class="review-right-icon">✓</span>
+          <span class="review-right-preview">${preview}</span>
+        </div>`;
+    }
+  });
+
+  return html;
 }
 
 /* ══ APPLY DRILL RESULTS TO DOMAIN SCORES ══ */
