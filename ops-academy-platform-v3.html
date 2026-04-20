@@ -327,28 +327,11 @@ function show(id) {
 }
 
 /* ══ INIT ══ */
-function dbg(msg) {
-  const el = document.getElementById('loading-text');
-  if (el) el.textContent = msg;
-  console.log('[INIT]', msg);
-}
-
-// Catch any uncaught JS errors and show them on screen
-window.onerror = function(msg, src, line) {
-  dbg('JS ERROR: ' + msg + ' (line ' + line + ')');
-  return false;
-};
-
 function init() {
-  dbg('SCANNING STORAGE...');
   let user = null;
   let needsRefresh = false;
-  let keyCount = 0;
 
   try {
-    keyCount = localStorage.length;
-    dbg('FOUND ' + keyCount + ' STORAGE KEYS...');
-
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (!k) continue;
@@ -363,29 +346,19 @@ function init() {
       } catch(_) {}
       break;
     }
-  } catch(e) {
-    dbg('STORAGE ERROR: ' + e.message);
-    return;
-  }
+  } catch(_) {}
 
   if (!user) {
-    dbg('NO SESSION FOUND (' + keyCount + ' keys) — REDIRECTING TO LOGIN...');
-    setTimeout(() => { window.location.href = 'ops-academy-login-v3.html'; }, 1200);
+    window.location.href = 'ops-academy-login-v3.html';
     return;
   }
 
-  dbg('SESSION FOUND' + (needsRefresh ? ' (EXPIRED — REFRESHING)' : '') + ' — LOADING DASHBOARD...');
-
-  try {
-    S.user = user;
-    S.profile = { full_name: user.user_metadata?.full_name || user.email || 'Operator' };
-    buildDashboard();
-    show('dashboard');
-    if (needsRefresh) sb.auth.refreshSession().catch(() => {});
-    loadStatsAsync();
-  } catch(e) {
-    dbg('DASHBOARD ERROR: ' + e.message);
-  }
+  S.user = user;
+  S.profile = { full_name: user.user_metadata?.full_name || user.email || 'Operator' };
+  buildDashboard();
+  show('dashboard');
+  if (needsRefresh) sb.auth.refreshSession().catch(() => {});
+  loadStatsAsync();
 }
 
 async function loadStatsAsync() {
