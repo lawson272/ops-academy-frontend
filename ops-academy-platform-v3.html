@@ -4,28 +4,100 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ops Academy | Platform</title>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@700;900&family=Barlow:wght@300;400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --black: #060c1e; --dark: #0b1228; --panel: #101830; --border: #1a2444; --border-l: #243060;
-      --cyan: #00e5cc; --cyan-dim: rgba(0,229,204,0.08); --cyan-glow: rgba(0,229,204,0.18);
-      --blue: #1a6dff; --blue-dim: rgba(26,109,255,0.08);
-      --white: #f0f4f8; --off: #ccd6f6; --muted: #4a6080; --text: #7a90b8;
-      --green: #00e090; --red: #ff5a5a; --amber: #ff9f43;
-      --mono: 'Share Tech Mono', monospace; --cond: 'Barlow Condensed', sans-serif; --body: 'Barlow', sans-serif;
+      --black:    #060c1e;
+      --dark:     #0b1228;
+      --panel:    #101830;
+      --border:   #1a2444;
+      --border-l: #243060;
+      --cyan:     #00e5cc;
+      --cyan-dim: rgba(0,229,204,0.08);
+      --cyan-glow:rgba(0,229,204,0.2);
+      --blue:     #1a6dff;
+      --green:    #00e676;
+      --green-dim:rgba(0,230,118,0.1);
+      --amber:    #ffb300;
+      --amber-dim:rgba(255,179,0,0.1);
+      --red:      #ff5252;
+      --red-dim:  rgba(255,82,82,0.1);
+      --white:    #f0f4f8;
+      --off:      #ccd6f6;
+      --muted:    #4a6080;
+      --text:     #7a90b8;
+      --mono:     'Share Tech Mono', monospace;
+      --cond:     'Barlow Condensed', sans-serif;
+      --body:     'Barlow', sans-serif;
     }
-    html, body { min-height: 100%; background: var(--black); color: var(--white); font-family: var(--body); }
-    body { background-image: radial-gradient(rgba(26,109,255,0.12) 1px, transparent 1px); background-size: 40px 40px; }
 
-    .screen { display: none; }
-    .screen.active { display: block; }
+    /* ── CERT SELECT (full page) ── */
+    #screen-cert-select {
+      min-height: 100vh;
+      background: var(--black);
+      background-image: radial-gradient(rgba(26,109,255,0.12) 1px, transparent 1px);
+      background-size: 40px 40px;
+      color: var(--white);
+      font-family: var(--body);
+    }
+    .cs-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px; height: 60px;
+      background: rgba(6,12,30,0.94); border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+    .cs-brand {
+      display: flex; align-items: center; gap: 12px;
+      font-family: var(--cond); font-size: 18px; font-weight: 900;
+      letter-spacing: 4px; text-transform: uppercase; color: var(--white);
+    }
+    .cs-brand .accent { color: var(--cyan); }
+    .cs-signout {
+      font-family: var(--mono); font-size: 11px; color: var(--muted);
+      background: transparent; border: 1px solid var(--border);
+      padding: 6px 14px; cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
+    }
+    .cs-signout:hover { border-color: var(--red); color: var(--red); }
+    .cs-wrap { max-width: 1000px; margin: 0 auto; padding: 60px 32px 80px; }
+    .cs-eyebrow {
+      font-family: var(--mono); font-size: 10px; color: var(--cyan);
+      letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .cs-eyebrow::before { content: ''; width: 24px; height: 1px; background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+    .cs-title { font-family: var(--cond); font-size: clamp(40px,6vw,64px); font-weight: 900; text-transform: uppercase; line-height: 0.95; margin-bottom: 12px; }
+    .cs-title .cyan { color: var(--cyan); }
+    .cs-sub { font-size: 15px; font-weight: 300; color: var(--text); max-width: 480px; line-height: 1.7; margin-bottom: 48px; }
+    .cs-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+    .cs-card {
+      background: var(--dark); border: 1px solid var(--border);
+      padding: 28px; position: relative; overflow: hidden; transition: border-color 0.2s;
+    }
+    .cs-card:hover { border-color: var(--border-l); }
+    .cs-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--cc); }
+    .cs-card-glow { position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; pointer-events: none; background: radial-gradient(ellipse, var(--cg) 0%, transparent 70%); }
+    .cs-code { font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: var(--cc); margin-bottom: 8px; text-transform: uppercase; }
+    .cs-name { font-family: var(--cond); font-size: 26px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; }
+    .cs-desc { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 20px; }
+    .cs-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .cs-badge { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; border: 1px solid var(--border); color: var(--muted); padding: 3px 8px; }
+    .cs-qcount { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+    .cs-btn {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      padding: 13px 20px; border: none; background: var(--cc); color: var(--black);
+      cursor: pointer; transition: all 0.2s; font-weight: 700; width: 100%;
+    }
+    .cs-btn:hover { opacity: 0.88; box-shadow: 0 0 20px var(--cg); }
+    .cs-btn.returning { background: transparent; color: var(--cc); border: 1px solid var(--cc); }
+    .cs-btn.returning:hover { background: var(--cg); }
 
-    /* ── LOADING ── */
+    /* ── LOADING OVERLAY ── */
     #screen-loading {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      min-height: 100vh; gap: 20px;
+      position: fixed; inset: 0; z-index: 1000;
+      background: var(--black);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
     }
     .loading-logo { font-family: var(--cond); font-size: 28px; font-weight: 900; letter-spacing: 6px; text-transform: uppercase; }
     .loading-logo span { color: var(--cyan); }
@@ -38,328 +110,479 @@
     @keyframes loadBar { to { left: 140%; } }
     .loading-text { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 3px; }
 
-    /* ── NAV ── */
-    .platform-nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(6,12,30,0.94); border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 32px; height: 60px;
-    }
-    .nav-brand {
-      display: flex; align-items: center; gap: 12px;
-      font-family: var(--cond); font-size: 18px; font-weight: 900;
-      letter-spacing: 4px; text-transform: uppercase; color: var(--white); text-decoration: none;
-    }
-    .nav-brand .accent { color: var(--cyan); }
-    .nav-right { display: flex; align-items: center; gap: 12px; }
-    .stat-pill {
-      display: flex; align-items: center; gap: 6px;
-      font-family: var(--mono); font-size: 11px; color: var(--text);
-      background: var(--panel); border: 1px solid var(--border);
-      padding: 6px 12px; border-radius: 2px; letter-spacing: 1px;
-    }
-    .stat-pill .val { color: var(--white); font-weight: 700; }
-    .stat-pill.amber .val { color: var(--amber); }
-    .nav-signout {
-      font-family: var(--mono); font-size: 11px; color: var(--muted);
-      background: transparent; border: 1px solid var(--border); border-radius: 2px;
-      padding: 6px 14px; cursor: pointer; letter-spacing: 1px; transition: all 0.2s;
-    }
-    .nav-signout:hover { border-color: var(--red); color: var(--red); }
+    /* ── MAIN APP ── */
+    html, body { height: 100%; background: var(--black); color: var(--white); font-family: var(--body); }
+    #app-main { display: grid; grid-template-columns: 220px 1fr 300px; grid-template-rows: 56px 1fr; height: 100vh; }
 
-    /* ── DASHBOARD ── */
-    .dash-wrap { max-width: 1100px; margin: 0 auto; padding: 60px 32px 80px; }
-    .eyebrow {
-      font-family: var(--mono); font-size: 10px; color: var(--cyan);
-      letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px;
-      display: flex; align-items: center; gap: 12px;
+    /* ── TOPBAR ── */
+    .topbar {
+      grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px; background: var(--dark); border-bottom: 1px solid var(--border);
     }
-    .eyebrow::before { content: ''; width: 24px; height: 1px; background: linear-gradient(90deg, var(--cyan), var(--blue)); }
-    .dash-title { font-family: var(--cond); font-size: clamp(40px,6vw,64px); font-weight: 900; text-transform: uppercase; line-height: 0.95; margin-bottom: 16px; }
-    .dash-title .cyan { color: var(--cyan); }
-    .dash-sub { font-size: 15px; font-weight: 300; color: var(--text); max-width: 480px; line-height: 1.7; margin-bottom: 48px; }
-
-    /* CERT GRID */
-    .cert-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
-
-    .cert-card {
-      background: var(--dark); border: 1px solid var(--border);
-      padding: 28px; position: relative; overflow: hidden; transition: border-color 0.2s;
+    .topbar-left { display: flex; align-items: center; gap: 28px; }
+    .topbar-brand { display: flex; align-items: center; gap: 10px; }
+    .brand-icon {
+      width: 32px; height: 32px; border: 1px solid rgba(0,229,204,0.4);
+      background: var(--cyan-dim); display: flex; align-items: center; justify-content: center;
     }
-    .cert-card:hover { border-color: var(--border-l); }
-    .cert-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--cc); }
-    .cert-card-glow { position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; border-radius: 50%; pointer-events: none; background: radial-gradient(ellipse, var(--cg) 0%, transparent 70%); }
-    .cert-code { font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: var(--cc); margin-bottom: 8px; text-transform: uppercase; }
-    .cert-name { font-family: var(--cond); font-size: 26px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; }
-    .cert-desc { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 20px; }
-    .cert-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-    .cert-badge { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; border: 1px solid var(--border); color: var(--muted); padding: 3px 8px; border-radius: 2px; }
-    .cert-qcount { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; }
-    .cert-drills { display: flex; gap: 8px; flex-wrap: wrap; }
-    .drill-btn {
-      font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-      padding: 9px 16px; border: 1px solid var(--border); background: transparent;
-      color: var(--text); cursor: pointer; border-radius: 2px; transition: all 0.18s;
-    }
-    .drill-btn:hover { background: var(--cc); color: var(--black); border-color: var(--cc); box-shadow: 0 0 16px var(--cg); }
-    .drill-btn.all { background: var(--cc); color: var(--black); border-color: var(--cc); font-weight: 700; }
-    .drill-btn.all:hover { box-shadow: 0 0 20px var(--cg); opacity: 0.9; }
-    .drill-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-    /* ── DRILL ── */
-    .drill-wrap { max-width: 760px; margin: 0 auto; padding: 0 24px 80px; min-height: 100vh; }
-    .drill-header {
-      position: sticky; top: 0; z-index: 50;
-      background: rgba(6,12,30,0.96); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px);
-      padding: 16px 24px; margin: 0 -24px;
-      display: flex; align-items: center; gap: 20px;
-    }
-    .drill-back {
+    .brand-text { font-family: var(--cond); font-size: 16px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; }
+    .brand-text span { color: var(--cyan); }
+    .topbar-cert {
       font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px;
-      background: none; border: 1px solid var(--border); padding: 8px 12px; cursor: pointer;
-      transition: all 0.2s; border-radius: 2px; white-space: nowrap;
+      cursor: pointer; padding: 5px 12px; border: 1px solid var(--border); transition: all 0.2s;
     }
-    .drill-back:hover { color: var(--red); border-color: var(--red); }
-    .drill-prog-wrap { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-    .drill-prog-labels { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
-    .drill-prog-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
-    .drill-prog-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); border-radius: 2px; transition: width 0.4s ease; }
-    .drill-xp-live { font-family: var(--mono); font-size: 11px; color: var(--amber); white-space: nowrap; letter-spacing: 1px; }
+    .topbar-cert:hover { border-color: var(--cyan); color: var(--cyan); }
+    .topbar-right { display: flex; align-items: center; gap: 16px; font-family: var(--mono); font-size: 11px; }
+    .streak-badge { display: flex; align-items: center; gap: 6px; background: var(--amber-dim); border: 1px solid rgba(255,179,0,0.25); padding: 5px 12px; border-radius: 20px; color: var(--amber); font-weight: 700; }
+    .xp-badge { display: flex; align-items: center; gap: 6px; background: var(--cyan-dim); border: 1px solid rgba(0,229,204,0.2); padding: 5px 12px; border-radius: 20px; color: var(--cyan); font-weight: 700; }
+    .topbar-signout {
+      font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px;
+      background: transparent; border: 1px solid var(--border); padding: 5px 12px; cursor: pointer; transition: all 0.2s;
+    }
+    .topbar-signout:hover { border-color: var(--red); color: var(--red); }
 
-    /* Question */
-    .q-area { padding: 40px 0 24px; }
-    .q-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-    .q-tag { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; border: 1px solid var(--border); color: var(--muted); padding: 3px 8px; border-radius: 2px; }
-    .q-tag.easy { color: var(--cyan); border-color: rgba(0,229,204,0.3); }
-    .q-tag.medium { color: #6699ff; border-color: rgba(102,153,255,0.3); }
-    .q-tag.hard { color: #ff7080; border-color: rgba(255,112,128,0.3); }
-    .q-number { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-bottom: 16px; }
-    .q-text { font-family: var(--cond); font-size: clamp(22px,3.5vw,30px); font-weight: 700; line-height: 1.3; color: var(--white); text-transform: uppercase; margin-bottom: 36px; }
+    /* ── SIDEBAR ── */
+    .sidebar { grid-row: 2; background: var(--dark); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+    .cert-selector { padding: 16px; border-bottom: 1px solid var(--border); background: var(--panel); cursor: pointer; }
+    .cert-selector:hover { background: rgba(0,229,204,0.04); }
+    .cert-sel-name { font-family: var(--cond); font-size: 14px; font-weight: 800; text-transform: uppercase; color: var(--cyan); margin-bottom: 2px; }
+    .cert-sel-code { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+    .cert-readiness-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+    .cert-readiness-bar { flex: 1; height: 3px; background: var(--border); overflow: hidden; margin-right: 8px; }
+    .cert-readiness-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); transition: width 0.6s ease; }
+    .cert-readiness-pct { font-family: var(--mono); font-size: 10px; color: var(--cyan); }
 
-    /* Answers */
-    .answers { display: flex; flex-direction: column; gap: 12px; }
+    .sidebar-nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .sidebar-group-label { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; padding: 0 16px 8px; }
+    .sidebar-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 16px; cursor: pointer; transition: all 0.15s; font-size: 13px; color: var(--text);
+    }
+    .sidebar-item:hover { background: rgba(255,255,255,0.03); color: var(--white); }
+    .sidebar-item.active { background: var(--cyan-dim); color: var(--cyan); border-right: 2px solid var(--cyan); }
+    .sidebar-item-left { display: flex; align-items: center; gap: 10px; }
+    .sidebar-soon { font-family: var(--mono); font-size: 8px; color: var(--muted); letter-spacing: 1px; border: 1px solid var(--border); padding: 2px 5px; }
+
+    .sidebar-domains { padding: 16px; flex: 1; overflow-y: auto; }
+    .dr-label { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+    .dr-item { margin-bottom: 12px; }
+    .dr-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .dr-name { font-size: 11px; color: var(--text); }
+    .dr-score { font-family: var(--mono); font-size: 10px; font-weight: 700; }
+    .dr-score.high { color: var(--green); }
+    .dr-score.mid  { color: var(--cyan); }
+    .dr-score.low  { color: var(--red); }
+    .dr-score.none { color: var(--muted); }
+    .dr-bar { height: 3px; background: var(--border); overflow: hidden; }
+    .dr-fill { height: 100%; transition: width 0.6s ease; }
+    .dr-fill.high { background: var(--green); }
+    .dr-fill.mid  { background: var(--cyan); }
+    .dr-fill.low  { background: var(--red); }
+    .dr-fill.none { background: var(--muted); }
+
+    .sidebar-user {
+      padding: 12px 16px; border-top: 1px solid var(--border); flex-shrink: 0;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .user-avatar {
+      width: 32px; height: 32px; background: var(--panel); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 11px; color: var(--cyan); flex-shrink: 0;
+    }
+    .user-name { font-size: 13px; font-weight: 500; }
+    .user-role { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
+
+    /* ── MAIN ── */
+    .main { grid-row: 2; overflow-y: auto; background: var(--black); background-image: radial-gradient(rgba(26,109,255,0.08) 1px, transparent 1px); background-size: 32px 32px; }
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* Dashboard screen */
+    .dash-greeting { font-family: var(--cond); font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; }
+    .dash-greeting .name { color: var(--cyan); }
+    .dash-sub-text { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 28px; }
+
+    .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 28px; }
+    .stat-box { background: var(--dark); border: 1px solid var(--border); padding: 18px 16px; }
+    .stat-box-num { font-family: var(--cond); font-size: 32px; font-weight: 900; margin-bottom: 2px; }
+    .stat-box-num.cyan   { color: var(--cyan); }
+    .stat-box-num.amber  { color: var(--amber); }
+    .stat-box-num.green  { color: var(--green); }
+    .stat-box-change { font-family: var(--mono); font-size: 9px; color: var(--green); letter-spacing: 1px; margin-bottom: 6px; }
+    .stat-box-label { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+    .domain-breakdown { background: var(--dark); border: 1px solid var(--border); padding: 20px 24px; }
+    .db-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .db-title { font-family: var(--cond); font-size: 16px; font-weight: 800; text-transform: uppercase; }
+    .db-row { margin-bottom: 14px; }
+    .db-row-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .db-row-name { font-size: 12px; color: var(--text); }
+    .db-row-score { font-family: var(--mono); font-size: 11px; font-weight: 700; }
+    .db-row-score.high { color: var(--green); }
+    .db-row-score.mid  { color: var(--cyan); }
+    .db-row-score.low  { color: var(--red); }
+    .db-row-score.none { color: var(--muted); }
+    .db-bar { height: 4px; background: var(--border); overflow: hidden; cursor: pointer; transition: opacity 0.2s; }
+    .db-bar:hover { opacity: 0.8; }
+    .db-bar-fill { height: 100%; transition: width 0.6s ease; }
+    .db-bar-fill.high { background: var(--green); }
+    .db-bar-fill.mid  { background: var(--cyan); }
+    .db-bar-fill.low  { background: var(--red); }
+    .db-bar-fill.none { background: var(--muted); width: 0% !important; }
+    .db-drill-btn {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: var(--muted);
+      background: transparent; border: 1px solid var(--border); padding: 3px 8px; cursor: pointer;
+      transition: all 0.2s; margin-left: 8px; flex-shrink: 0;
+    }
+    .db-drill-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+    .db-no-data {
+      padding: 32px; text-align: center; border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan); background: var(--dark);
+    }
+    .db-no-data-title { font-family: var(--cond); font-size: 20px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; }
+    .db-no-data-sub { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 20px; }
+    .db-diag-btn {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+      padding: 12px 28px; border: none; background: var(--cyan); color: var(--black);
+      cursor: pointer; font-weight: 700; transition: all 0.2s;
+    }
+    .db-diag-btn:hover { opacity: 0.88; box-shadow: 0 0 20px var(--cyan-glow); }
+
+    /* ── DRILL SCREEN ── */
+    #screen-drill { padding: 32px; }
+    .drill-header-row {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;
+    }
+    .drill-back-btn {
+      font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px;
+      background: none; border: 1px solid var(--border); padding: 8px 14px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .drill-back-btn:hover { color: var(--red); border-color: var(--red); }
+    .drill-type-tag {
+      font-family: var(--mono); font-size: 10px; color: var(--cyan);
+      background: var(--cyan-dim); border: 1px solid rgba(0,229,204,0.2);
+      padding: 5px 14px; border-radius: 20px; letter-spacing: 1px;
+    }
+    .drill-xp-tag { font-family: var(--mono); font-size: 11px; color: var(--amber); letter-spacing: 1px; }
+    .drill-prog-row { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 8px; }
+    .drill-prog-bar { height: 4px; background: var(--border); overflow: hidden; margin-bottom: 32px; }
+    .drill-prog-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); transition: width 0.4s ease; }
+    .q-tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .q-tag { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; border: 1px solid var(--border); color: var(--muted); padding: 3px 8px; }
+    .q-tag.easy   { color: var(--cyan);   border-color: rgba(0,229,204,0.3); }
+    .q-tag.medium { color: #6699ff;       border-color: rgba(102,153,255,0.3); }
+    .q-tag.hard   { color: #ff7080;       border-color: rgba(255,112,128,0.3); }
+    .q-number { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-bottom: 12px; }
+    .q-text { font-family: var(--cond); font-size: clamp(20px,2.5vw,26px); font-weight: 700; line-height: 1.3; color: var(--white); text-transform: uppercase; margin-bottom: 28px; max-width: 680px; }
+    .answers { display: flex; flex-direction: column; gap: 10px; max-width: 680px; }
     .ans-btn {
       display: flex; align-items: flex-start; gap: 16px;
       background: var(--panel); border: 1px solid var(--border);
-      padding: 16px 20px; cursor: pointer; transition: all 0.18s; border-radius: 2px;
-      text-align: left; width: 100%; color: var(--white);
+      padding: 14px 18px; cursor: pointer; transition: all 0.18s; text-align: left; width: 100%; color: var(--white); border-radius: 2px;
     }
     .ans-btn:hover:not(:disabled) { border-color: var(--border-l); background: rgba(255,255,255,0.03); }
     .ans-btn:disabled { cursor: default; }
-    .ans-key { font-family: var(--mono); font-size: 12px; color: var(--muted); min-width: 20px; padding-top: 1px; flex-shrink: 0; letter-spacing: 1px; }
-    .ans-text { font-size: 15px; font-weight: 400; line-height: 1.5; }
-    .ans-btn.correct { background: rgba(0,224,144,0.1); border-color: var(--green); }
+    .ans-key { font-family: var(--mono); font-size: 12px; color: var(--muted); min-width: 20px; padding-top: 1px; flex-shrink: 0; }
+    .ans-text { font-size: 14px; font-weight: 300; line-height: 1.5; }
+    .ans-btn.correct { background: var(--green-dim); border-color: var(--green); }
     .ans-btn.correct .ans-key { color: var(--green); }
-    .ans-btn.wrong { background: rgba(255,90,90,0.1); border-color: var(--red); }
-    .ans-btn.wrong .ans-key { color: var(--red); }
-
-    /* Explanation */
-    .expl-wrap { margin-top: 24px; background: var(--dark); border: 1px solid var(--border); border-left: 3px solid var(--cyan); padding: 20px 24px; border-radius: 2px; animation: slideUp 0.3s ease; }
-    @keyframes slideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-    .expl-tag { font-family: var(--mono); font-size: 9px; color: var(--cyan); letter-spacing: 3px; margin-bottom: 10px; }
+    .ans-btn.wrong   { background: var(--red-dim);   border-color: var(--red);   }
+    .ans-btn.wrong .ans-key   { color: var(--red);   }
+    .expl-wrap { margin-top: 20px; max-width: 680px; background: var(--dark); border: 1px solid var(--border); border-left: 3px solid var(--cyan); padding: 18px 22px; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .expl-tag { font-family: var(--mono); font-size: 9px; color: var(--cyan); letter-spacing: 3px; margin-bottom: 8px; }
     .expl-tag.wrong-tag { color: var(--red); }
-    .expl-text { font-size: 14px; color: var(--off); line-height: 1.7; }
-    .expl-xp { margin-top: 12px; font-family: var(--mono); font-size: 11px; color: var(--amber); letter-spacing: 1px; }
-
-    .next-wrap { display: flex; justify-content: flex-end; margin-top: 28px; }
+    .expl-text { font-size: 13px; color: var(--off); line-height: 1.7; }
+    .expl-xp { margin-top: 10px; font-family: var(--mono); font-size: 10px; color: var(--amber); }
+    .next-wrap { display: flex; justify-content: flex-start; margin-top: 24px; }
     .drill-next {
       font-family: var(--mono); font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
       background: var(--cyan); color: var(--black); border: none;
-      padding: 16px 32px; cursor: pointer; transition: all 0.2s; border-radius: 2px; font-weight: 700;
+      padding: 14px 28px; cursor: pointer; transition: all 0.2s; font-weight: 700;
     }
-    .drill-next:hover { background: #1ffce3; box-shadow: 0 0 24px var(--cyan-glow); }
+    .drill-next:hover { background: #1ffce3; box-shadow: 0 0 20px var(--cyan-glow); }
 
-    /* ── RESULTS ── */
-    .results-wrap { max-width: 620px; margin: 0 auto; padding: 60px 24px 80px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-    .results-eye { font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: 4px; margin-bottom: 20px; }
-    .results-pct { font-family: var(--cond); font-size: clamp(80px,18vw,140px); font-weight: 900; line-height: 1; margin-bottom: 4px; }
-    .results-pct.perfect { color: var(--cyan); text-shadow: 0 0 60px var(--cyan-glow); }
-    .results-pct.good { color: var(--green); }
-    .results-pct.ok { color: var(--amber); }
-    .results-pct.poor { color: var(--red); }
-    .results-grade { font-family: var(--mono); font-size: 13px; letter-spacing: 4px; color: var(--muted); margin-bottom: 40px; }
-    .results-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; width: 100%; margin-bottom: 40px; }
-    .res-stat { background: var(--panel); border: 1px solid var(--border); padding: 20px 16px; border-radius: 2px; }
-    .res-stat-val { font-family: var(--cond); font-size: 36px; font-weight: 900; margin-bottom: 4px; }
+    /* ── RESULTS SCREEN ── */
+    #screen-results { padding: 40px 32px 60px; max-width: 560px; }
+    .res-eye { font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: 4px; margin-bottom: 16px; }
+    .res-pct { font-family: var(--cond); font-size: clamp(64px,12vw,100px); font-weight: 900; line-height: 1; margin-bottom: 4px; }
+    .res-pct.perfect { color: var(--cyan); text-shadow: 0 0 40px var(--cyan-glow); }
+    .res-pct.good    { color: var(--green); }
+    .res-pct.ok      { color: var(--amber); }
+    .res-pct.poor    { color: var(--red); }
+    .res-grade { font-family: var(--mono); font-size: 11px; letter-spacing: 3px; color: var(--muted); margin-bottom: 32px; }
+    .res-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px; }
+    .res-stat { background: var(--dark); border: 1px solid var(--border); padding: 16px; }
+    .res-stat-val { font-family: var(--cond); font-size: 30px; font-weight: 900; margin-bottom: 4px; }
     .res-stat-lbl { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
-    .res-xp-banner { width: 100%; background: rgba(255,159,67,0.08); border: 1px solid rgba(255,159,67,0.2); padding: 16px 24px; border-radius: 2px; margin-bottom: 40px; font-family: var(--mono); font-size: 13px; color: var(--amber); letter-spacing: 2px; }
-    .results-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
-    .res-btn { font-family: var(--mono); font-size: 12px; letter-spacing: 3px; text-transform: uppercase; padding: 16px 32px; cursor: pointer; transition: all 0.2s; border-radius: 2px; }
+    .res-xp { font-family: var(--mono); font-size: 12px; color: var(--amber); letter-spacing: 2px; margin-bottom: 28px; padding: 12px 16px; background: var(--amber-dim); border: 1px solid rgba(255,179,0,0.2); }
+    .res-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .res-btn { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 13px 24px; cursor: pointer; transition: all 0.2s; }
     .res-btn.primary { background: var(--cyan); color: var(--black); border: none; font-weight: 700; }
-    .res-btn.primary:hover { background: #1ffce3; box-shadow: 0 0 24px var(--cyan-glow); }
+    .res-btn.primary:hover { opacity: 0.88; box-shadow: 0 0 20px var(--cyan-glow); }
     .res-btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
     .res-btn.secondary:hover { border-color: var(--border-l); color: var(--white); }
 
-    /* ── DOMAIN DASHBOARD ── */
-    .domain-dash-wrap { max-width: 900px; margin: 0 auto; padding: 48px 32px 80px; }
-    .domain-back { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px; background: none; border: 1px solid var(--border); padding: 8px 14px; cursor: pointer; transition: all 0.2s; margin-bottom: 40px; display: inline-flex; align-items: center; gap: 8px; }
-    .domain-back:hover { border-color: var(--cyan); color: var(--cyan); }
-    .domain-overall { display: flex; align-items: center; gap: 28px; background: var(--dark); border: 1px solid var(--border); padding: 24px 28px; margin-bottom: 8px; }
-    .domain-overall-pct { font-family: var(--cond); font-size: 52px; font-weight: 900; line-height: 1; min-width: 90px; }
-    .domain-overall-right { flex: 1; display: flex; flex-direction: column; gap: 10px; }
-    .domain-overall-label { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--muted); }
-    .domain-master-count { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; color: var(--text); }
-    .domain-list { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
-    .domain-row-item { background: var(--dark); border: 1px solid var(--border); padding: 20px 24px; display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center; transition: border-color 0.2s; }
-    .domain-row-item:hover { border-color: var(--border-l); }
-    .domain-row-left { display: flex; flex-direction: column; gap: 8px; }
-    .domain-row-name { font-family: var(--cond); font-size: 17px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
-    .domain-row-stats { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
-    .domain-bar-track { position: relative; height: 4px; background: var(--border); max-width: 480px; }
-    .domain-bar-fill { height: 100%; transition: width 0.6s ease; }
-    .domain-bar-target { position: absolute; top: -4px; height: 12px; width: 2px; background: var(--amber); opacity: 0.7; }
-    .domain-bar-target::after { content: '85%'; font-family: var(--mono); font-size: 8px; color: var(--amber); position: absolute; top: -16px; left: 4px; white-space: nowrap; }
-    .domain-drill-cta { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; background: transparent; border: 1px solid var(--border); color: var(--text); padding: 10px 18px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-    .domain-drill-cta:hover { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
-    .domain-drill-cta.mastered { border-color: var(--green); color: var(--green); opacity: 0.7; cursor: default; }
-    .domain-drill-cta.unstarted { border-color: var(--border-l); color: var(--muted); }
-    .domain-drill-cta.unstarted:hover { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
-    .cert-action-btn { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 13px 20px; border: none; background: var(--cc); color: var(--black); cursor: pointer; transition: all 0.2s; font-weight: 700; width: 100%; }
-    .cert-action-btn:hover { opacity: 0.88; box-shadow: 0 0 20px var(--cg); }
-    .cert-action-btn.secondary { background: transparent; color: var(--cc); border: 1px solid var(--cc); }
-    .cert-action-btn.secondary:hover { background: var(--cg); }
+    /* ── RIGHT PANEL ── */
+    .right-panel { grid-row: 2; background: var(--dark); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+    .rp-section { padding: 20px 18px; border-bottom: 1px solid var(--border); }
+    .rp-section-label { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
 
-    /* ── MOBILE ── */
-    @media (max-width: 768px) {
-      .cert-grid { grid-template-columns: 1fr; }
-      .dash-wrap { padding: 40px 20px 60px; }
-      .platform-nav { padding: 0 16px; }
-      .stat-pill { display: none; }
-      .stat-pill.streak { display: flex; }
-      .drill-wrap { padding: 0 16px 60px; }
-      .q-text { font-size: 20px; }
+    .gauge-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .gauge-svg-wrap { position: relative; }
+    .gauge-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .gauge-pct { font-family: var(--cond); font-size: 28px; font-weight: 900; color: var(--cyan); }
+    .gauge-sub-text { font-family: var(--mono); font-size: 8px; color: var(--muted); letter-spacing: 2px; }
+    .gauge-track { fill: none; stroke: var(--border); stroke-width: 8; }
+    .gauge-fill-cyan { fill: none; stroke: url(#gaugeGrad); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 377; transform-origin: center; transform: rotate(-90deg); transition: stroke-dashoffset 0.8s ease; }
+    .gauge-status { font-family: var(--mono); font-size: 9px; color: var(--amber); letter-spacing: 1px; text-align: center; }
+    .ai-insight { margin-top: 12px; background: var(--panel); border: 1px solid var(--border); padding: 10px 12px; }
+    .ai-insight-label { font-family: var(--mono); font-size: 9px; color: var(--cyan); letter-spacing: 2px; margin-bottom: 6px; }
+    .ai-insight-text { font-size: 11px; color: var(--text); line-height: 1.6; }
+
+    .activity-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+    .activity-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; background: var(--panel); border: 1px solid var(--border); }
+    .activity-icon.good { border-color: rgba(0,230,118,0.3); color: var(--green); }
+    .activity-icon.warn { border-color: rgba(255,179,0,0.3); }
+    .activity-title { font-size: 12px; color: var(--off); line-height: 1.4; }
+    .activity-xp { font-family: var(--mono); font-size: 10px; color: var(--amber); margin-left: 4px; }
+    .activity-meta { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; margin-top: 3px; }
+    .activity-empty { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; text-align: center; padding: 20px 0; }
+
+    /* ── Q-OPTION (old style compat) ── */
+    .q-option {
+      display: flex; align-items: flex-start; gap: 14px; padding: 14px 18px;
+      background: var(--panel); border: 1px solid var(--border); cursor: pointer;
+      transition: all 0.2s; font-size: 14px; font-weight: 300; color: var(--off); line-height: 1.5; max-width: 680px;
     }
-    @media (max-width: 480px) {
-      .cert-drills { gap: 6px; }
-      .drill-btn { padding: 8px 12px; font-size: 9px; }
-      .results-btns { flex-direction: column; }
+    .q-option:hover { border-color: var(--cyan); background: var(--cyan-dim); }
+    .q-option.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); pointer-events: none; }
+    .q-option.incorrect { border-color: var(--red); background: var(--red-dim); color: var(--red); pointer-events: none; }
+    .q-option.disabled { pointer-events: none; opacity: 0.5; }
+    .q-key { font-family: var(--mono); font-size: 12px; color: var(--muted); width: 20px; flex-shrink: 0; padding-top: 1px; }
+
+    @media (max-width: 900px) {
+      #app-main { grid-template-columns: 180px 1fr; }
+      .right-panel { display: none; }
+    }
+    @media (max-width: 600px) {
+      #app-main { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .cs-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
 <!-- ════════ LOADING ════════ -->
-<div id="screen-loading" class="screen active">
+<div id="screen-loading">
   <div class="loading-logo">OPS <span>ACADEMY</span></div>
   <div class="loading-bar"></div>
   <div class="loading-text" id="loading-text">AUTHENTICATING...</div>
 </div>
 
 <!-- ════════ CERT SELECT ════════ -->
-<div id="screen-cert-select" class="screen">
-  <nav class="platform-nav">
-    <a class="nav-brand" href="#">
+<div id="screen-cert-select" style="display:none">
+  <nav class="cs-nav">
+    <div class="cs-brand">
       <svg width="28" height="28" viewBox="0 0 44 44" fill="none">
         <path fill-rule="evenodd" d="M7,0 L37,0 L44,7 L44,37 L37,44 L7,44 L0,37 L0,7 Z M15,11 L29,11 L33,15 L33,29 L29,33 L15,33 L11,29 L11,15 Z" fill="#00e5cc"/>
         <polyline points="17,16 26,22 17,28" stroke="#060c1e" stroke-width="2.8" fill="none" stroke-linejoin="round"/>
       </svg>
       OPS <span class="accent">ACADEMY</span>
-    </a>
-    <div class="nav-right">
-      <button class="nav-signout" onclick="handleSignOut()">
-        <span id="cs-nav-username">—</span> · Sign Out
-      </button>
     </div>
+    <button class="cs-signout" onclick="handleSignOut()"><span id="cs-username">—</span> · Sign Out</button>
   </nav>
-
-  <div class="dash-wrap">
-    <div class="eyebrow">Select Certification</div>
-    <h1 class="dash-title">CHOOSE YOUR<br><span class="cyan">CERT</span></h1>
-    <p class="dash-sub">Select the certification you're studying for. Your dashboard tracks your progress domain by domain until you hit 85% mastery.</p>
-    <div class="cert-grid" id="cert-grid"></div>
+  <div class="cs-wrap">
+    <div class="cs-eyebrow">Select Certification</div>
+    <h1 class="cs-title">CHOOSE YOUR<br><span class="cyan">CERT</span></h1>
+    <p class="cs-sub">Select the certification you're studying for. Your dashboard tracks progress domain by domain until you hit 85% mastery.</p>
+    <div class="cs-grid" id="cert-grid"></div>
   </div>
 </div>
 
-<!-- ════════ DRILL ════════ -->
-<div id="screen-drill" class="screen">
-  <div class="drill-wrap">
-    <div class="drill-header">
-      <button class="drill-back" onclick="confirmBack()">◂ BACK</button>
-      <div class="drill-prog-wrap">
-        <div class="drill-prog-labels">
-          <span id="prog-label">Q 1 / 10</span>
-          <span id="prog-cert">—</span>
+<!-- ════════ MAIN APP ════════ -->
+<div id="app-main" style="display:none">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-brand">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 44 44" fill="none">
+            <path fill-rule="evenodd" d="M7,0 L37,0 L44,7 L44,37 L37,44 L7,44 L0,37 L0,7 Z M15,11 L29,11 L33,15 L33,29 L29,33 L15,33 L11,29 L11,15 Z" fill="#00e5cc"/>
+            <polyline points="17,16 26,22 17,28" stroke="#060c1e" stroke-width="2.5" fill="none" stroke-linejoin="round"/>
+          </svg>
         </div>
-        <div class="drill-prog-bar">
-          <div class="drill-prog-fill" id="prog-fill" style="width:0%"></div>
+        <div class="brand-text">OPS <span>ACADEMY</span></div>
+      </div>
+      <div class="topbar-cert" id="topbar-cert" onclick="goToCertSelect()" title="Change cert">◂ Change Cert</div>
+    </div>
+    <div class="topbar-right">
+      <div class="streak-badge">🔥 <span id="tb-streak">0</span></div>
+      <div class="xp-badge">⬡ <span id="tb-xp">0</span> XP</div>
+      <button class="topbar-signout" onclick="handleSignOut()"><span id="tb-username">—</span> · Sign Out</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="cert-selector" onclick="goToCertSelect()">
+      <div class="cert-sel-name" id="sb-cert-name">—</div>
+      <div class="cert-sel-code" id="sb-cert-code">—</div>
+      <div class="cert-readiness-row">
+        <div class="cert-readiness-bar"><div class="cert-readiness-fill" id="sb-readiness-fill" style="width:0%"></div></div>
+        <div class="cert-readiness-pct" id="sb-readiness-pct">—%</div>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <div class="sidebar-group-label">Study</div>
+      <div class="sidebar-item active" id="nav-dashboard" onclick="showMain('dashboard')">
+        <div class="sidebar-item-left"><span>▤</span> Dashboard</div>
+      </div>
+      <div class="sidebar-item" id="nav-drill" onclick="showMain('drill-placeholder')">
+        <div class="sidebar-item-left"><span>▸</span> Start Drill</div>
+      </div>
+      <div class="sidebar-group-label" style="margin-top:8px">Account</div>
+      <div class="sidebar-item"><div class="sidebar-item-left"><span>↗</span> My Progress</div></div>
+      <div class="sidebar-item"><div class="sidebar-item-left"><span>◈</span> Settings</div><span class="sidebar-soon">SOON</span></div>
+    </div>
+
+    <div class="sidebar-domains">
+      <div class="dr-label">Domain Readiness</div>
+      <div id="sb-domains">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;">Loading...</div>
+      </div>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="sb-avatar">—</div>
+      <div>
+        <div class="user-name" id="sb-username">—</div>
+        <div class="user-role">Operator</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div id="screen-dashboard" class="screen active" style="padding:32px">
+      <div class="dash-greeting">Welcome back, <span class="name" id="dash-name">—</span></div>
+      <div class="dash-sub-text" id="dash-sub">Select a domain below and start drilling.</div>
+
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="stat-box-num cyan" id="dash-overall">—%</div>
+          <div class="stat-box-change" id="dash-overall-change" style="color:var(--muted)">—</div>
+          <div class="stat-box-label">Overall Readiness</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-num cyan" id="dash-xp">0</div>
+          <div class="stat-box-change" style="color:var(--text)">Total earned</div>
+          <div class="stat-box-label">XP Points</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-num amber" id="dash-streak">0 🔥</div>
+          <div class="stat-box-change" style="color:var(--text)">Days in a row</div>
+          <div class="stat-box-label">Current Streak</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-num green" id="dash-mastered">0</div>
+          <div class="stat-box-change" style="color:var(--text)">of <span id="dash-total-domains">—</span> domains</div>
+          <div class="stat-box-label">Mastered (85%+)</div>
         </div>
       </div>
-      <div class="drill-xp-live">+<span id="xp-live">0</span> XP</div>
-    </div>
-    <div class="q-area" id="q-area"></div>
-  </div>
-</div>
 
-<!-- ════════ RESULTS ════════ -->
-<div id="screen-results" class="screen">
-  <div class="results-wrap">
-    <div class="results-eye" id="results-eye">DRILL COMPLETE</div>
-    <div class="results-pct" id="res-pct">—%</div>
-    <div class="results-grade" id="res-grade">—</div>
-    <div class="results-stats">
-      <div class="res-stat">
-        <div class="res-stat-val" id="res-correct">—</div>
-        <div class="res-stat-lbl">Correct</div>
-      </div>
-      <div class="res-stat">
-        <div class="res-stat-val" id="res-total">—</div>
-        <div class="res-stat-lbl">Attempted</div>
-      </div>
-      <div class="res-stat">
-        <div class="res-stat-val" id="res-time">—</div>
-        <div class="res-stat-lbl">Minutes</div>
-      </div>
-    </div>
-    <div class="res-xp-banner" id="res-xp-banner">⬡ +— XP EARNED</div>
-    <div class="results-btns" id="results-btns">
-      <button class="res-btn primary" onclick="drillAgain()">▸ Drill Again</button>
-      <button class="res-btn secondary" onclick="goToDashboard()">← Dashboard</button>
-    </div>
-  </div>
-</div>
-
-<!-- ════════ DASHBOARD ════════ -->
-<div id="screen-dashboard" class="screen">
-  <nav class="platform-nav">
-    <a class="nav-brand" href="#">
-      <svg width="28" height="28" viewBox="0 0 44 44" fill="none">
-        <path fill-rule="evenodd" d="M7,0 L37,0 L44,7 L44,37 L37,44 L7,44 L0,37 L0,7 Z M15,11 L29,11 L33,15 L33,29 L29,33 L15,33 L11,29 L11,15 Z" fill="#00e5cc"/>
-        <polyline points="17,16 26,22 17,28" stroke="#060c1e" stroke-width="2.8" fill="none" stroke-linejoin="round"/>
-      </svg>
-      OPS <span class="accent">ACADEMY</span>
-    </a>
-    <div class="nav-right">
-      <div class="stat-pill">XP <span class="val" id="db-stat-xp">—</span></div>
-      <div class="stat-pill amber streak">🔥 <span class="val" id="db-stat-streak">0</span></div>
-      <button class="nav-signout" onclick="handleSignOut()">
-        <span id="db-nav-username">—</span> · Sign Out
-      </button>
-    </div>
-  </nav>
-
-  <div class="domain-dash-wrap">
-    <button class="domain-back" onclick="show('cert-select'); window.scrollTo({top:0});">◂ CHANGE CERT</button>
-
-    <!-- Overall score card -->
-    <div class="domain-overall">
-      <div class="domain-overall-pct" id="db-overall-pct">—%</div>
-      <div class="domain-overall-right">
-        <div class="domain-overall-label" id="db-cert-label">LOADING...</div>
-        <div class="domain-master-count" id="db-master-count">— domains mastered</div>
-        <div class="domain-bar-track" style="max-width:100%;margin-top:6px">
-          <div class="domain-bar-fill" id="db-overall-bar" style="width:0%;background:var(--cyan)"></div>
-          <div class="domain-bar-target" style="left:85%"></div>
+      <div class="domain-breakdown">
+        <div class="db-header">
+          <div class="db-title" id="db-title">Domain Breakdown</div>
+        </div>
+        <div id="db-content">
+          <div style="padding:20px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;">LOADING...</div>
         </div>
       </div>
     </div>
 
-    <!-- Per-domain list -->
-    <div class="domain-list" id="db-domain-list">
-      <div style="padding:48px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:2px;">LOADING DOMAINS...</div>
+    <!-- DRILL -->
+    <div id="screen-drill" class="screen" style="padding:32px">
+      <div class="drill-header-row">
+        <button class="drill-back-btn" onclick="confirmBack()">◂ BACK</button>
+        <div class="drill-type-tag" id="drill-type-tag">DRILL</div>
+        <div class="drill-xp-tag">+<span id="xp-live">0</span> XP</div>
+      </div>
+      <div class="drill-prog-row">
+        <span id="prog-label">Q 1 / 10</span>
+        <span id="prog-cert">—</span>
+      </div>
+      <div class="drill-prog-bar">
+        <div class="drill-prog-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+      <div id="q-area"></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="screen-results" class="screen">
+      <div style="padding:40px 32px 60px">
+        <div class="res-eye" id="res-eye">DRILL COMPLETE</div>
+        <div class="res-pct" id="res-pct">—%</div>
+        <div class="res-grade" id="res-grade">—</div>
+        <div class="res-stats">
+          <div class="res-stat"><div class="res-stat-val" id="res-correct">—</div><div class="res-stat-lbl">Correct</div></div>
+          <div class="res-stat"><div class="res-stat-val" id="res-total">—</div><div class="res-stat-lbl">Attempted</div></div>
+          <div class="res-stat"><div class="res-stat-val" id="res-time">—</div><div class="res-stat-lbl">Minutes</div></div>
+        </div>
+        <div class="res-xp" id="res-xp">⬡ +— XP EARNED</div>
+        <div class="res-btns" id="res-btns">
+          <button class="res-btn primary" onclick="drillAgain()">▸ DRILL AGAIN</button>
+          <button class="res-btn secondary" onclick="goToDashboard()">← DASHBOARD</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+    <div class="rp-section">
+      <div class="rp-section-label">Readiness Score</div>
+      <div class="gauge-wrap">
+        <div class="gauge-svg-wrap">
+          <svg viewBox="0 0 140 140" width="140" height="140">
+            <defs>
+              <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#00e5cc"/>
+                <stop offset="100%" style="stop-color:#1a6dff"/>
+              </linearGradient>
+            </defs>
+            <circle class="gauge-track" cx="70" cy="70" r="60"/>
+            <circle class="gauge-fill-cyan" cx="70" cy="70" r="60" id="gauge-fill" stroke-dashoffset="377"/>
+          </svg>
+          <div class="gauge-center">
+            <div class="gauge-pct" id="gauge-pct">—%</div>
+            <div class="gauge-sub-text" id="gauge-sub">LOADING</div>
+          </div>
+        </div>
+      </div>
+      <div class="gauge-status" id="gauge-status"></div>
+      <div class="ai-insight" id="ai-insight" style="display:none">
+        <div class="ai-insight-label">💡 Insight</div>
+        <div class="ai-insight-text" id="ai-insight-text"></div>
+      </div>
+    </div>
+
+    <div class="rp-section" style="flex:1">
+      <div class="rp-section-label">Recent Sessions</div>
+      <div id="rp-activity">
+        <div class="activity-empty">No sessions yet</div>
+      </div>
     </div>
   </div>
-</div>
+
+</div><!-- /app-main -->
 
 <script>
 /* ══ CONFIG ══ */
@@ -370,37 +593,25 @@ const sb = createClient(SB_URL, SB_ANON);
 
 /* ══ CERT DEFINITIONS ══ */
 const CERTS = [
-  { id:'aplus',         code:'COMPTIA A+',        name:'CompTIA A+',         desc:'Hardware, operating systems, networking, security and troubleshooting fundamentals.', cc:'#ff7f4f', cg:'rgba(255,127,79,0.08)',  q:12 },
-  { id:'netplus',       code:'COMPTIA NETWORK+',   name:'CompTIA Network+',   desc:'Subnetting, routing protocols, switching, VLANs and network troubleshooting.',       cc:'#00e5cc', cg:'rgba(0,229,204,0.08)',  q:12 },
-  { id:'ccna',          code:'CISCO CCNA',          name:'Cisco CCNA',         desc:'Cisco IOS, VLANs, OSPF, STP, ACLs and enterprise network design.',                  cc:'#1a6dff', cg:'rgba(26,109,255,0.08)', q:12 },
-  { id:'security_plus', code:'COMPTIA SECURITY+',  name:'CompTIA Security+',  desc:'Threats, cryptography, risk management, security operations and architecture.',       cc:'#a06fff', cg:'rgba(160,111,255,0.08)',q:18 }
+  { id:'aplus',         code:'COMPTIA A+',       name:'CompTIA A+',        desc:'Hardware, operating systems, networking, security and troubleshooting fundamentals.', cc:'#ff7f4f', cg:'rgba(255,127,79,0.08)',  q:12 },
+  { id:'netplus',       code:'COMPTIA NETWORK+',  name:'CompTIA Network+',  desc:'Subnetting, routing protocols, switching, VLANs and network troubleshooting.',       cc:'#00e5cc', cg:'rgba(0,229,204,0.08)',  q:12 },
+  { id:'ccna',          code:'CISCO CCNA',         name:'Cisco CCNA',        desc:'Cisco IOS, VLANs, OSPF, STP, ACLs and enterprise network design.',                  cc:'#1a6dff', cg:'rgba(26,109,255,0.08)', q:12 },
+  { id:'security_plus', code:'COMPTIA SECURITY+', name:'CompTIA Security+', desc:'Threats, cryptography, risk management, security operations and architecture.',       cc:'#a06fff', cg:'rgba(160,111,255,0.08)',q:18 }
 ];
 
 /* ══ STATE ══ */
 const S = {
   user: null, profile: null, totalXP: 0, streak: 0,
-  cert: null, difficulty: null, questions: [], idx: 0,
-  sessionId: null, sessionStart: null, qStart: null,
+  cert: null, certObj: null,
+  questions: [], idx: 0, sessionId: null, sessionStart: null, qStart: null,
   correct: 0, sessionXP: 0, answered: false,
-  drillType: 'standard', domain: null
+  drillType: 'standard', domain: null,
+  domains: []   // cached domain scores for current cert
 };
-
-/* ══ SCREEN ══ */
-function show(id) {
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.remove('active');
-    s.style.display = 'none'; // force-hide — ID selectors override class rules
-  });
-  const el = document.getElementById('screen-' + id);
-  el.classList.add('active');
-  el.style.display = (id === 'loading') ? 'flex' : 'block';
-}
 
 /* ══ INIT ══ */
 function init() {
-  let user = null;
-  let needsRefresh = false;
-
+  let user = null, needsRefresh = false;
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
@@ -418,148 +629,143 @@ function init() {
     }
   } catch(_) {}
 
-  if (!user) {
-    window.location.href = 'ops-academy-login-v3.html';
-    return;
-  }
+  if (!user) { window.location.href = 'ops-academy-login-v3.html'; return; }
 
   S.user = user;
   S.profile = { full_name: user.user_metadata?.full_name || user.email || 'Operator' };
-  buildCertSelect();
-  show('cert-select');
+
   if (needsRefresh) sb.auth.refreshSession().catch(() => {});
+
+  buildCertSelect();
+  showPage('cert-select');
   loadStatsAsync();
 }
 
-async function loadStatsAsync() {
-  try {
-    const xpRes = await sb.from('xp_events').select('amount').eq('user_id', S.user.id);
-    if (xpRes.data) {
-      S.totalXP = xpRes.data.reduce((sum, e) => sum + (e.amount || 0), 0);
-      const xpText = S.totalXP.toLocaleString();
-      const xpEl = document.getElementById('db-stat-xp');
-      if (xpEl) xpEl.textContent = xpText;
-    }
-  } catch (_) {}
+/* ══ PAGE VISIBILITY ══ */
+function showPage(page) {
+  document.getElementById('screen-loading').style.display    = 'none';
+  document.getElementById('screen-cert-select').style.display = (page === 'cert-select') ? 'block' : 'none';
+  document.getElementById('app-main').style.display           = (page === 'app')         ? 'grid'  : 'none';
+}
 
-  try {
-    const strRes = await sb.from('streaks').select('current_streak').eq('user_id', S.user.id).single();
-    if (strRes.data) {
-      S.streak = strRes.data.current_streak || 0;
-      const strEl = document.getElementById('db-stat-streak');
-      if (strEl) strEl.textContent = S.streak;
-    }
-  } catch (_) {}
+function showMain(screenId) {
+  if (screenId === 'drill-placeholder') {
+    // Start a mixed drill from the sidebar
+    startDrill(S.cert, 'all', 'standard');
+    return;
+  }
+  document.querySelectorAll('.main .screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + screenId);
+  if (el) el.classList.add('active');
+  // Update sidebar nav
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  if (screenId === 'dashboard') document.getElementById('nav-dashboard')?.classList.add('active');
+  if (screenId === 'drill')     document.getElementById('nav-drill')?.classList.add('active');
 }
 
 /* ══ CERT SELECT ══ */
 function buildCertSelect() {
   const first = (S.profile?.full_name || S.user?.email || 'Operator').split(' ')[0];
-  document.getElementById('cs-nav-username').textContent = first;
+  document.getElementById('cs-username').textContent = first;
 
   document.getElementById('cert-grid').innerHTML = CERTS.map(c => `
-    <div class="cert-card" style="--cc:${c.cc};--cg:${c.cg}" id="cert-card-${c.id}">
-      <div class="cert-card-glow"></div>
-      <div class="cert-code">${c.code}</div>
-      <div class="cert-name">${c.name}</div>
-      <div class="cert-desc">${c.desc}</div>
-      <div class="cert-meta">
-        <span class="cert-badge">ACTIVE</span>
-        <span class="cert-qcount">${c.q} QUESTIONS IN BANK</span>
+    <div class="cs-card" style="--cc:${c.cc};--cg:${c.cg}">
+      <div class="cs-card-glow"></div>
+      <div class="cs-code">${c.code}</div>
+      <div class="cs-name">${c.name}</div>
+      <div class="cs-desc">${c.desc}</div>
+      <div class="cs-meta">
+        <span class="cs-badge">ACTIVE</span>
+        <span class="cs-qcount">${c.q} QUESTIONS IN BANK</span>
       </div>
-      <button class="cert-action-btn" id="cert-btn-${c.id}" onclick="selectCert('${c.id}')">
-        ▸ ENTER CERT
-      </button>
+      <button class="cs-btn" id="cs-btn-${c.id}" onclick="selectCert('${c.id}')">▸ ENTER CERT</button>
     </div>
   `).join('');
-  // Async: update buttons to show status per cert
+
+  // Async: update buttons for returning users
   loadCertStatuses();
 }
 
-async function handleSignOut() {
-  await sb.auth.signOut();
-  window.location.href = 'ops-academy-login-v3.html';
-}
-
-/* ══ LOAD CERT STATUSES ══ */
 async function loadCertStatuses() {
   try {
-    const { data: sessions } = await sb.from('drill_sessions')
-      .select('cert')
-      .eq('user_id', S.user.id)
-      .eq('completed', true);
-
-    if (!sessions) return;
-    const started = new Set(sessions.map(s => s.cert));
-
+    const { data } = await sb.from('drill_sessions').select('cert').eq('user_id', S.user.id).eq('completed', true);
+    if (!data) return;
+    const started = new Set(data.map(s => s.cert));
     CERTS.forEach(c => {
-      const btn = document.getElementById('cert-btn-' + c.id);
-      if (!btn) return;
-      if (started.has(c.id)) {
+      const btn = document.getElementById('cs-btn-' + c.id);
+      if (btn && started.has(c.id)) {
         btn.textContent = '▸ CONTINUE';
-        btn.classList.add('secondary');
+        btn.classList.add('returning');
       }
     });
   } catch (_) {}
 }
 
-/* ══ SELECT CERT ══ */
 async function selectCert(certId) {
-  show('loading');
-  document.getElementById('loading-text').textContent = 'LOADING PROGRESS...';
-  await showDomainDash(certId);
+  document.getElementById('screen-loading').style.display = 'flex';
+  document.getElementById('loading-text').textContent = 'LOADING YOUR DASHBOARD...';
+  document.getElementById('screen-cert-select').style.display = 'none';
+
+  S.cert    = certId;
+  S.certObj = CERTS.find(c => c.id === certId);
+
+  // Populate app nav
+  const first = (S.profile?.full_name || S.user?.email || 'Operator').split(' ')[0];
+  const initials = first.slice(0,2).toUpperCase();
+  document.getElementById('tb-username').textContent = first;
+  document.getElementById('sb-username').textContent = first;
+  document.getElementById('sb-avatar').textContent   = initials;
+  document.getElementById('tb-xp').textContent       = S.totalXP.toLocaleString();
+  document.getElementById('tb-streak').textContent   = S.streak;
+  document.getElementById('dash-xp').textContent     = S.totalXP.toLocaleString();
+  document.getElementById('dash-streak').textContent = S.streak + ' 🔥';
+  document.getElementById('sb-cert-name').textContent = S.certObj?.name || certId;
+  document.getElementById('sb-cert-code').textContent = S.certObj?.code || certId.toUpperCase();
+  document.getElementById('topbar-cert').textContent  = '◂ ' + (S.certObj?.code || certId.toUpperCase());
+  document.getElementById('db-title').textContent     = 'Domain Breakdown — ' + (S.certObj?.name || certId);
+  document.getElementById('dash-name').textContent    = first;
+
+  await loadDomainData(certId);
+
+  showMain('dashboard');
+  showPage('app');
 }
 
-/* ══ GET DOMAIN SCORES ══ */
+/* ══ LOAD DOMAIN DATA ══ */
 async function getDomainScores(certId) {
   try {
-    // Fetch all answers for this user
     const { data: answers } = await sb.from('question_answers')
-      .select('question_id, is_correct')
-      .eq('user_id', S.user.id);
-    if (!answers || !answers.length) return [];
+      .select('question_id, is_correct').eq('user_id', S.user.id);
 
-    // Fetch questions for this cert to map to domains
-    const qids = [...new Set(answers.map(a => a.question_id))];
-    const { data: questions } = await sb.from('questions')
-      .select('id, domain')
-      .eq('cert', certId)
-      .in('id', qids);
-    if (!questions || !questions.length) return [];
-
-    // Build domain stats
-    const domainMap = {};
-    const qMap = {};
-    questions.forEach(q => { qMap[q.id] = q.domain; });
-
-    // Also load ALL domains for this cert so unstarted ones show up
+    // Get all domains for this cert
     const { data: allQ } = await sb.from('questions')
-      .select('domain')
-      .eq('cert', certId)
-      .eq('active', true);
-    if (allQ) {
-      allQ.forEach(q => {
-        if (!domainMap[q.domain]) domainMap[q.domain] = { total: 0, correct: 0 };
+      .select('id, domain').eq('cert', certId).eq('active', true);
+    if (!allQ?.length) return [];
+
+    const domainMap = {};
+    allQ.forEach(q => { if (!domainMap[q.domain]) domainMap[q.domain] = { total: 0, correct: 0 }; });
+
+    if (answers?.length) {
+      const answeredQids = new Set(answers.map(a => a.question_id));
+      const relevantQ = allQ.filter(q => answeredQids.has(q.id));
+      const qMap = {};
+      relevantQ.forEach(q => qMap[q.id] = q.domain);
+      answers.forEach(a => {
+        const d = qMap[a.question_id];
+        if (!d) return;
+        domainMap[d].total++;
+        if (a.is_correct) domainMap[d].correct++;
       });
     }
 
-    answers.forEach(a => {
-      const domain = qMap[a.question_id];
-      if (!domain) return;
-      if (!domainMap[domain]) domainMap[domain] = { total: 0, correct: 0 };
-      domainMap[domain].total++;
-      if (a.is_correct) domainMap[domain].correct++;
-    });
-
-    return Object.entries(domainMap).map(([name, stats]) => ({
+    return Object.entries(domainMap).map(([name, st]) => ({
       name,
-      total: stats.total,
-      correct: stats.correct,
-      pct: stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0,
-      mastered: stats.total > 0 && Math.round((stats.correct / stats.total) * 100) >= 85,
-      unstarted: stats.total === 0
+      total:    st.total,
+      correct:  st.correct,
+      pct:      st.total > 0 ? Math.round((st.correct / st.total) * 100) : 0,
+      mastered: st.total > 0 && Math.round((st.correct / st.total) * 100) >= 85,
+      unstarted: st.total === 0
     })).sort((a, b) => {
-      // Unstarted first, then by lowest pct, mastered last
       if (a.mastered && !b.mastered) return 1;
       if (!a.mastered && b.mastered) return -1;
       return a.pct - b.pct;
@@ -567,153 +773,224 @@ async function getDomainScores(certId) {
   } catch (_) { return []; }
 }
 
-/* ══ LOAD DASHBOARD ══ */
-async function showDomainDash(certId) {
-  S.cert = certId;
-  const cert = CERTS.find(c => c.id === certId);
-
-  // Sync nav
-  const first = (S.profile?.full_name || S.user?.email || 'Operator').split(' ')[0];
-  document.getElementById('db-nav-username').textContent = first;
-  document.getElementById('db-stat-xp').textContent = S.totalXP.toLocaleString();
-  document.getElementById('db-stat-streak').textContent = S.streak;
-
-  document.getElementById('db-cert-label').textContent =
-    (cert?.code || certId.toUpperCase()) + ' — DOMAIN PROGRESS';
-
+async function loadDomainData(certId) {
   const domains = await getDomainScores(certId);
+  S.domains = domains;
 
-  if (!domains.length) {
-    document.getElementById('db-overall-pct').textContent = '—%';
-    document.getElementById('db-master-count').textContent = 'No sessions yet';
-    document.getElementById('db-domain-list').innerHTML = `
-      <div style="background:var(--dark);border:1px solid var(--border);border-left:3px solid var(--cyan);padding:36px 32px;margin-top:4px;">
-        <div style="font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:3px;margin-bottom:12px;">GETTING STARTED</div>
-        <div style="font-family:var(--cond);font-size:22px;font-weight:900;text-transform:uppercase;margin-bottom:10px;">Run your diagnostic first</div>
-        <div style="font-size:14px;color:var(--text);line-height:1.7;margin-bottom:28px;max-width:480px;">
-          Take a 10-question diagnostic to gauge your current knowledge. We'll use the results to build your personalised domain breakdown and show you exactly where to focus.
-        </div>
-        <button onclick="startDrill('${certId}','all','diagnostic')" style="font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:14px 32px;border:none;background:var(--cyan);color:var(--black);cursor:pointer;font-weight:700;">
-          ▸ START DIAGNOSTIC
-        </button>
-      </div>
-    `;
-    document.getElementById('loading-text').textContent = 'AUTHENTICATING...';
-    show('dashboard');
-    window.scrollTo({ top: 0 });
-    return;
-  }
-
-  const startedDomains = domains.filter(d => !d.unstarted);
-  const overall = startedDomains.length
-    ? Math.round(startedDomains.reduce((s, d) => s + d.pct, 0) / startedDomains.length)
-    : 0;
+  const started  = domains.filter(d => !d.unstarted);
+  const overall  = started.length ? Math.round(started.reduce((s,d) => s + d.pct, 0) / started.length) : 0;
   const mastered = domains.filter(d => d.mastered).length;
 
-  const pctEl = document.getElementById('db-overall-pct');
-  pctEl.textContent = `${overall}%`;
-  pctEl.style.color = overall >= 85 ? 'var(--green)' : overall >= 60 ? 'var(--amber)' : 'var(--cyan)';
+  // Update dashboard stats
+  document.getElementById('dash-overall').textContent   = domains.length ? overall + '%' : '—%';
+  document.getElementById('dash-mastered').textContent  = mastered;
+  document.getElementById('dash-total-domains').textContent = domains.length || '—';
 
-  document.getElementById('db-master-count').textContent =
-    `${mastered} of ${domains.length} domain${domains.length !== 1 ? 's' : ''} mastered (85%+ target)`;
+  const overallChange = overall >= 85 ? 'TARGET REACHED' : `${85 - overall}% to reach target`;
+  document.getElementById('dash-overall-change').textContent = domains.length ? overallChange : 'No sessions yet';
+  document.getElementById('dash-overall-change').style.color = overall >= 85 ? 'var(--green)' : 'var(--text)';
 
-  document.getElementById('db-overall-bar').style.width = `${Math.min(overall, 100)}%`;
-  document.getElementById('db-overall-bar').style.background =
-    overall >= 85 ? 'var(--green)' : 'var(--cyan)';
+  document.getElementById('dash-sub').textContent = domains.length
+    ? mastered === domains.length
+      ? 'All domains mastered. Exam ready!'
+      : `${mastered} of ${domains.length} domains mastered. Keep drilling!`
+    : 'Run your diagnostic to see your domain breakdown.';
 
-  document.getElementById('db-domain-list').innerHTML = domains.map(d => {
-    const barColor = d.mastered ? 'var(--green)' : d.pct >= 60 ? 'var(--cyan)' : 'var(--red)';
-    const ctaClass = d.mastered ? 'mastered' : d.unstarted ? 'unstarted' : '';
-    const ctaText  = d.mastered ? '✓ MASTERED' : '▸ DRILL';
-    const ctaAttr  = d.mastered
-      ? 'disabled'
-      : `onclick="startDomainDrill('${certId}','${d.name.replace(/'/g,"\\'")}' )"`;
-    const nameColor = d.mastered ? 'var(--green)' : d.unstarted ? 'var(--muted)' : 'var(--white)';
+  // Sidebar readiness
+  document.getElementById('sb-readiness-fill').style.width = overall + '%';
+  document.getElementById('sb-readiness-pct').textContent  = overall + '%';
 
-    return `
-      <div class="domain-row-item">
-        <div class="domain-row-left">
-          <div class="domain-row-name" style="color:${nameColor}">${d.name}</div>
-          <div class="domain-row-stats">
-            ${d.unstarted
-              ? 'NOT YET ATTEMPTED'
-              : `${d.correct}/${d.total} correct &middot; ${d.pct}%${d.mastered ? ' &middot; ✓ MASTERED' : ''}`
-            }
+  // Sidebar domain list
+  document.getElementById('sb-domains').innerHTML = domains.length
+    ? domains.map(d => {
+        const cls = d.mastered ? 'high' : d.pct >= 60 ? 'mid' : d.unstarted ? 'none' : 'low';
+        return `<div class="dr-item">
+          <div class="dr-head">
+            <span class="dr-name">${d.name}</span>
+            <span class="dr-score ${cls}">${d.unstarted ? '—' : d.pct + '%'}</span>
           </div>
-          <div class="domain-bar-track" style="margin-top:6px;max-width:100%">
-            <div class="domain-bar-fill" style="width:${Math.min(d.pct,100)}%;background:${barColor}"></div>
-            <div class="domain-bar-target" style="left:85%"></div>
+          <div class="dr-bar"><div class="dr-fill ${cls}" style="width:${d.pct}%"></div></div>
+        </div>`;
+      }).join('')
+    : '<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:1px;">No data yet</div>';
+
+  // Main domain breakdown
+  if (!domains.length) {
+    document.getElementById('db-content').innerHTML = `
+      <div class="db-no-data">
+        <div style="font-family:var(--mono);font-size:9px;color:var(--cyan);letter-spacing:3px;margin-bottom:10px;">GETTING STARTED</div>
+        <div class="db-no-data-title">Run Your Diagnostic First</div>
+        <div class="db-no-data-sub">Take a 10-question diagnostic to gauge your current knowledge. We'll map your scores to each domain and show you exactly where to focus.</div>
+        <button class="db-diag-btn" onclick="startDrill('${certId}','all','diagnostic')">▸ START DIAGNOSTIC</button>
+      </div>`;
+  } else {
+    document.getElementById('db-content').innerHTML = domains.map(d => {
+      const cls = d.mastered ? 'high' : d.pct >= 60 ? 'mid' : d.unstarted ? 'none' : 'low';
+      return `<div class="db-row">
+        <div class="db-row-head">
+          <span class="db-row-name">${d.name}</span>
+          <div style="display:flex;align-items:center;gap:0">
+            <span class="db-row-score ${cls}">${d.unstarted ? 'NOT STARTED' : d.pct + '%' + (d.mastered ? ' ✓' : '')}</span>
+            ${d.mastered ? '' : `<button class="db-drill-btn" onclick="startDomainDrill('${certId}','${d.name.replace(/'/g,"\\'")}')">DRILL</button>`}
           </div>
         </div>
-        <button class="domain-drill-cta ${ctaClass}" ${ctaAttr}>${ctaText}</button>
-      </div>
-    `;
-  }).join('');
+        <div class="db-bar" onclick="${d.mastered ? '' : `startDomainDrill('${certId}','${d.name.replace(/'/g,"\\'")}')"`}">
+          <div class="db-bar-fill ${cls}" style="width:${d.pct}%"></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
 
-  document.getElementById('loading-text').textContent = 'AUTHENTICATING...';
-  show('dashboard');
-  window.scrollTo({ top: 0 });
+  // Gauge
+  updateGauge(overall, domains);
+
+  // Recent activity
+  loadRecentActivity();
 }
 
-/* ══ START DOMAIN DRILL ══ */
-async function startDomainDrill(certId, domain) {
-  await startDrill(certId, 'all', 'domain', domain);
+function updateGauge(overall, domains) {
+  const circumference = 377;
+  const offset = circumference - (circumference * Math.min(overall, 100) / 100);
+  document.getElementById('gauge-fill').style.strokeDashoffset = offset;
+  document.getElementById('gauge-pct').textContent  = domains.length ? overall + '%' : '—%';
+  const sub = overall >= 85 ? 'EXAM READY' : overall >= 60 ? 'PROGRESSING' : domains.length ? 'KEEP GOING' : 'NO DATA';
+  document.getElementById('gauge-sub').textContent  = sub;
+  document.getElementById('gauge-pct').style.color  = overall >= 85 ? 'var(--green)' : 'var(--cyan)';
+
+  const weakDomains = domains.filter(d => !d.mastered && !d.unstarted).sort((a,b) => a.pct - b.pct).slice(0,2);
+  if (weakDomains.length) {
+    document.getElementById('gauge-status').textContent = overall >= 85 ? '✓ All domains mastered' : `⚠ Focus: ${weakDomains[0].name}`;
+    document.getElementById('ai-insight').style.display = 'block';
+    document.getElementById('ai-insight-text').textContent = weakDomains.length >= 2
+      ? `${weakDomains[0].name} (${weakDomains[0].pct}%) and ${weakDomains[1].name} (${weakDomains[1].pct}%) are your weakest domains. Drill these to raise your overall score.`
+      : `${weakDomains[0].name} at ${weakDomains[0].pct}% is your weakest domain. Target it to reach 85% mastery.`;
+  } else {
+    document.getElementById('gauge-status').textContent = domains.length ? '✓ On track' : 'Run diagnostic to begin';
+    document.getElementById('ai-insight').style.display = 'none';
+  }
 }
 
-/* ══ START DRILL ══ */
+async function loadRecentActivity() {
+  try {
+    const { data: sessions } = await sb.from('drill_sessions')
+      .select('domain, questions_correct, questions_attempted, xp_earned, completed, created_at')
+      .eq('user_id', S.user.id).eq('cert', S.cert).eq('completed', true)
+      .order('created_at', { ascending: false }).limit(4);
+
+    if (!sessions?.length) {
+      document.getElementById('rp-activity').innerHTML = '<div class="activity-empty">No sessions yet</div>';
+      return;
+    }
+
+    document.getElementById('rp-activity').innerHTML = sessions.map(s => {
+      const score = s.questions_attempted ? `${s.questions_correct}/${s.questions_attempted} correct` : '';
+      const when  = timeSince(s.created_at);
+      const pct   = s.questions_attempted ? Math.round((s.questions_correct / s.questions_attempted) * 100) : 0;
+      const good  = pct >= 70;
+      return `<div class="activity-item">
+        <div class="activity-icon ${good ? 'good' : 'warn'}">${good ? '✓' : '!'}</div>
+        <div class="activity-body">
+          <div class="activity-title">${(s.domain || 'Mixed').toUpperCase()} <span class="activity-xp">+${s.xp_earned} XP</span></div>
+          <div class="activity-meta">${when} · ${score}</div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (_) {}
+}
+
+function timeSince(iso) {
+  const mins = Math.floor((Date.now() - new Date(iso)) / 60000);
+  if (mins < 60)    return mins + 'm ago';
+  if (mins < 1440)  return Math.floor(mins/60) + 'h ago';
+  return Math.floor(mins/1440) + 'd ago';
+}
+
+/* ══ ASYNC STATS ══ */
+async function loadStatsAsync() {
+  try {
+    const { data } = await sb.from('xp_events').select('amount').eq('user_id', S.user.id);
+    if (data) { S.totalXP = data.reduce((s, e) => s + (e.amount || 0), 0); }
+  } catch (_) {}
+  try {
+    const { data } = await sb.from('streaks').select('current_streak').eq('user_id', S.user.id).single();
+    if (data) S.streak = data.current_streak || 0;
+  } catch (_) {}
+}
+
+/* ══ NAVIGATION ══ */
+function goToCertSelect() {
+  S.cert = null; S.certObj = null; S.domains = [];
+  showPage('cert-select');
+  buildCertSelect();
+}
+
+function goToDashboard() {
+  if (S.cert) {
+    showMain('dashboard');
+    loadDomainData(S.cert); // refresh
+    // Sync stats
+    document.getElementById('tb-xp').textContent     = S.totalXP.toLocaleString();
+    document.getElementById('tb-streak').textContent = S.streak;
+    document.getElementById('dash-xp').textContent   = S.totalXP.toLocaleString();
+    document.getElementById('dash-streak').textContent = S.streak + ' 🔥';
+  } else {
+    goToCertSelect();
+  }
+}
+
+function confirmBack() {
+  if (S.idx > 0 && !S.answered) {
+    if (!confirm('Leave drill? Progress will not be saved.')) return;
+  }
+  goToDashboard();
+}
+
+/* ══ DRILL ══ */
 async function startDrill(certId, difficulty, type='standard', domain=null) {
-  show('loading');
+  showMain('drill');
   document.getElementById('loading-text').textContent = 'LOADING QUESTIONS...';
 
   let q = sb.from('questions').select('*').eq('cert', certId).eq('active', true);
-  if (type === 'domain' && domain) {
-    q = q.eq('domain', domain);
-  } else if (difficulty !== 'all') {
-    q = q.eq('difficulty', difficulty);
-  }
+  if (type === 'domain' && domain) q = q.eq('domain', domain);
+  else if (difficulty !== 'all')    q = q.eq('difficulty', difficulty);
   const { data: rows, error } = await q;
 
   if (error || !rows?.length) {
     alert('No questions found for this selection.');
-    if (type === 'domain' || type === 'diagnostic') {
-      await showDomainDash(certId);
-    } else {
-      show('cert-select');
-    }
-    document.getElementById('loading-text').textContent = 'AUTHENTICATING...';
+    goToDashboard();
     return;
   }
 
   const questions = shuffle(rows).slice(0, 10);
-
   const sessionDomain = type === 'diagnostic' ? 'diagnostic'
-                      : type === 'domain' ? domain
-                      : difficulty === 'all' ? 'mixed' : difficulty;
+                      : type === 'domain'     ? domain
+                      : difficulty === 'all'  ? 'mixed' : difficulty;
 
   const { data: sess } = await sb.from('drill_sessions').insert({
-    user_id: S.user.id, cert: certId,
-    domain: sessionDomain,
+    user_id: S.user.id, cert: certId, domain: sessionDomain,
     questions_attempted: 0, questions_correct: 0, xp_earned: 0, completed: false
   }).select().single();
 
   Object.assign(S, {
-    cert: certId, difficulty,
-    drillType: type, domain: domain,
+    cert: certId, drillType: type, domain,
     questions, idx: 0,
-    sessionId: sess?.id || null,
-    sessionStart: Date.now(),
+    sessionId: sess?.id || null, sessionStart: Date.now(),
     correct: 0, sessionXP: 0, answered: false
   });
 
-  document.getElementById('loading-text').textContent = 'AUTHENTICATING...';
+  const tagMap = { diagnostic: 'DIAGNOSTIC', domain: (domain||'DOMAIN').toUpperCase(), standard: 'MIXED DRILL' };
+  document.getElementById('drill-type-tag').textContent = tagMap[type] || 'DRILL';
+
   renderQ();
-  show('drill');
-  window.scrollTo({ top: 0 });
+  showMain('drill');
 }
 
-/* ══ RENDER QUESTION ══ */
+async function startDomainDrill(certId, domain) {
+  await startDrill(certId, 'all', 'domain', domain);
+}
+
 function renderQ() {
-  const q    = S.questions[S.idx];
+  const q     = S.questions[S.idx];
   const total = S.questions.length;
   const cert  = CERTS.find(c => c.id === S.cert);
 
@@ -726,7 +1003,7 @@ function renderQ() {
   document.getElementById('xp-live').textContent    = S.sessionXP;
 
   document.getElementById('q-area').innerHTML = `
-    <div class="q-tags">
+    <div class="q-tag-row">
       <span class="q-tag ${q.difficulty}">${q.difficulty.toUpperCase()}</span>
       <span class="q-tag">${q.domain}</span>
     </div>
@@ -734,8 +1011,7 @@ function renderQ() {
     <div class="q-text">${q.question_text}</div>
     <div class="answers" id="answers">
       ${q.options.map(o => `
-        <button class="ans-btn"
-          data-key="${o.key}"
+        <button class="ans-btn" data-key="${o.key}"
           onclick="pick('${o.key}','${q.id}','${q.correct_answer}')">
           <span class="ans-key">${o.key}</span>
           <span class="ans-text">${o.text}</span>
@@ -751,25 +1027,21 @@ function renderQ() {
   `;
 }
 
-/* ══ PICK ANSWER ══ */
 async function pick(key, qid, correct) {
   if (S.answered) return;
   S.answered = true;
-
   const isCorrect = key === correct;
   const xp = isCorrect ? 10 : 5;
   const secs = Math.round((Date.now() - S.qStart) / 1000);
   S.sessionXP += xp;
   if (isCorrect) S.correct++;
 
-  // Style buttons
   document.querySelectorAll('.ans-btn').forEach(b => {
     b.disabled = true;
-    if (b.dataset.key === correct) b.classList.add('correct');
-    if (b.dataset.key === key && !isCorrect) b.classList.add('wrong');
+    if (b.dataset.key === correct)            b.classList.add('correct');
+    if (b.dataset.key === key && !isCorrect)  b.classList.add('wrong');
   });
 
-  // Explanation
   const q = S.questions[S.idx];
   document.getElementById('expl').style.display = 'block';
   document.getElementById('expl').innerHTML = `
@@ -779,12 +1051,10 @@ async function pick(key, qid, correct) {
       </div>
       <div class="expl-text">${q.explanation}</div>
       <div class="expl-xp">+${xp} XP earned</div>
-    </div>
-  `;
+    </div>`;
   document.getElementById('xp-live').textContent = S.sessionXP;
   document.getElementById('next-wrap').style.display = 'flex';
 
-  // Save to DB (fire-and-forget)
   if (S.sessionId) {
     sb.from('question_answers').insert({
       session_id: S.sessionId, user_id: S.user.id,
@@ -794,19 +1064,16 @@ async function pick(key, qid, correct) {
   }
 }
 
-/* ══ ADVANCE ══ */
 function advance() {
   S.idx++;
   if (S.idx >= S.questions.length) finish();
-  else { renderQ(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  else { renderQ(); document.querySelector('.main').scrollTo({ top: 0, behavior: 'smooth' }); }
 }
 
-/* ══ FINISH ══ */
 async function finish() {
-  const dur  = Math.round((Date.now() - S.sessionStart) / 1000);
-  const pct  = Math.round((S.correct / S.questions.length) * 100);
+  const dur = Math.round((Date.now() - S.sessionStart) / 1000);
+  const pct = Math.round((S.correct / S.questions.length) * 100);
 
-  // Persist session
   if (S.sessionId) {
     sb.from('drill_sessions').update({
       questions_attempted: S.questions.length, questions_correct: S.correct,
@@ -817,7 +1084,7 @@ async function finish() {
     sb.from('xp_events').insert({
       user_id: S.user.id, amount: S.sessionXP, source: 'drill_session',
       session_id: S.sessionId || null,
-      metadata: { cert: S.cert, difficulty: S.difficulty, score_pct: pct }
+      metadata: { cert: S.cert, domain: S.domain, score_pct: pct }
     }).then(() => {});
   }
 
@@ -825,74 +1092,40 @@ async function finish() {
   updateStreak();
 
   // Results UI
-  const el = document.getElementById('res-pct');
-  el.textContent = `${pct}%`;
-  el.className = 'results-pct ' + (pct === 100 ? 'perfect' : pct >= 80 ? 'good' : pct >= 60 ? 'ok' : 'poor');
+  const pctEl = document.getElementById('res-pct');
+  pctEl.textContent  = pct + '%';
+  pctEl.className    = 'res-pct ' + (pct===100?'perfect':pct>=80?'good':pct>=60?'ok':'poor');
+  const grades = { 100:'PERFECT SCORE', 80:'STRONG PASS', 60:'PASS — REVIEW WEAK AREAS', 0:'NEEDS WORK — KEEP DRILLING' };
+  document.getElementById('res-grade').textContent   = grades[pct===100?100:pct>=80?80:pct>=60?60:0];
+  document.getElementById('res-correct').textContent = S.correct;
+  document.getElementById('res-total').textContent   = S.questions.length;
+  document.getElementById('res-time').textContent    = (dur/60).toFixed(1);
+  document.getElementById('res-xp').textContent      = `⬡  +${S.sessionXP} XP EARNED`;
 
-  const grades = {
-    100: 'PERFECT SCORE — OPERATOR LEVEL',
-    80:  'STRONG PASS — MISSION READY',
-    60:  'PASS — REVIEW WEAK AREAS',
-    0:   'NEEDS WORK — KEEP DRILLING'
-  };
-  document.getElementById('res-grade').textContent    = grades[pct===100?100:pct>=80?80:pct>=60?60:0];
-  document.getElementById('res-correct').textContent  = S.correct;
-  document.getElementById('res-total').textContent    = S.questions.length;
-  document.getElementById('res-time').textContent     = (dur / 60).toFixed(1);
-  document.getElementById('res-xp-banner').textContent = `⬡  +${S.sessionXP} XP EARNED THIS SESSION`;
+  const eyebrowMap = { diagnostic:'DIAGNOSTIC COMPLETE', domain:'DOMAIN DRILL COMPLETE', standard:'DRILL COMPLETE' };
+  document.getElementById('res-eye').textContent = eyebrowMap[S.drillType] || 'DRILL COMPLETE';
 
-  // Dynamic eyebrow + buttons based on drill type
-  const eyebrowMap = {
-    diagnostic: 'DIAGNOSTIC COMPLETE',
-    domain:     'DOMAIN DRILL COMPLETE',
-    standard:   'DRILL COMPLETE'
-  };
-  document.getElementById('results-eye').textContent = eyebrowMap[S.drillType] || 'DRILL COMPLETE';
-
-  if (S.drillType === 'diagnostic') {
-    document.getElementById('results-btns').innerHTML = `
-      <button class="res-btn primary" onclick="showDomainDash('${S.cert}')">▸ VIEW DOMAIN PROGRESS</button>
-      <button class="res-btn secondary" onclick="goToDashboard()">← CHOOSE CERT</button>
-    `;
-  } else if (S.drillType === 'domain') {
-    document.getElementById('results-btns').innerHTML = `
-      <button class="res-btn primary" onclick="startDomainDrill('${S.cert}','${(S.domain||'').replace(/'/g,"\\'")}')">▸ DRILL AGAIN</button>
-      <button class="res-btn secondary" onclick="showDomainDash('${S.cert}')">← BACK TO PROGRESS</button>
+  if (S.drillType === 'diagnostic' || S.drillType === 'domain') {
+    document.getElementById('res-btns').innerHTML = `
+      <button class="res-btn primary" onclick="goToDashboard()">▸ VIEW PROGRESS</button>
+      <button class="res-btn secondary" onclick="startDomainDrill('${S.cert}','${(S.domain||'').replace(/'/g,"\\'")}')">↺ DRILL AGAIN</button>
     `;
   } else {
-    document.getElementById('results-btns').innerHTML = `
+    document.getElementById('res-btns').innerHTML = `
       <button class="res-btn primary" onclick="drillAgain()">▸ DRILL AGAIN</button>
       <button class="res-btn secondary" onclick="goToDashboard()">← DASHBOARD</button>
     `;
   }
 
-  show('results');
-  window.scrollTo({ top: 0 });
+  // Sync topbar XP
+  document.getElementById('tb-xp').textContent     = S.totalXP.toLocaleString();
+  document.getElementById('dash-xp').textContent   = S.totalXP.toLocaleString();
+
+  showMain('results');
+  document.querySelector('.main').scrollTo({ top: 0 });
 }
 
-/* ══ RESULTS ACTIONS ══ */
-function drillAgain() { startDrill(S.cert, S.difficulty, S.drillType, S.domain); }
-function goToDashboard() {
-  // After a drill, go back to the cert's dashboard (not cert-select)
-  if (S.cert) {
-    showDomainDash(S.cert);
-  } else {
-    show('cert-select');
-    window.scrollTo({ top: 0 });
-  }
-}
-function confirmBack() {
-  if (S.idx > 0 && !S.answered) {
-    if (!confirm('Leave drill? Progress will not be saved.')) return;
-  }
-  // Always return to the cert dashboard
-  if (S.cert) {
-    showDomainDash(S.cert);
-  } else {
-    show('cert-select');
-    window.scrollTo({ top: 0 });
-  }
-}
+function drillAgain() { startDrill(S.cert, 'all', S.drillType, S.domain); }
 
 /* ══ STREAK ══ */
 async function updateStreak() {
@@ -904,20 +1137,25 @@ async function updateStreak() {
     const newStreak = st.last_activity === yest ? st.current_streak + 1 : 1;
     S.streak = newStreak;
     await sb.from('streaks').update({
-      current_streak: newStreak,
-      longest_streak: Math.max(st.longest_streak, newStreak),
+      current_streak: newStreak, longest_streak: Math.max(st.longest_streak, newStreak),
       last_activity: today, updated_at: new Date().toISOString()
     }).eq('user_id', S.user.id);
-    const strEl = document.getElementById('db-stat-streak');
-    if (strEl) strEl.textContent = newStreak;
+    document.getElementById('tb-streak').textContent   = newStreak;
+    document.getElementById('dash-streak').textContent = newStreak + ' 🔥';
   } catch (_) {}
+}
+
+/* ══ AUTH ══ */
+async function handleSignOut() {
+  await sb.auth.signOut();
+  window.location.href = 'ops-academy-login-v3.html';
 }
 
 /* ══ UTILS ══ */
 function shuffle(a) {
   const r = [...a];
-  for (let i = r.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+  for (let i = r.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
     [r[i], r[j]] = [r[j], r[i]];
   }
   return r;
