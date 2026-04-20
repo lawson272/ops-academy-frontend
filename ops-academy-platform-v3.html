@@ -982,7 +982,8 @@ async function startDrill(certId, difficulty, type='standard', domain=null) {
     questions, idx: 0,
     sessionId: sess?.id || null, sessionStart: Date.now(),
     correct: 0, sessionXP: 0, answered: false,
-    questionResults: []  // reset for this drill
+    questionResults: [],  // { domain, is_correct } — for immediate UI update
+    pendingAnswers: []    // rows to bulk-insert at finish()
   });
 
   const tagMap = { diagnostic: 'DIAGNOSTIC', domain: (domain||'DOMAIN').toUpperCase(), standard: 'MIXED DRILL' };
@@ -1065,13 +1066,12 @@ async function pick(key, qid, correct) {
   document.getElementById('xp-live').textContent = S.sessionXP;
   document.getElementById('next-wrap').style.display = 'flex';
 
-  if (S.sessionId) {
-    sb.from('question_answers').insert({
-      session_id: S.sessionId, user_id: S.user.id,
-      question_id: qid, answer_given: key,
-      is_correct: isCorrect, time_taken_secs: secs
-    }).then(() => {});
-  }
+  // Queue answer for bulk insert in finish() — ensures DB is ready before dashboard re-fetch
+  S.pendingAnswers.push({
+    session_id: S.sessionId, user_id: S.user.id,
+    question_id: qid, answer_given: key,
+    is_correct: isCorrect, time_taken_secs: secs
+  });
 }
 
 function advance() {
@@ -1084,6 +1084,12 @@ async function finish() {
   const dur = Math.round((Date.now() - S.sessionStart) / 1000);
   const pct = Math.round((S.correct / S.questions.length) * 100);
 
+  // Bulk-insert all question answers first — awaited so DB is ready when dashboard re-fetches
+  if (S.pendingAnswers.length) {
+    try { await sb.from('question_answers').insert(S.pendingAnswers); } catch (_) {}
+  }
+
+  // Fire-and-forget the rest (session summary + XP)
   if (S.sessionId) {
     sb.from('drill_sessions').update({
       questions_attempted: S.questions.length, questions_correct: S.correct,
