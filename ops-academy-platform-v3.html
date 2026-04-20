@@ -606,7 +606,8 @@ const S = {
   questions: [], idx: 0, sessionId: null, sessionStart: null, qStart: null,
   correct: 0, sessionXP: 0, answered: false,
   drillType: 'standard', domain: null,
-  domains: []   // cached domain scores for current cert
+  domains: [],          // cached domain scores for current cert
+  questionResults: []   // { domain, is_correct } — tracked per answer for immediate updates
 };
 
 /* ══ INIT ══ */
@@ -776,14 +777,18 @@ async function getDomainScores(certId) {
 async function loadDomainData(certId) {
   const domains = await getDomainScores(certId);
   S.domains = domains;
+  renderDomainUI(certId, domains);
+  loadRecentActivity();
+}
 
+function renderDomainUI(certId, domains) {
   const started  = domains.filter(d => !d.unstarted);
   const overall  = started.length ? Math.round(started.reduce((s,d) => s + d.pct, 0) / started.length) : 0;
   const mastered = domains.filter(d => d.mastered).length;
 
-  // Update dashboard stats
-  document.getElementById('dash-overall').textContent   = domains.length ? overall + '%' : '—%';
-  document.getElementById('dash-mastered').textContent  = mastered;
+  // Dashboard stats
+  document.getElementById('dash-overall').textContent       = domains.length ? overall + '%' : '—%';
+  document.getElementById('dash-mastered').textContent      = mastered;
   document.getElementById('dash-total-domains').textContent = domains.length || '—';
 
   const overallChange = overall >= 85 ? 'TARGET REACHED' : `${85 - overall}% to reach target`;
@@ -791,8 +796,7 @@ async function loadDomainData(certId) {
   document.getElementById('dash-overall-change').style.color = overall >= 85 ? 'var(--green)' : 'var(--text)';
 
   document.getElementById('dash-sub').textContent = domains.length
-    ? mastered === domains.length
-      ? 'All domains mastered. Exam ready!'
+    ? mastered === domains.length ? 'All domains mastered. Exam ready!'
       : `${mastered} of ${domains.length} domains mastered. Keep drilling!`
     : 'Run your diagnostic to see your domain breakdown.';
 
@@ -843,9 +847,6 @@ async function loadDomainData(certId) {
 
   // Gauge
   updateGauge(overall, domains);
-
-  // Recent activity
-  loadRecentActivity();
 }
 
 function updateGauge(overall, domains) {
@@ -926,13 +927,18 @@ function goToCertSelect() {
 
 function goToDashboard() {
   if (S.cert) {
-    showMain('dashboard');
-    loadDomainData(S.cert); // refresh
     // Sync stats
-    document.getElementById('tb-xp').textContent     = S.totalXP.toLocaleString();
-    document.getElementById('tb-streak').textContent = S.streak;
-    document.getElementById('dash-xp').textContent   = S.totalXP.toLocaleString();
+    document.getElementById('tb-xp').textContent      = S.totalXP.toLocaleString();
+    document.getElementById('tb-streak').textContent  = S.streak;
+    document.getElementById('dash-xp').textContent    = S.totalXP.toLocaleString();
     document.getElementById('dash-streak').textContent = S.streak + ' 🔥';
+
+    // Render immediately from in-memory S.domains (already updated by applyDrillResultsToDomains)
+    renderDomainUI(S.cert, S.domains);
+    showMain('dashboard');
+
+    // Then refresh from DB in background (question_answers writes are done by now)
+    loadDomainData(S.cert);
   } else {
     goToCertSelect();
   }
@@ -975,7 +981,8 @@ async function startDrill(certId, difficulty, type='standard', domain=null) {
     cert: certId, drillType: type, domain,
     questions, idx: 0,
     sessionId: sess?.id || null, sessionStart: Date.now(),
-    correct: 0, sessionXP: 0, answered: false
+    correct: 0, sessionXP: 0, answered: false,
+    questionResults: []  // reset for this drill
   });
 
   const tagMap = { diagnostic: 'DIAGNOSTIC', domain: (domain||'DOMAIN').toUpperCase(), standard: 'MIXED DRILL' };
@@ -1036,13 +1043,16 @@ async function pick(key, qid, correct) {
   S.sessionXP += xp;
   if (isCorrect) S.correct++;
 
+  // Track per-domain result for immediate progress bar update
+  const q = S.questions[S.idx];
+  S.questionResults.push({ domain: q.domain, is_correct: isCorrect });
+
   document.querySelectorAll('.ans-btn').forEach(b => {
     b.disabled = true;
     if (b.dataset.key === correct)            b.classList.add('correct');
     if (b.dataset.key === key && !isCorrect)  b.classList.add('wrong');
   });
 
-  const q = S.questions[S.idx];
   document.getElementById('expl').style.display = 'block';
   document.getElementById('expl').innerHTML = `
     <div class="expl-wrap">
@@ -1121,8 +1131,39 @@ async function finish() {
   document.getElementById('tb-xp').textContent     = S.totalXP.toLocaleString();
   document.getElementById('dash-xp').textContent   = S.totalXP.toLocaleString();
 
+  // Apply this drill's results to domain scores immediately (no DB wait needed)
+  applyDrillResultsToDomains();
+
   showMain('results');
   document.querySelector('.main').scrollTo({ top: 0 });
+}
+
+/* ══ APPLY DRILL RESULTS TO DOMAIN SCORES ══ */
+function applyDrillResultsToDomains() {
+  S.questionResults.forEach(r => {
+    const existing = S.domains.find(d => d.name === r.domain);
+    if (existing) {
+      existing.total++;
+      if (r.is_correct) existing.correct++;
+      existing.pct      = Math.round((existing.correct / existing.total) * 100);
+      existing.mastered = existing.pct >= 85;
+      existing.unstarted = false;
+    } else {
+      // Domain not yet in cache — add it
+      S.domains.push({
+        name: r.domain, total: 1,
+        correct: r.is_correct ? 1 : 0,
+        pct: r.is_correct ? 100 : 0,
+        mastered: false, unstarted: false
+      });
+    }
+  });
+  // Re-sort: mastered last, weakest first
+  S.domains.sort((a, b) => {
+    if (a.mastered && !b.mastered) return 1;
+    if (!a.mastered && b.mastered) return -1;
+    return a.pct - b.pct;
+  });
 }
 
 function drillAgain() { startDrill(S.cert, 'all', S.drillType, S.domain); }
