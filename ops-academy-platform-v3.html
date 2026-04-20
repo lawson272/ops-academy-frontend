@@ -359,10 +359,11 @@ function show(id) {
 }
 
 /* ══ INIT ══
-   Pure JS JWT decode — zero Supabase SDK calls, zero network, ~1ms
-   Scans ALL localStorage keys for any Supabase session object           */
+   Read session from localStorage — accept even expired tokens and refresh in background.
+   This breaks the redirect loop caused by expired-token bounce between login ↔ platform. */
 function init() {
   let user = null;
+  let needsRefresh = false;
 
   try {
     for (let i = 0; i < localStorage.length; i++) {
@@ -370,23 +371,21 @@ function init() {
       if (!k) continue;
       let v;
       try { v = JSON.parse(localStorage.getItem(k) || 'null'); } catch(_) { continue; }
-      // Look for any object with access_token + user
+      // Any object with access_token + user — expired or not
       if (!v?.access_token || !v?.user?.id) continue;
-      // Decode JWT payload to check expiry
+      user = v.user;
+      // Check expiry only to decide whether to background-refresh
       try {
         const b64 = v.access_token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
         const payload = JSON.parse(atob(b64));
-        const now = Math.floor(Date.now() / 1000);
-        // Accept token if not expired (or no exp claim)
-        if (!payload.exp || payload.exp > now) {
-          user = v.user;
-          break;
-        }
-      } catch(_) { continue; }
+        if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) needsRefresh = true;
+      } catch(_) {}
+      break;
     }
   } catch(_) {}
 
   if (!user) {
+    // Truly no session at all — go log in
     window.location.href = 'ops-academy-login-v3.html';
     return;
   }
@@ -395,6 +394,10 @@ function init() {
   S.profile = { full_name: user.user_metadata?.full_name || user.email || 'Operator' };
   buildDashboard();
   show('dashboard');
+
+  // Refresh expired token in background — doesn't block the UI
+  if (needsRefresh) sb.auth.refreshSession().catch(() => {});
+
   loadStatsAsync();
 }
 
