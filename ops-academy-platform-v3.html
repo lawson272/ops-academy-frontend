@@ -149,7 +149,7 @@
     .cert-sel-code { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; }
     .cert-readiness-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
     .cert-readiness-bar { flex: 1; height: 3px; background: var(--border); overflow: hidden; margin-right: 8px; }
-    .cert-readiness-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); transition: width 0.6s ease; }
+    .cert-readiness-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); }
     .cert-readiness-pct { font-family: var(--mono); font-size: 10px; color: var(--cyan); }
 
     .sidebar-nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -174,7 +174,7 @@
     .dr-score.low  { color: var(--red); }
     .dr-score.none { color: var(--muted); }
     .dr-bar { height: 3px; background: var(--border); overflow: hidden; }
-    .dr-fill { height: 100%; transition: width 0.6s ease; }
+    .dr-fill { height: 100%; }
     .dr-fill.high { background: var(--green); }
     .dr-fill.mid  { background: var(--cyan); }
     .dr-fill.low  { background: var(--red); }
@@ -224,7 +224,7 @@
     .db-row-score.none { color: var(--muted); }
     .db-bar { height: 4px; background: var(--border); overflow: hidden; cursor: pointer; transition: opacity 0.2s; }
     .db-bar:hover { opacity: 0.8; }
-    .db-bar-fill { height: 100%; transition: width 0.6s ease; }
+    .db-bar-fill { height: 100%; }
     .db-bar-fill.high { background: var(--green); }
     .db-bar-fill.mid  { background: var(--cyan); }
     .db-bar-fill.low  { background: var(--red); }
@@ -607,6 +607,7 @@ const S = {
   correct: 0, sessionXP: 0, answered: false,
   drillType: 'standard', domain: null,
   domains: [],          // cached domain scores for current cert
+  domainVersion: 0,     // incremented whenever drill results update domains; guards stale loadDomainData overwrites
   questionResults: []   // { domain, is_correct } — tracked per answer for immediate updates
 };
 
@@ -775,7 +776,16 @@ async function getDomainScores(certId) {
 }
 
 async function loadDomainData(certId) {
+  // Capture the version before the async DB call.
+  // If a drill completes while we're fetching, domainVersion will have been incremented
+  // and we must NOT overwrite the fresher in-memory data with stale DB results.
+  const v = S.domainVersion;
   const domains = await getDomainScores(certId);
+  if (S.domainVersion !== v) {
+    // A drill completed while we were fetching — in-memory data is more current, skip overwrite
+    loadRecentActivity();
+    return;
+  }
   S.domains = domains;
   renderDomainUI(certId, domains);
   loadRecentActivity();
@@ -926,22 +936,23 @@ function goToCertSelect() {
 }
 
 function goToDashboard() {
-  if (S.cert) {
-    // Sync stats
-    document.getElementById('tb-xp').textContent       = S.totalXP.toLocaleString();
-    document.getElementById('tb-streak').textContent   = S.streak;
-    document.getElementById('dash-xp').textContent     = S.totalXP.toLocaleString();
-    document.getElementById('dash-streak').textContent = S.streak + ' 🔥';
+  if (!S.cert) { goToCertSelect(); return; }
 
-    // Render from in-memory S.domains — already updated by applyDrillResultsToDomains.
-    // No DB re-fetch here: the read-back timing is unreliable and causes the flash-to-zero bug.
-    // S.domains accumulates correctly across drills within a session.
-    // A fresh DB fetch only happens when first entering a cert via selectCert().
-    renderDomainUI(S.cert, S.domains);
-    showMain('dashboard');
-  } else {
-    goToCertSelect();
-  }
+  // Sync stats text
+  document.getElementById('tb-xp').textContent       = S.totalXP.toLocaleString();
+  document.getElementById('tb-streak').textContent   = S.streak;
+  document.getElementById('dash-xp').textContent     = S.totalXP.toLocaleString();
+  document.getElementById('dash-streak').textContent = S.streak + ' 🔥';
+
+  // If we're coming back from a drill, applyDrillResultsToDomains() already pre-rendered
+  // the dashboard with correct bar widths while the screen was hidden. We just reveal it.
+  // If we're navigating normally (no drill), re-render from in-memory S.domains.
+  // Either way, no DB re-fetch here — avoids race conditions entirely.
+  renderDomainUI(S.cert, S.domains);
+
+  // Show the screen AFTER rendering so bars are at their target widths on first paint.
+  // This prevents the CSS transition firing from 0% → correct% on screen reveal.
+  showMain('dashboard');
 }
 
 function confirmBack() {
@@ -1146,6 +1157,9 @@ async function finish() {
 
 /* ══ APPLY DRILL RESULTS TO DOMAIN SCORES ══ */
 function applyDrillResultsToDomains() {
+  // Bump version FIRST so any in-flight loadDomainData call will abort when it resolves
+  S.domainVersion++;
+
   S.questionResults.forEach(r => {
     const existing = S.domains.find(d => d.name === r.domain);
     if (existing) {
@@ -1160,7 +1174,7 @@ function applyDrillResultsToDomains() {
         name: r.domain, total: 1,
         correct: r.is_correct ? 1 : 0,
         pct: r.is_correct ? 100 : 0,
-        mastered: false, unstarted: false
+        mastered: r.is_correct, unstarted: false
       });
     }
   });
@@ -1170,6 +1184,11 @@ function applyDrillResultsToDomains() {
     if (!a.mastered && b.mastered) return -1;
     return a.pct - b.pct;
   });
+
+  // Pre-render the dashboard NOW while it's still hidden behind the results screen.
+  // This means the bars are already at the correct widths when goToDashboard() makes
+  // the screen visible — no CSS-transition-from-zero artifact possible.
+  if (S.cert) renderDomainUI(S.cert, S.domains);
 }
 
 function drillAgain() { startDrill(S.cert, 'all', S.drillType, S.domain); }
