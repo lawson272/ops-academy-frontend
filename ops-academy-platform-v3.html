@@ -3173,6 +3173,25 @@ function confirmBack() {
 }
 
 /* ══ DAILY ORDERS ══ */
+function showDailyOrdersError(msg) {
+  const loading = document.getElementById('do-loading');
+  const active  = document.getElementById('do-active');
+  if (loading) loading.style.display = 'none';
+  if (active) {
+    active.innerHTML = `
+      <div class="do-panel-inner">
+        <div class="do-header">
+          <div class="do-icon">⬡</div>
+          <div class="do-title-block">
+            <div class="do-title">DAILY ORDERS</div>
+            <div class="do-date" style="color:var(--amber)">${msg}</div>
+          </div>
+        </div>
+      </div>`;
+    active.style.display = 'block';
+  }
+}
+
 async function loadDailyOrders(certId) {
   const panel = document.getElementById('daily-orders-panel');
   if (!panel) return;
@@ -3180,28 +3199,37 @@ async function loadDailyOrders(certId) {
   document.getElementById('do-active').style.display   = 'none';
   document.getElementById('do-complete').style.display = 'none';
 
+  // Safety timeout — if anything hangs for >10s, show a friendly error
+  const timeout = setTimeout(() => showDailyOrdersError('Timed out — please refresh'), 10000);
+
   const today    = new Date().toISOString().split('T')[0];
   const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
   try {
-    // 1. Check today's orders
-    const { data: todayOrders } = await sb.from('daily_orders')
-      .select('*').eq('user_id', S.user.id).eq('cert', certId).eq('date', today).single();
+    // 1. Check today's orders — use .limit(1) instead of .single() to avoid PGRST116 errors
+    const { data: todayRows, error: todayErr } = await sb.from('daily_orders')
+      .select('*').eq('user_id', S.user.id).eq('cert', certId).eq('date', today).limit(1);
+    if (todayErr) console.warn('daily_orders today fetch error:', todayErr);
+
+    const todayOrders = todayRows?.[0] || null;
 
     if (todayOrders) {
       // Today's orders exist — if complete, pre-fetch or generate tomorrow's
       if (todayOrders.completed) {
-        const { data: tomorrowOrders } = await sb.from('daily_orders')
-          .select('*').eq('user_id', S.user.id).eq('cert', certId).eq('date', tomorrow).single();
+        const { data: tomorrowRows } = await sb.from('daily_orders')
+          .select('*').eq('user_id', S.user.id).eq('cert', certId).eq('date', tomorrow).limit(1);
+        const tomorrowOrders = tomorrowRows?.[0] || null;
         if (tomorrowOrders) {
-          // Tomorrow's already been issued by cron — show them as "next orders"
+          clearTimeout(timeout);
           renderDailyOrders(tomorrowOrders, true);
         } else {
-          // Cron hasn't run yet — generate tomorrow's client-side so user isn't left waiting
+          // Cron hasn't run yet — generate tomorrow's client-side
           const next = await generateDailyOrders(certId, tomorrow);
-          renderDailyOrders(next, true);
+          clearTimeout(timeout);
+          renderDailyOrders(next || todayOrders, !!next);
         }
       } else {
+        clearTimeout(timeout);
         renderDailyOrders(todayOrders, false);
       }
       return;
@@ -3209,36 +3237,16 @@ async function loadDailyOrders(certId) {
 
     // 2. No today orders — generate them now (new user or cron missed)
     const orders = await generateDailyOrders(certId, today);
+    clearTimeout(timeout);
     if (orders) { renderDailyOrders(orders, false); return; }
 
-    // 3. Total fallback — show a friendly error state
-    document.getElementById('do-loading').style.display = 'none';
-    document.getElementById('do-active').innerHTML = `
-      <div class="do-panel-inner">
-        <div class="do-header">
-          <div class="do-icon">⬡</div>
-          <div class="do-title-block">
-            <div class="do-title">DAILY ORDERS</div>
-            <div class="do-date">Unable to load — please refresh</div>
-          </div>
-        </div>
-      </div>`;
-    document.getElementById('do-active').style.display = 'block';
+    // 3. Total fallback
+    showDailyOrdersError('Unable to load — please refresh');
 
   } catch (e) {
+    clearTimeout(timeout);
     console.error('Daily orders error:', e);
-    document.getElementById('do-loading').style.display = 'none';
-    document.getElementById('do-active').innerHTML = `
-      <div class="do-panel-inner">
-        <div class="do-header">
-          <div class="do-icon">⬡</div>
-          <div class="do-title-block">
-            <div class="do-title">DAILY ORDERS</div>
-            <div class="do-date" style="color:var(--red)">Error loading orders — refresh to retry</div>
-          </div>
-        </div>
-      </div>`;
-    document.getElementById('do-active').style.display = 'block';
+    showDailyOrdersError('Error loading orders — refresh to retry');
   }
 }
 
