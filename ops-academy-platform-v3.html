@@ -93,6 +93,35 @@
     .cs-btn.returning { background: transparent; color: var(--cc); border: 1px solid var(--cc); }
     .cs-btn.returning:hover { background: var(--cg); }
 
+    /* ── ONBOARDING MODAL ── */
+    #onboarding-modal {
+      position: fixed; inset: 0; z-index: 900;
+      background: rgba(6,12,30,0.92); backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .ob-box {
+      background: var(--dark); border: 1px solid var(--border-l);
+      width: 100%; max-width: 640px; max-height: 90vh; overflow-y: auto;
+      position: relative;
+    }
+    .ob-box::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--cyan),var(--blue)); }
+    .ob-head { padding: 28px 28px 0; }
+    .ob-eyebrow { font-family: var(--mono); font-size: 9px; color: var(--cyan); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 10px; }
+    .ob-title { font-family: var(--cond); font-size: clamp(28px,5vw,40px); font-weight: 900; text-transform: uppercase; line-height: 1; margin-bottom: 8px; }
+    .ob-title span { color: var(--cyan); }
+    .ob-sub { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 24px; }
+    .ob-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 28px 24px; }
+    .ob-card { background: var(--panel); border: 1px solid var(--border); padding: 18px; }
+    .ob-card-icon { font-family: var(--mono); font-size: 18px; color: var(--cyan); margin-bottom: 10px; }
+    .ob-card-title { font-family: var(--cond); font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; color: var(--white); }
+    .ob-card-text { font-size: 12px; color: var(--text); line-height: 1.6; }
+    .ob-foot { padding: 0 28px 28px; display: flex; flex-direction: column; gap: 10px; }
+    .ob-cta { font-family: var(--mono); font-size: 12px; letter-spacing: 3px; background: var(--cyan); color: var(--black); border: none; padding: 16px; cursor: pointer; font-weight: 700; transition: all 0.2s; width: 100%; }
+    .ob-cta:hover { background: #1ffce3; box-shadow: 0 0 24px var(--cyan-glow); }
+    .ob-skip { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; text-align: center; cursor: pointer; }
+    .ob-skip:hover { color: var(--text); }
+    @media (max-width: 480px) { .ob-cards { grid-template-columns: 1fr; } .ob-head { padding: 20px 20px 0; } .ob-cards { padding: 0 20px 20px; } .ob-foot { padding: 0 20px 20px; } }
+
     /* ── LOADING OVERLAY ── */
     #screen-loading {
       position: fixed; inset: 0; z-index: 1000;
@@ -1147,6 +1176,43 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
   <div class="loading-text" id="loading-text">AUTHENTICATING...</div>
 </div>
 
+<!-- ════════ ONBOARDING MODAL ════════ -->
+<div id="onboarding-modal" style="display:none">
+  <div class="ob-box">
+    <div class="ob-head">
+      <div class="ob-eyebrow">◈ Welcome, Operator</div>
+      <div class="ob-title">Here's how<br><span>it works</span></div>
+      <p class="ob-sub">Four things to know before your first drill.</p>
+    </div>
+    <div class="ob-cards">
+      <div class="ob-card">
+        <div class="ob-card-icon">▸</div>
+        <div class="ob-card-title">Drills</div>
+        <div class="ob-card-text">Your core activity. Each drill is 10 questions from your chosen cert. Answer them, get XP, and watch your domain scores update in real time.</div>
+      </div>
+      <div class="ob-card">
+        <div class="ob-card-icon">⬡</div>
+        <div class="ob-card-title">Daily Orders</div>
+        <div class="ob-card-text">Every day you get a mission: revisit questions you got wrong, drill your weakest domain, then reinforce a strong one. Complete all three to keep your streak alive.</div>
+      </div>
+      <div class="ob-card">
+        <div class="ob-card-icon">◎</div>
+        <div class="ob-card-title">Readiness Map</div>
+        <div class="ob-card-text">Every domain in your cert is tracked separately. Hit 85% in a domain and it's marked mastered. Your goal is to get every domain to green before exam day.</div>
+      </div>
+      <div class="ob-card">
+        <div class="ob-card-icon">★</div>
+        <div class="ob-card-title">Rank & XP</div>
+        <div class="ob-card-text">Correct answers earn XP. XP unlocks ranks from Recruit all the way up to Commander. Your rank reflects your total effort across all certs.</div>
+      </div>
+    </div>
+    <div class="ob-foot">
+      <button class="ob-cta" onclick="dismissOnboarding()">▸ GOT IT — CHOOSE MY CERT</button>
+      <div class="ob-skip" onclick="dismissOnboarding()">Skip intro</div>
+    </div>
+  </div>
+</div>
+
 <!-- ════════ CERT SELECT ════════ -->
 <div id="screen-cert-select" style="display:none">
   <nav class="cs-nav">
@@ -2064,6 +2130,19 @@ function init() {
   buildCertSelect();
   showPage('cert-select');
   loadStatsAsync();
+  checkOnboarding();
+}
+
+/* ══ ONBOARDING ══ */
+function checkOnboarding() {
+  if (!localStorage.getItem('oa_onboarded')) {
+    document.getElementById('onboarding-modal').style.display = 'flex';
+  }
+}
+
+function dismissOnboarding() {
+  localStorage.setItem('oa_onboarded', '1');
+  document.getElementById('onboarding-modal').style.display = 'none';
 }
 
 /* ══ PAGE VISIBILITY ══ */
