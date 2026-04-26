@@ -3199,48 +3199,31 @@ async function loadDailyOrders(certId) {
   document.getElementById('do-active').style.display   = 'none';
   document.getElementById('do-complete').style.display = 'none';
 
-  // Safety timeout — if anything hangs for >10s, show a friendly error
-  const timeout = setTimeout(() => showDailyOrdersError('Timed out — please refresh'), 10000);
+  // Safety timeout — if anything hangs for >8s, show a friendly error
+  const timeout = setTimeout(() => showDailyOrdersError('Timed out — please refresh'), 8000);
 
-  const today    = new Date().toISOString().split('T')[0];
-  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  const today = new Date().toISOString().split('T')[0];
 
   try {
-    // 1. Check today's orders — use .limit(1) instead of .single() to avoid PGRST116 errors
+    // 1. Check today's orders
     const { data: todayRows, error: todayErr } = await sb.from('daily_orders')
       .select('*').eq('user_id', S.user.id).eq('cert', certId).eq('date', today).limit(1);
-    if (todayErr) console.warn('daily_orders today fetch error:', todayErr);
+    if (todayErr) console.warn('daily_orders fetch error:', todayErr);
 
     const todayOrders = todayRows?.[0] || null;
 
     if (todayOrders) {
-      // Today's orders exist — if complete, pre-fetch or generate tomorrow's
-      if (todayOrders.completed) {
-        const { data: tomorrowRows } = await sb.from('daily_orders')
-          .select('*').eq('user_id', S.user.id).eq('cert', certId).eq('date', tomorrow).limit(1);
-        const tomorrowOrders = tomorrowRows?.[0] || null;
-        if (tomorrowOrders) {
-          clearTimeout(timeout);
-          renderDailyOrders(tomorrowOrders, true);
-        } else {
-          // Cron hasn't run yet — generate tomorrow's client-side
-          const next = await generateDailyOrders(certId, tomorrow);
-          clearTimeout(timeout);
-          renderDailyOrders(next || todayOrders, !!next);
-        }
-      } else {
-        clearTimeout(timeout);
-        renderDailyOrders(todayOrders, false);
-      }
+      // Today's orders found — show them as-is (complete or active)
+      clearTimeout(timeout);
+      renderDailyOrders(todayOrders, false);
       return;
     }
 
-    // 2. No today orders — generate them now (new user or cron missed)
+    // 2. No orders for today — generate them (new user or cron missed)
     const orders = await generateDailyOrders(certId, today);
     clearTimeout(timeout);
     if (orders) { renderDailyOrders(orders, false); return; }
 
-    // 3. Total fallback
     showDailyOrdersError('Unable to load — please refresh');
 
   } catch (e) {
@@ -3253,14 +3236,13 @@ async function loadDailyOrders(certId) {
 async function generateDailyOrders(certId, today) {
   const yesterday = new Date(Date.now() - 86400000).toISOString();
 
-  // 1. Wrong question IDs from last 24 hrs (via question_answers)
+  // 1. Wrong question IDs from last 24 hrs — simple query, no join
   let remIds = [];
   try {
     const { data: wrong } = await sb.from('question_answers')
-      .select('question_id, questions!inner(cert)')
+      .select('question_id')
       .eq('user_id', S.user.id).eq('is_correct', false)
-      .eq('questions.cert', certId)
-      .gte('created_at', yesterday);
+      .gte('created_at', yesterday).limit(20);
     remIds = [...new Set((wrong || []).map(r => r.question_id))].slice(0, 5);
   } catch (_) {}
 
@@ -3316,8 +3298,8 @@ async function generateDailyOrders(certId, today) {
   };
 
   try {
-    const { data } = await sb.from('daily_orders').insert(record).select().single();
-    return data || record;
+    const { data } = await sb.from('daily_orders').insert(record).select().limit(1);
+    return data?.[0] || record;
   } catch (_) { return record; }
 }
 
