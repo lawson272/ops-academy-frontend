@@ -1080,18 +1080,6 @@
     .activity-meta { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; margin-top: 3px; }
     .activity-empty { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; text-align: center; padding: 20px 0; }
 
-    /* ── Q-OPTION (old style compat) ── */
-    .q-option {
-      display: flex; align-items: flex-start; gap: 14px; padding: 14px 18px;
-      background: var(--panel); border: 1px solid var(--border); cursor: pointer;
-      transition: all 0.2s; font-size: 14px; font-weight: 300; color: var(--off); line-height: 1.5; max-width: 680px;
-    }
-    .q-option:hover { border-color: var(--cyan); background: var(--cyan-dim); }
-    .q-option.correct { border-color: var(--green); background: var(--green-dim); color: var(--green); pointer-events: none; }
-    .q-option.incorrect { border-color: var(--red); background: var(--red-dim); color: var(--red); pointer-events: none; }
-    .q-option.disabled { pointer-events: none; opacity: 0.5; }
-    .q-key { font-family: var(--mono); font-size: 12px; color: var(--muted); width: 20px; flex-shrink: 0; padding-top: 1px; }
-
     /* ── HAMBURGER ── */
     .topbar-hamburger {
       display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
@@ -3487,15 +3475,12 @@ function showDailyOrdersError(msg) {
 }
 
 async function loadDailyOrders(certId) {
-  console.log('[DO] called — certId:', certId, '| user:', S.user?.id);
   const panel = document.getElementById('daily-orders-panel');
-  console.log('[DO] panel element:', panel ? 'found' : 'MISSING');
   if (!panel) return;
 
   const loadingEl  = document.getElementById('do-loading');
   const activeEl   = document.getElementById('do-active');
   const completeEl = document.getElementById('do-complete');
-  console.log('[DO] do-loading:', loadingEl ? 'found' : 'MISSING', '| do-active:', activeEl ? 'found' : 'MISSING', '| do-complete:', completeEl ? 'found' : 'MISSING');
 
   if (loadingEl)  loadingEl.style.display  = 'block';
   if (activeEl)   activeEl.style.display   = 'none';
@@ -3505,36 +3490,31 @@ async function loadDailyOrders(certId) {
   const timeout = setTimeout(() => showDailyOrdersError('Timed out — please refresh'), 8000);
 
   const today = new Date().toISOString().split('T')[0];
-  console.log('[DO] querying Supabase for date:', today);
 
   try {
     // 1. Check today's orders
     const { data: todayRows, error: todayErr } = await sb.from('daily_orders')
       .select('*').eq('user_id', S.user.id).eq('cert', certId).eq('date', today).limit(1);
-    console.log('[DO] query done — rows:', todayRows?.length, '| error:', todayErr);
-    if (todayErr) console.warn('[DO] fetch error detail:', todayErr);
+    if (todayErr) throw todayErr;
 
     const todayOrders = todayRows?.[0] || null;
 
     if (todayOrders) {
-      console.log('[DO] found orders — completed:', todayOrders.completed);
       clearTimeout(timeout);
       renderDailyOrders(todayOrders, false);
       return;
     }
 
     // 2. No orders for today — generate them (new user or cron missed)
-    console.log('[DO] no orders found — generating...');
     const orders = await generateDailyOrders(certId, today);
     clearTimeout(timeout);
-    console.log('[DO] generated orders:', !!orders);
     if (orders) { renderDailyOrders(orders, false); return; }
 
     showDailyOrdersError('Unable to load — please refresh');
 
   } catch (e) {
     clearTimeout(timeout);
-    console.error('[DO] caught error:', e);
+    console.error('[DO] error:', e);
     showDailyOrdersError('Error loading orders — refresh to retry');
   }
 }
