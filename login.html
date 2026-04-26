@@ -247,7 +247,7 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
       // Don't redirect if we're in a password reset flow
       const hash = window.location.hash;
       if (!hash.includes('type=recovery')) {
-        window.location.href = 'ops-academy-platform-v3.html';
+        window.location.href = '/main';
       }
     }
   })();
@@ -321,7 +321,7 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
       btn.disabled = false;
     } else {
       btn.textContent = '✓  Redirecting...';
-      window.location.href = 'ops-academy-platform-v3.html';
+      window.location.href = '/main';
     }
   }
 
@@ -357,7 +357,7 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
     } else if (data.session) {
       // Email confirmation disabled — immediate login
       btn.textContent = '✓  Account created!';
-      window.location.href = 'ops-academy-platform-v3.html';
+      window.location.href = '/main';
     } else {
       // Email confirmation required
       btn.textContent = '✓  Account created!';
@@ -391,7 +391,7 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
     } else {
       btn.textContent = '✓  Password updated!';
       showSuccess('reset-error', 'Password updated. Redirecting...');
-      setTimeout(() => { window.location.href = 'ops-academy-platform-v3.html'; }, 1500);
+      setTimeout(() => { window.location.href = '/main'; }, 1500);
     }
   }
 
@@ -403,7 +403,7 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
     }
 
     const { error } = await sb.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/ops-academy-login-v3.html'
+      redirectTo: window.location.origin + '/login'
     });
 
     if (error) {
