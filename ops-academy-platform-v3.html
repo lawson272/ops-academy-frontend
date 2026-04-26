@@ -901,7 +901,30 @@
     .drill-prog-row { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted); margin-bottom: 8px; }
     .drill-prog-bar { height: 4px; background: var(--border); overflow: hidden; margin-bottom: 32px; }
     .drill-prog-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); transition: width 0.4s ease; }
-    .q-tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .q-tag-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 16px; }
+    .q-tag-row-left { display: flex; gap: 8px; flex-wrap: wrap; }
+    .q-flag-btn { font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: var(--muted); background: transparent; border: 1px solid var(--border); padding: 4px 10px; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+    .q-flag-btn:hover { color: var(--amber); border-color: rgba(255,179,0,0.4); }
+    /* Flag modal */
+    .flag-modal-backdrop { position: fixed; inset: 0; background: rgba(6,12,30,0.85); z-index: 500; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .flag-modal { background: var(--dark); border: 1px solid var(--border-l); width: 420px; max-width: calc(100vw - 32px); position: relative; }
+    .flag-modal::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--amber),var(--red)); }
+    .flag-modal-head { padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .flag-modal-title { font-family: var(--mono); font-size: 11px; color: var(--amber); letter-spacing: 3px; }
+    .flag-modal-close { font-family: var(--mono); font-size: 18px; color: var(--muted); background: none; border: none; cursor: pointer; line-height: 1; padding: 0; }
+    .flag-modal-close:hover { color: var(--white); }
+    .flag-modal-body { padding: 20px; }
+    .flag-opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .flag-opt { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--panel); border: 1px solid var(--border); cursor: pointer; transition: all 0.18s; text-align: left; width: 100%; color: var(--text); font-size: 13px; border-radius: 2px; }
+    .flag-opt:hover { border-color: rgba(255,179,0,0.4); color: var(--white); }
+    .flag-opt.selected { border-color: rgba(255,179,0,0.6); color: var(--amber); background: var(--amber-dim); }
+    .flag-opt-icon { font-size: 14px; flex-shrink: 0; width: 20px; text-align: center; }
+    .flag-note { width: 100%; background: var(--panel); border: 1px solid var(--border); color: var(--white); font-family: var(--body); font-size: 13px; padding: 10px 12px; outline: none; resize: vertical; min-height: 60px; transition: border-color 0.2s; margin-bottom: 16px; display: block; }
+    .flag-note:focus { border-color: var(--amber); }
+    .flag-note::placeholder { color: var(--muted); font-family: var(--mono); font-size: 10px; letter-spacing: 1px; }
+    .flag-submit { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; background: var(--amber); color: var(--black); border: none; padding: 13px 20px; cursor: pointer; font-weight: 700; transition: opacity 0.2s; width: 100%; }
+    .flag-submit:hover:not(:disabled) { opacity: 0.88; }
+    .flag-submit:disabled { opacity: 0.45; cursor: default; }
     .q-tag { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; border: 1px solid var(--border); color: var(--muted); padding: 3px 8px; }
     .q-tag.easy   { color: var(--cyan);   border-color: rgba(0,229,204,0.3); }
     .q-tag.medium { color: #6699ff;       border-color: rgba(102,153,255,0.3); }
@@ -1928,6 +1951,37 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
       </div>
     </div>
   </div>
+
+<!-- FLAG QUESTION MODAL -->
+<div id="flag-modal-backdrop" class="flag-modal-backdrop" style="display:none" onclick="if(event.target===this)closeFlagModal()">
+  <div class="flag-modal">
+    <div class="flag-modal-head">
+      <div class="flag-modal-title">⚑ FLAG QUESTION</div>
+      <button class="flag-modal-close" onclick="closeFlagModal()">×</button>
+    </div>
+    <div class="flag-modal-body">
+      <div class="flag-opts" id="flag-opts">
+        <button class="flag-opt" data-type="wrong_answer" onclick="selectFlagType(this)">
+          <span class="flag-opt-icon">✗</span> Wrong answer marked as correct
+        </button>
+        <button class="flag-opt" data-type="unclear" onclick="selectFlagType(this)">
+          <span class="flag-opt-icon">?</span> Question is unclear or ambiguous
+        </button>
+        <button class="flag-opt" data-type="typo" onclick="selectFlagType(this)">
+          <span class="flag-opt-icon">✎</span> Typo or formatting error
+        </button>
+        <button class="flag-opt" data-type="wrong_explanation" onclick="selectFlagType(this)">
+          <span class="flag-opt-icon">⚠</span> Explanation is incorrect
+        </button>
+        <button class="flag-opt" data-type="other" onclick="selectFlagType(this)">
+          <span class="flag-opt-icon">…</span> Other issue
+        </button>
+      </div>
+      <textarea id="flag-note" class="flag-note" placeholder="OPTIONAL NOTE — add detail here" maxlength="500"></textarea>
+      <button id="flag-submit-btn" class="flag-submit" onclick="submitFlag()" disabled>SUBMIT FLAG</button>
+    </div>
+  </div>
+</div>
 
 </div><!-- /app-main -->
 
@@ -3597,8 +3651,11 @@ function renderQ() {
 
   document.getElementById('q-area').innerHTML = `
     <div class="q-tag-row">
-      <span class="q-tag ${q.difficulty}">${q.difficulty.toUpperCase()}</span>
-      <span class="q-tag">${q.domain}</span>
+      <div class="q-tag-row-left">
+        <span class="q-tag ${q.difficulty}">${q.difficulty.toUpperCase()}</span>
+        <span class="q-tag">${q.domain}</span>
+      </div>
+      <button class="q-flag-btn" onclick="openFlagModal('${q.id}')">⚑ FLAG</button>
     </div>
     <div class="q-number">QUESTION ${S.idx + 1}</div>
     <div class="q-text">${q.question_text}</div>
@@ -3922,6 +3979,55 @@ async function checkCertCompletionBonus() {
     document.getElementById('tb-xp').textContent   = S.totalXP.toLocaleString();
     document.getElementById('dash-xp').textContent = S.totalXP.toLocaleString();
   } catch (_) {}
+}
+
+/* ══ QUESTION FLAGS ══ */
+let _flagQid = null;
+
+function openFlagModal(questionId) {
+  _flagQid = questionId;
+  // Reset state
+  document.querySelectorAll('.flag-opt').forEach(b => b.classList.remove('selected'));
+  document.getElementById('flag-note').value = '';
+  document.getElementById('flag-submit-btn').disabled = true;
+  document.getElementById('flag-modal-backdrop').style.display = 'flex';
+}
+
+function closeFlagModal() {
+  document.getElementById('flag-modal-backdrop').style.display = 'none';
+  _flagQid = null;
+}
+
+function selectFlagType(btn) {
+  document.querySelectorAll('.flag-opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('flag-submit-btn').disabled = false;
+}
+
+async function submitFlag() {
+  const typeBtn = document.querySelector('.flag-opt.selected');
+  if (!typeBtn || !_flagQid) return;
+
+  const btn = document.getElementById('flag-submit-btn');
+  btn.textContent = 'SUBMITTING...';
+  btn.disabled = true;
+
+  const note = document.getElementById('flag-note').value.trim() || null;
+
+  try {
+    await sb.from('question_flags').insert({
+      question_id: _flagQid,
+      user_id: S.user.id,
+      flag_type: typeBtn.dataset.type,
+      note
+    });
+    btn.textContent = '✓ FLAGGED — THANKS';
+    setTimeout(closeFlagModal, 1200);
+  } catch (e) {
+    btn.textContent = 'ERROR — TRY AGAIN';
+    btn.disabled = false;
+    setTimeout(() => { btn.textContent = 'SUBMIT FLAG'; btn.disabled = false; }, 2000);
+  }
 }
 
 /* ══ SETTINGS ══ */
