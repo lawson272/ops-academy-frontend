@@ -202,6 +202,608 @@
     .dash-greeting .name { color: var(--cyan); }
     .dash-sub-text { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 28px; }
 
+    /* ── MY PROGRESS ── */
+    #screen-progress { padding: 32px; }
+    .prog-hero {
+      background: linear-gradient(135deg, rgba(0,229,204,0.06), rgba(26,109,255,0.06));
+      border: 1px solid var(--border-l); padding: 28px 32px; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 24px; position: relative; overflow: hidden;
+    }
+    .prog-hero::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--cyan),var(--blue)); }
+    .prog-avatar {
+      width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--cond); font-size: 22px; font-weight: 900; color: var(--black);
+      border: 2px solid rgba(0,229,204,0.4);
+    }
+    .prog-hero-info { flex: 1; min-width: 0; }
+    .prog-hero-name { font-family: var(--cond); font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+    .prog-hero-rank { font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: var(--cyan); margin-bottom: 10px; }
+    .prog-hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .prog-tag { font-family: var(--mono); font-size: 9px; color: var(--text); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 3px 10px; letter-spacing: 1px; }
+    .prog-hero-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+    .prog-xp-val { font-family: var(--cond); font-size: 36px; font-weight: 900; line-height: 1; }
+    .prog-xp-val span { font-size: 14px; color: var(--muted); font-weight: 400; }
+    .prog-xp-label { font-family: var(--mono); font-size: 9px; color: var(--cyan); letter-spacing: 2px; }
+    .prog-xp-bar-wrap { width: 180px; height: 4px; background: var(--border); overflow: hidden; }
+    .prog-xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); transition: width 1s ease; }
+    .prog-xp-sub { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+
+    .prog-stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px; }
+    .prog-stat { background: var(--dark); border: 1px solid var(--border); padding: 16px; text-align: center; }
+    .prog-stat-val { font-family: var(--cond); font-size: 28px; font-weight: 900; line-height: 1; margin-bottom: 6px; }
+    .prog-stat-val.cyan  { color: var(--cyan); }
+    .prog-stat-val.amber { color: var(--amber); }
+    .prog-stat-val.green { color: var(--green); }
+    .prog-stat-lbl { font-family: var(--mono); font-size: 8px; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; line-height: 1.4; }
+
+    .prog-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; margin-bottom: 20px; }
+    .prog-panel { background: var(--dark); border: 1px solid var(--border); padding: 22px; }
+    .prog-panel-title { font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: var(--cyan); text-transform: uppercase; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+
+    /* Heatmap */
+    .hm-wrap { overflow-x: auto; }
+    .hm-months { display: flex; gap: 3px; margin-bottom: 4px; }
+    .hm-month-lbl { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; width: calc(12px * 4 + 3px * 3); flex-shrink: 0; }
+    .hm-grid { display: grid; grid-template-rows: repeat(7, 12px); grid-auto-flow: column; gap: 3px; width: max-content; }
+    .hm-cell { width: 12px; height: 12px; border-radius: 2px; background: rgba(255,255,255,0.05); }
+    .hm-cell.l1 { background: rgba(0,229,204,0.18); }
+    .hm-cell.l2 { background: rgba(0,229,204,0.40); }
+    .hm-cell.l3 { background: rgba(0,229,204,0.65); }
+    .hm-cell.l4 { background: rgba(0,229,204,0.90); }
+    .hm-legend { display: flex; align-items: center; gap: 5px; margin-top: 10px; justify-content: flex-end; font-family: var(--mono); font-size: 9px; color: var(--muted); }
+    .hm-l { width: 12px; height: 12px; border-radius: 2px; }
+
+    /* Session table */
+    .sess-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+    .sess-table th { font-family: var(--mono); font-size: 8px; letter-spacing: 2px; color: var(--muted); text-align: left; padding: 0 10px 10px; border-bottom: 1px solid var(--border); }
+    .sess-table td { font-size: 12px; color: var(--text); padding: 10px; border-bottom: 1px solid var(--border); }
+    .sess-table tr:last-child td { border-bottom: none; }
+    .sess-score { font-family: var(--cond); font-size: 14px; font-weight: 800; }
+    .sess-score.good { color: var(--green); }
+    .sess-score.ok   { color: var(--amber); }
+    .sess-score.poor { color: var(--red); }
+    .sess-domain { font-family: var(--mono); font-size: 9px; color: var(--cyan); letter-spacing: 1px; }
+
+    /* Cert progress */
+    .cert-prog-item { margin-bottom: 18px; }
+    .cert-prog-item:last-child { margin-bottom: 0; }
+    .cert-prog-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .cert-prog-name { font-family: var(--cond); font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+    .cert-prog-pct  { font-family: var(--cond); font-size: 16px; font-weight: 900; color: var(--cyan); }
+    .cert-prog-bar  { height: 6px; background: var(--border); overflow: hidden; margin-bottom: 4px; }
+    .cert-prog-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); transition: width 1s ease; }
+    .cert-prog-meta { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+    .cert-prog-unseen { opacity: .4; }
+
+    /* Badges */
+    .prog-badges-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+    .badge-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 16px 10px; text-align: center; transition: border-color .2s; }
+    .badge-card.earned { background: rgba(0,229,204,0.05); border-color: rgba(0,229,204,0.25); }
+    .badge-card.earned:hover { border-color: var(--cyan); }
+    .badge-card.locked { opacity: .4; }
+    .badge-icon-lg { font-size: 24px; display: block; margin-bottom: 6px; }
+    .badge-name-sm { font-family: var(--cond); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+    .badge-desc-sm { font-family: var(--mono); font-size: 8px; color: var(--muted); letter-spacing: 1px; line-height: 1.4; }
+
+    /* ── RANK PROGRESSION ── */
+    #screen-rank { padding: 32px; }
+    .rank-page-header { margin-bottom: 32px; }
+    .rank-page-eye { font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: 4px; margin-bottom: 8px; }
+    .rank-page-title { font-family: var(--cond); font-size: 36px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+    .rank-page-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+
+    /* Global XP bar */
+    .rank-global-bar { background: var(--dark); border: 1px solid var(--border-l); padding: 24px 28px; margin-bottom: 32px; display: flex; align-items: center; gap: 24px; position: relative; overflow: hidden; }
+    .rank-global-bar::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--cyan),var(--blue)); }
+    .rgb-avatar { width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg, var(--cyan), var(--blue)); display: flex; align-items: center; justify-content: center; font-family: var(--cond); font-size: 18px; font-weight: 900; color: var(--black); border: 2px solid rgba(0,229,204,0.35); }
+    .rgb-info { flex: 1; min-width: 0; }
+    .rgb-rank { font-family: var(--cond); font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: var(--white); margin-bottom: 2px; }
+    .rgb-next { font-family: var(--mono); font-size: 9px; color: var(--cyan); letter-spacing: 2px; margin-bottom: 10px; }
+    .rgb-bar-wrap { height: 6px; background: var(--border); overflow: hidden; }
+    .rgb-bar-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--blue)); transition: width 1.2s ease; }
+    .rgb-xp-row { display: flex; justify-content: space-between; margin-top: 5px; }
+    .rgb-xp-row span { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+    .rgb-xp-row .rgb-xp-hi { color: var(--cyan); }
+    .rgb-total { text-align: right; flex-shrink: 0; }
+    .rgb-total-val { font-family: var(--cond); font-size: 40px; font-weight: 900; line-height: 1; color: var(--white); }
+    .rgb-total-val span { font-size: 14px; color: var(--muted); font-weight: 400; }
+    .rgb-total-lbl { font-family: var(--mono); font-size: 8px; color: var(--muted); letter-spacing: 2px; margin-top: 4px; }
+
+    /* XP Sources panel */
+    .rank-two-col { display: grid; grid-template-columns: 1fr 340px; gap: 20px; margin-bottom: 20px; }
+    .rank-panel { background: var(--dark); border: 1px solid var(--border); padding: 22px; }
+    .rank-panel-title { font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: var(--cyan); text-transform: uppercase; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+    .xp-source-list { display: flex; flex-direction: column; gap: 10px; }
+    .xp-source-item { display: flex; align-items: center; gap: 14px; padding: 12px 14px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); }
+    .xp-source-icon { font-size: 18px; flex-shrink: 0; width: 28px; text-align: center; }
+    .xp-source-info { flex: 1; }
+    .xp-source-name { font-family: var(--cond); font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--white); margin-bottom: 2px; }
+    .xp-source-desc { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+    .xp-source-val { font-family: var(--cond); font-size: 18px; font-weight: 900; color: var(--amber); flex-shrink: 0; }
+
+    /* Rank timeline */
+    .rank-timeline { position: relative; padding: 0 8px; }
+    .rank-timeline-line { position: absolute; left: 36px; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--cyan) var(--prog-pct, 0%), var(--border) var(--prog-pct, 0%)); }
+    .rank-node { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; position: relative; }
+    .rank-node:last-child { margin-bottom: 0; }
+    .rank-node-dot {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; border: 2px solid var(--border); background: var(--dark);
+      position: relative; z-index: 1; margin-top: 10px;
+      transition: all .3s;
+    }
+    .rank-node.achieved .rank-node-dot { border-color: var(--cyan); background: var(--cyan); color: var(--black); font-weight: 900; }
+    .rank-node.current  .rank-node-dot { border-color: var(--cyan); background: var(--black); box-shadow: 0 0 12px var(--cyan-glow); color: var(--cyan); }
+    .rank-node.locked   .rank-node-dot { border-color: var(--border); color: var(--muted); }
+    .rank-node-card {
+      flex: 1; padding: 14px 18px; background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border); transition: border-color .2s;
+    }
+    .rank-node.achieved .rank-node-card { border-color: rgba(0,229,204,0.2); background: rgba(0,229,204,0.04); }
+    .rank-node.current  .rank-node-card { border-color: var(--cyan); background: rgba(0,229,204,0.06); box-shadow: 0 0 20px rgba(0,229,204,0.08); }
+    .rank-node-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .rank-node-name { font-family: var(--cond); font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+    .rank-node.achieved .rank-node-name { color: var(--cyan); }
+    .rank-node.current  .rank-node-name { color: var(--white); }
+    .rank-node.locked   .rank-node-name { color: var(--muted); }
+    .rank-node-xp { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+    .rank-node-xp.achieved { color: var(--cyan); }
+    .rank-node-desc { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; line-height: 1.5; margin-bottom: 6px; }
+    .rank-node-badge { display: inline-block; font-family: var(--mono); font-size: 8px; letter-spacing: 2px; padding: 3px 10px; border: 1px solid; }
+    .rank-node-badge.achieved { border-color: rgba(0,229,204,0.4); color: var(--cyan); }
+    .rank-node-badge.current  { border-color: var(--amber); color: var(--amber); }
+    .rank-node-badge.locked   { border-color: var(--border); color: var(--muted); }
+    .rank-node-prog { margin-top: 10px; }
+    .rank-node-prog-bar { height: 3px; background: var(--border); overflow: hidden; margin-top: 4px; }
+    .rank-node-prog-fill { height: 100%; background: linear-gradient(90deg, var(--amber), var(--cyan)); }
+    .rank-node-prog-lbl { font-family: var(--mono); font-size: 8px; color: var(--amber); letter-spacing: 1px; }
+
+    @media (max-width: 900px) {
+      .rank-two-col { grid-template-columns: 1fr; }
+      #screen-rank { padding: 16px; }
+      .rank-global-bar { flex-wrap: wrap; }
+    }
+
+    /* Share button */
+    .share-prog-btn {
+      margin-top: 10px; font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
+      background: transparent; border: 1px solid var(--cyan); color: var(--cyan);
+      padding: 8px 16px; cursor: pointer; transition: all .2s;
+    }
+    .share-prog-btn:hover { background: var(--cyan-dim); box-shadow: 0 0 14px var(--cyan-glow); }
+
+    /* Share Modal */
+    .share-modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(6,12,30,0.88); backdrop-filter: blur(8px);
+      align-items: center; justify-content: center;
+    }
+    .share-modal-overlay.open { display: flex; }
+    .share-modal {
+      background: var(--panel); border: 1px solid var(--border-l);
+      width: 520px; max-width: calc(100vw - 32px); max-height: 90vh;
+      overflow-y: auto; padding: 28px;
+      box-shadow: 0 0 60px rgba(0,229,204,0.08);
+    }
+    .share-modal-head {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
+    }
+    .share-modal-title { font-family: var(--cond); font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }
+    .share-modal-close {
+      font-family: var(--mono); font-size: 11px; color: var(--muted); background: transparent;
+      border: 1px solid var(--border); padding: 5px 12px; cursor: pointer; letter-spacing: 1px; transition: all .2s;
+    }
+    .share-modal-close:hover { border-color: var(--red); color: var(--red); }
+    .share-modal-sub { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; margin-bottom: 20px; }
+    .share-format-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .share-fmt-btn {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+      padding: 12px; background: var(--dark); border: 1px solid var(--border);
+      color: var(--muted); cursor: pointer; transition: all .2s; text-align: left;
+    }
+    .share-fmt-btn.active { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
+    .share-fmt-btn .sfb-icon { font-size: 16px; display: block; margin-bottom: 5px; }
+    .share-fmt-btn .sfb-name { font-weight: 700; font-size: 10px; display: block; margin-bottom: 3px; }
+    .share-fmt-btn .sfb-sub { color: var(--muted); font-size: 8px; }
+
+    /* The card preview */
+    .share-card-wrap { border: 1px solid var(--border); margin-bottom: 18px; overflow: hidden; background: var(--black); }
+    .share-card {
+      background: #060c1e;
+      background-image: radial-gradient(rgba(26,109,255,0.1) 1px, transparent 1px);
+      background-size: 30px 30px;
+      padding: 28px; position: relative; overflow: hidden;
+      font-family: 'Barlow Condensed', 'Barlow', sans-serif;
+    }
+    .share-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, #00e5cc, #1a6dff);
+    }
+    .share-card.landscape { padding: 22px 28px; }
+    .sc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .sc-brand { display: flex; align-items: center; gap: 10px; }
+    .sc-brand-hex { font-size: 22px; color: #00e5cc; line-height: 1; }
+    .sc-brand-text .sc-brand-name { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; color: #f0f4f8; }
+    .sc-brand-text .sc-brand-sub  { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 3px; color: #4a6080; }
+    .sc-level { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 2px; background: rgba(0,229,204,0.1); border: 1px solid rgba(0,229,204,0.3); color: #00e5cc; padding: 5px 12px; }
+    .sc-profile { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .sc-avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: linear-gradient(135deg, #00e5cc, #1a6dff);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 900; color: #060c1e;
+      border: 2px solid rgba(0,229,204,0.4); flex-shrink: 0;
+    }
+    .sc-info .sc-name { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #f0f4f8; line-height: 1; margin-bottom: 4px; }
+    .sc-info .sc-meta { font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: 2px; color: #4a6080; }
+    .sc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+    .sc-stat { background: rgba(255,255,255,0.03); border: 1px solid #1a2444; padding: 12px 10px; }
+    .sc-stat-val { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 900; color: #00e5cc; line-height: 1; margin-bottom: 4px; }
+    .sc-stat-val.amber { color: #ffb300; }
+    .sc-stat-val.white { color: #f0f4f8; }
+    .sc-stat-lbl { font-family: 'Share Tech Mono', monospace; font-size: 7px; letter-spacing: 1.5px; color: #4a6080; text-transform: uppercase; line-height: 1.3; }
+    .sc-stat-sub { font-family: 'Share Tech Mono', monospace; font-size: 6px; letter-spacing: 1px; color: #2a3a5a; margin-top: 2px; }
+    .sc-xp-label { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .sc-xp-label span { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 1px; color: #4a6080; }
+    .sc-xp-label span.xp-val { color: #00e5cc; }
+    .sc-xp-bar { height: 4px; background: #1a2444; overflow: hidden; margin-bottom: 14px; }
+    .sc-xp-fill { height: 100%; background: linear-gradient(90deg, #00e5cc, #1a6dff); }
+    .sc-footer { display: flex; justify-content: space-between; align-items: center; }
+    .sc-url { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 1px; color: #2a3a5a; }
+    .sc-tagline { font-family: 'Share Tech Mono', monospace; font-size: 8px; letter-spacing: 1px; color: #2a3a5a; font-style: italic; }
+
+    /* Landscape card variant */
+    .share-card.landscape .sc-stats { grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    .share-card.landscape .sc-stat { padding: 10px 8px; }
+    .share-card.landscape .sc-stat-val { font-size: 20px; }
+    .share-card.landscape .sc-profile { margin-bottom: 14px; }
+
+    .share-action-row { display: flex; gap: 10px; margin-bottom: 14px; }
+    .share-open-btn {
+      flex: 1; font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      padding: 14px; background: var(--cyan); color: var(--black); border: none; cursor: pointer; font-weight: 700; transition: opacity .2s;
+    }
+    .share-open-btn:hover { opacity: .88; }
+    .share-cancel-btn {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
+      padding: 14px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); cursor: pointer; transition: all .2s;
+    }
+    .share-cancel-btn:hover { border-color: var(--text); color: var(--white); }
+    .share-tip { font-family: var(--mono); font-size: 8px; color: var(--muted); letter-spacing: 1px; line-height: 1.5; }
+    .share-tip strong { color: var(--text); }
+
+    @media (max-width: 900px) {
+      .prog-grid { grid-template-columns: 1fr; }
+      .prog-stats { grid-template-columns: repeat(3, 1fr); }
+      .prog-badges-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 600px) {
+      #screen-progress { padding: 16px; }
+      .prog-hero { flex-direction: column; align-items: flex-start; padding: 20px; }
+      .prog-hero-right { align-items: flex-start; }
+      .prog-stats { grid-template-columns: repeat(2, 1fr); }
+      .prog-badges-grid { grid-template-columns: repeat(3, 1fr); }
+      .prog-xp-bar-wrap { width: 140px; }
+    }
+
+    /* ── READINESS MAP ── */
+    #screen-readiness { padding: 32px; }
+    .rm-header { margin-bottom: 24px; }
+    .rm-title { font-family: var(--cond); font-size: 11px; font-weight: 700; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+    .rm-cert  { font-family: var(--cond); font-size: 26px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+    .rm-summary { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 28px; }
+    .rm-sum-box { background: var(--dark); border: 1px solid var(--border); padding: 16px; text-align: center; }
+    .rm-sum-val  { font-family: var(--cond); font-size: 32px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+    .rm-sum-val.green { color: var(--green); }
+    .rm-sum-val.amber { color: var(--amber); }
+    .rm-sum-val.muted { color: var(--muted); }
+    .rm-sum-lbl  { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+    .rm-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .rm-card {
+      background: var(--dark); border: 1px solid var(--border);
+      padding: 22px; cursor: pointer; transition: border-color .2s, transform .15s;
+      position: relative; overflow: hidden;
+    }
+    .rm-card:hover { transform: translateY(-2px); }
+    .rm-card.rm-green { border-bottom: 3px solid var(--green); }
+    .rm-card.rm-amber { border-bottom: 3px solid var(--amber); }
+    .rm-card.rm-red   { border-bottom: 3px solid var(--red); }
+    .rm-card.rm-grey  { border-bottom: 3px solid var(--border); }
+    .rm-card.rm-green:hover { border-color: var(--green); }
+    .rm-card.rm-amber:hover { border-color: var(--amber); }
+    .rm-card.rm-red:hover   { border-color: var(--red); }
+    .rm-card-pct  { font-family: var(--cond); font-size: 48px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+    .rm-card-pct.green { color: var(--green); }
+    .rm-card-pct.amber { color: var(--amber); }
+    .rm-card-pct.red   { color: var(--red); }
+    .rm-card-pct.grey  { color: var(--muted); }
+    .rm-card-name { font-family: var(--cond); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: var(--off); }
+    .rm-card-badge {
+      display: inline-block; font-family: var(--mono); font-size: 8px; letter-spacing: 2px;
+      padding: 3px 8px; border: 1px solid; margin-bottom: 12px; text-transform: uppercase;
+    }
+    .rm-card-badge.green { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+    .rm-card-badge.amber { color: var(--amber); border-color: var(--amber); background: var(--amber-dim); }
+    .rm-card-badge.red   { color: var(--red);   border-color: var(--red);   background: var(--red-dim); }
+    .rm-card-badge.grey  { color: var(--muted); border-color: var(--border); }
+    .rm-card-bar-track { height: 3px; background: var(--border); margin-bottom: 12px; }
+    .rm-card-bar-fill  { height: 100%; transition: width 1s ease; }
+    .rm-card-bar-fill.green { background: var(--green); }
+    .rm-card-bar-fill.amber { background: var(--amber); }
+    .rm-card-bar-fill.red   { background: var(--red); }
+    .rm-card-bar-fill.grey  { background: var(--muted); width: 0% !important; }
+    .rm-card-meta { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; margin-bottom: 14px; }
+    .rm-drill-btn {
+      width: 100%; padding: 8px; background: transparent;
+      border: 1px solid var(--border-l); color: var(--text);
+      font-family: var(--cond); font-size: 11px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all .15s;
+    }
+    .rm-card.rm-green .rm-drill-btn { display: none; }
+    .rm-drill-btn:hover { background: var(--cyan-dim); border-color: var(--cyan); color: var(--cyan); }
+    .rm-mastered-tick { position: absolute; top: 12px; right: 12px; color: var(--green); font-size: 16px; }
+    @media (max-width: 900px) { .rm-grid { grid-template-columns: repeat(2,1fr); } .rm-summary { grid-template-columns: repeat(3,1fr); } }
+    @media (max-width: 600px) { .rm-grid { grid-template-columns: 1fr; } #screen-readiness { padding: 20px 16px; } }
+
+    /* ── QUESTION BANK ── */
+    #screen-qbank { padding: 32px; flex-direction: column; gap: 0; }
+    #screen-qbank.active { display: flex; }
+    .qb-header { margin-bottom: 20px; }
+    .qb-title-row { display: flex; align-items: flex-end; justify-content: space-between; }
+    .qb-total-pill { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--cyan); background: var(--cyan-dim); border: 1px solid rgba(0,229,204,0.2); padding: 4px 12px; }
+    .qb-status-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .qb-status-btn {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+      padding: 7px 14px; border: 1px solid var(--border); background: transparent;
+      color: var(--muted); cursor: pointer; transition: all .15s; display: flex; gap: 8px; align-items: center;
+    }
+    .qb-status-btn:hover { border-color: var(--border-l); color: var(--white); }
+    .qb-status-btn.active        { border-color: var(--cyan);  color: var(--cyan);  background: var(--cyan-dim); }
+    .qb-status-btn.active.weak   { border-color: var(--red);   color: var(--red);   background: var(--red-dim); }
+    .qb-status-btn.active.learning { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+    .qb-status-btn.active.mastered { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+    .qb-status-btn.active.unseen   { border-color: var(--muted); color: var(--white); background: rgba(255,255,255,0.04); }
+    .qb-status-count { font-family: var(--cond); font-size: 13px; font-weight: 800; }
+    .qb-filter-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .qb-select {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: var(--text);
+      background: var(--dark); border: 1px solid var(--border); padding: 7px 12px;
+      cursor: pointer; outline: none; appearance: none; min-width: 160px;
+    }
+    .qb-select:focus { border-color: var(--cyan); }
+    .qb-page-controls { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .qb-page-info { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+    .qb-page-btn {
+      font-family: var(--mono); font-size: 11px; color: var(--text);
+      background: var(--dark); border: 1px solid var(--border); padding: 5px 12px; cursor: pointer;
+    }
+    .qb-page-btn:hover:not(:disabled) { border-color: var(--cyan); color: var(--cyan); }
+    .qb-page-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .qb-table-wrap { border: 1px solid var(--border); overflow-x: auto; }
+    .qb-table { width: 100%; border-collapse: collapse; }
+    .qb-table th {
+      font-family: var(--mono); font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); text-align: left; padding: 10px 14px;
+      border-bottom: 1px solid var(--border); background: var(--panel); white-space: nowrap;
+    }
+    .qb-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .qb-table tr:last-child td { border-bottom: none; }
+    .qb-row { transition: background .1s; }
+    .qb-row:hover td { background: rgba(255,255,255,0.02); }
+    .qb-num { font-family: var(--mono); font-size: 9px; color: var(--muted); width: 36px; }
+    .qb-text { font-size: 12px; color: var(--off); line-height: 1.5; max-width: 380px; }
+    .qb-domain-tag {
+      font-family: var(--mono); font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
+      padding: 3px 7px; border: 1px solid var(--border-l); color: var(--text); white-space: nowrap;
+    }
+    .qb-diff-badge {
+      font-family: var(--mono); font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
+      padding: 3px 7px; border: 1px solid; white-space: nowrap;
+    }
+    .qb-diff-badge.green { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+    .qb-diff-badge.amber { color: var(--amber); border-color: var(--amber); background: var(--amber-dim); }
+    .qb-diff-badge.red   { color: var(--red);   border-color: var(--red);   background: var(--red-dim); }
+    .qb-status-badge {
+      font-family: var(--mono); font-size: 8px; letter-spacing: 1px; text-transform: uppercase;
+      padding: 3px 7px; border: 1px solid; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
+    }
+    .qb-status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .qb-status-badge.green  { color: var(--green); border-color: var(--green); background: var(--green-dim); }
+    .qb-status-badge.green::before  { background: var(--green); }
+    .qb-status-badge.amber  { color: var(--amber); border-color: var(--amber); background: var(--amber-dim); }
+    .qb-status-badge.amber::before  { background: var(--amber); }
+    .qb-status-badge.red    { color: var(--red);   border-color: var(--red);   background: var(--red-dim); }
+    .qb-status-badge.red::before    { background: var(--red); }
+    .qb-status-badge.grey   { color: var(--muted); border-color: var(--border); }
+    .qb-status-badge.grey::before   { background: var(--muted); }
+    .qb-acc { font-family: var(--mono); font-size: 10px; color: var(--white); text-align: right; white-space: nowrap; }
+    .qb-attempts { font-size: 9px; color: var(--muted); letter-spacing: 1px; }
+    .qb-empty { padding: 40px; text-align: center; font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px; }
+    .qb-bottom-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 600px) { #screen-qbank { padding: 16px; } .qb-text { max-width: 200px; } .qb-table th:nth-child(3), .qb-table td:nth-child(3) { display: none; } }
+
+    /* ── CERTIFICATIONS SCREEN ── */
+    #screen-certs { padding: 32px; }
+    .certs-page-eye { font-family:var(--mono); font-size:10px; color:var(--cyan); letter-spacing:4px; margin-bottom:8px; }
+    .certs-page-title { font-family:var(--cond); font-size:36px; font-weight:900; text-transform:uppercase; letter-spacing:2px; margin-bottom:6px; }
+    .certs-page-sub { font-family:var(--mono); font-size:10px; color:var(--muted); letter-spacing:1px; margin-bottom:32px; }
+
+    .certs-section-label { font-family:var(--mono); font-size:9px; letter-spacing:3px; color:var(--muted); text-transform:uppercase; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+    .certs-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-bottom:32px; }
+
+    .cert-card {
+      background:var(--dark); border:1px solid var(--border);
+      position:relative; overflow:hidden; transition:border-color .2s;
+    }
+    .cert-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--cc,var(--cyan)); }
+    .cert-card.active-cert { border-color:var(--cc,var(--cyan)); box-shadow:0 0 24px rgba(0,0,0,0.3); }
+    .cert-card:hover { border-color:var(--cc-dim, var(--border-l)); }
+    .cert-card-glow { position:absolute; top:-60px; right:-60px; width:180px; height:180px; border-radius:50%; pointer-events:none; background:radial-gradient(ellipse, var(--cg,rgba(0,229,204,0.08)) 0%, transparent 70%); }
+
+    .cert-card-top { padding:22px 22px 16px; }
+    .cert-card-status-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+    .cert-card-code { font-family:var(--mono); font-size:9px; letter-spacing:3px; color:var(--cc,var(--cyan)); }
+    .cert-status-badge { font-family:var(--mono); font-size:8px; letter-spacing:2px; padding:3px 10px; border:1px solid; }
+    .cert-status-badge.active   { color:var(--cc,var(--cyan)); border-color:var(--cc,var(--cyan)); background:rgba(0,229,204,0.08); }
+    .cert-status-badge.progress { color:var(--amber); border-color:rgba(255,179,0,0.4); background:var(--amber-dim); }
+    .cert-status-badge.new      { color:var(--muted); border-color:var(--border); }
+
+    .cert-card-name { font-family:var(--cond); font-size:24px; font-weight:900; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; color:var(--white); }
+    .cert-card-desc { font-size:12px; color:var(--text); line-height:1.6; margin-bottom:14px; }
+
+    .cert-card-stats { display:flex; gap:16px; margin-bottom:14px; flex-wrap:wrap; }
+    .cert-card-stat { font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:1px; }
+    .cert-card-stat strong { color:var(--text); }
+
+    .cert-card-progress { margin-bottom:16px; }
+    .cert-card-prog-row { display:flex; justify-content:space-between; margin-bottom:5px; }
+    .cert-card-prog-lbl { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:1px; }
+    .cert-card-prog-pct { font-family:var(--mono); font-size:8px; letter-spacing:1px; }
+    .cert-card-prog-bar { height:4px; background:var(--border); overflow:hidden; }
+    .cert-card-prog-fill { height:100%; transition:width 1s ease; }
+
+    .cert-card-bottom { padding:0 22px 20px; display:flex; gap:10px; align-items:center; }
+    .cert-switch-btn {
+      flex:1; font-family:var(--mono); font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      padding:11px 16px; border:none; background:var(--cc,var(--cyan)); color:var(--black);
+      cursor:pointer; font-weight:700; transition:opacity .2s;
+    }
+    .cert-switch-btn:hover { opacity:.85; }
+    .cert-switch-btn:disabled { opacity:.45; cursor:default; }
+    .cert-switch-btn.outline { background:transparent; color:var(--cc,var(--cyan)); border:1px solid var(--cc,var(--cyan)); }
+    .cert-switch-btn.outline:hover { background:rgba(0,0,0,0.2); opacity:1; }
+    .cert-domains-count { font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:1px; flex-shrink:0; }
+
+    /* Coming soon cards */
+    .cert-card.coming-soon { opacity:.45; }
+    .cert-card.coming-soon::before { background:var(--muted); }
+
+    @media (max-width:900px) { .certs-grid { grid-template-columns:1fr; } }
+    @media (max-width:600px) { #screen-certs { padding:16px; } }
+
+    /* ── KNOWLEDGE DECAY ── */
+    .decay-badge { font-family:var(--mono); font-size:8px; letter-spacing:1px; padding:2px 7px; border:1px solid; border-radius:2px; white-space:nowrap; flex-shrink:0; }
+    .decay-badge.stale    { color:var(--amber); border-color:rgba(255,179,0,0.35); background:rgba(255,179,0,0.07); }
+    .decay-badge.danger   { color:#ff7043;      border-color:rgba(255,112,67,0.4); background:rgba(255,112,67,0.08); }
+    .decay-badge.critical { color:var(--red);   border-color:rgba(255,82,82,0.4);  background:rgba(255,82,82,0.08); }
+
+    .decay-strip-inner {
+      background:var(--dark); border:1px solid rgba(255,82,82,0.25);
+      border-left:3px solid var(--red); padding:16px 20px;
+    }
+    .decay-strip-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+    .decay-strip-title { font-family:var(--mono); font-size:10px; letter-spacing:3px; color:var(--red); text-transform:uppercase; }
+    .decay-strip-sub { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:1px; }
+    .decay-items { display:flex; flex-direction:column; gap:8px; }
+    .decay-item { display:flex; align-items:center; gap:12px; padding:10px 14px; background:rgba(255,82,82,0.04); border:1px solid rgba(255,82,82,0.12); }
+    .decay-item.danger-item   { background:rgba(255,112,67,0.05); border-color:rgba(255,112,67,0.15); }
+    .decay-item.stale-item    { background:rgba(255,179,0,0.04); border-color:rgba(255,179,0,0.15); }
+    .decay-item-icon { font-size:14px; flex-shrink:0; }
+    .decay-item-info { flex:1; min-width:0; }
+    .decay-item-name { font-family:var(--cond); font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--white); margin-bottom:2px; }
+    .decay-item-meta { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:1px; }
+    .decay-item-pct  { font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:1px; flex-shrink:0; }
+    .decay-drill-btn { font-family:var(--mono); font-size:9px; letter-spacing:2px; background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; cursor:pointer; transition:all .2s; flex-shrink:0; }
+    .decay-drill-btn:hover { border-color:var(--cyan); color:var(--cyan); }
+    .decay-all-fresh { display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:9px; color:var(--green); letter-spacing:2px; padding:10px 14px; background:rgba(0,230,118,0.04); border:1px solid rgba(0,230,118,0.15); }
+
+    /* ── EXAM COUNTDOWN ── */
+    .exam-widget {
+      background: var(--dark); border: 1px solid var(--border-l);
+      margin-bottom: 16px; position: relative; overflow: hidden;
+    }
+    .exam-widget::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--amber),var(--red)); }
+
+    /* Empty state */
+    .exam-empty { display:flex; align-items:center; justify-content:space-between; padding:18px 24px; gap:16px; }
+    .exam-empty-left { display:flex; align-items:center; gap:14px; }
+    .exam-empty-icon { width:36px; height:36px; background:var(--amber-dim); border:1px solid rgba(255,179,0,0.3); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+    .exam-empty-text { font-family:var(--mono); font-size:10px; color:var(--muted); letter-spacing:1px; line-height:1.5; }
+    .exam-empty-text strong { color:var(--amber); font-size:11px; display:block; margin-bottom:2px; letter-spacing:2px; }
+    .exam-set-btn { font-family:var(--mono); font-size:10px; letter-spacing:2px; background:var(--amber); color:var(--black); border:none; padding:10px 18px; cursor:pointer; font-weight:700; white-space:nowrap; transition:opacity .2s; flex-shrink:0; }
+    .exam-set-btn:hover { opacity:.85; }
+    .exam-set-btn.secondary { background:transparent; color:var(--amber); border:1px solid rgba(255,179,0,0.4); }
+    .exam-set-btn.secondary:hover { background:var(--amber-dim); }
+
+    /* Active countdown */
+    .exam-active { padding:18px 24px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+    .exam-icon-col { width:36px; height:36px; background:var(--amber-dim); border:1px solid rgba(255,179,0,0.35); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; align-self:flex-start; margin-top:2px; }
+    .exam-main { flex:1; min-width:0; }
+    .exam-eyebrow { font-family:var(--mono); font-size:8px; letter-spacing:3px; color:var(--amber); margin-bottom:4px; }
+    .exam-cert-name { font-family:var(--cond); font-size:20px; font-weight:900; text-transform:uppercase; letter-spacing:1px; color:var(--white); margin-bottom:2px; }
+    .exam-date-line { font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:1px; }
+    .exam-countdown-nums { display:flex; align-items:center; gap:12px; margin-top:10px; flex-wrap:wrap; }
+    .exam-cd-block { text-align:center; background:rgba(255,179,0,0.06); border:1px solid rgba(255,179,0,0.2); padding:8px 14px; min-width:54px; }
+    .exam-cd-val { font-family:var(--cond); font-size:28px; font-weight:900; line-height:1; color:var(--amber); }
+    .exam-cd-lbl { font-family:var(--mono); font-size:7px; letter-spacing:2px; color:var(--muted); margin-top:2px; }
+    .exam-cd-sep { font-family:var(--cond); font-size:24px; color:var(--muted); line-height:1; }
+    .exam-cd-block.red .exam-cd-val { color:var(--red); }
+    .exam-cd-block.red { border-color:rgba(255,82,82,0.3); background:rgba(255,82,82,0.06); }
+    .exam-right { display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0; }
+    .exam-readiness-wrap { text-align:right; }
+    .exam-readiness-pct { font-family:var(--cond); font-size:32px; font-weight:900; line-height:1; }
+    .exam-readiness-pct.green { color:var(--green); }
+    .exam-readiness-pct.amber { color:var(--amber); }
+    .exam-readiness-pct.red   { color:var(--red); }
+    .exam-readiness-lbl { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:2px; margin-top:2px; }
+    .exam-target-line { font-family:var(--mono); font-size:9px; color:var(--text); letter-spacing:1px; text-align:right; }
+    .exam-actions { display:flex; gap:8px; }
+
+    /* Exam date modal */
+    .exam-modal-overlay { display:none; position:fixed; inset:0; z-index:500; background:rgba(6,12,30,0.88); backdrop-filter:blur(8px); align-items:center; justify-content:center; }
+    .exam-modal-overlay.open { display:flex; }
+    .exam-modal { background:var(--panel); border:1px solid var(--border-l); width:440px; max-width:calc(100vw - 32px); padding:28px; box-shadow:0 0 60px rgba(255,179,0,0.08); position:relative; }
+    .exam-modal::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,var(--amber),var(--red)); }
+    .exam-modal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
+    .exam-modal-title { font-family:var(--cond); font-size:20px; font-weight:900; text-transform:uppercase; letter-spacing:2px; }
+    .exam-modal-close { font-family:var(--mono); font-size:11px; color:var(--muted); background:transparent; border:1px solid var(--border); padding:5px 12px; cursor:pointer; letter-spacing:1px; transition:all .2s; }
+    .exam-modal-close:hover { border-color:var(--red); color:var(--red); }
+    .exam-modal-label { font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+    .exam-modal-cert-display { font-family:var(--cond); font-size:16px; font-weight:700; text-transform:uppercase; color:var(--cyan); letter-spacing:2px; background:var(--cyan-dim); border:1px solid rgba(0,229,204,0.2); padding:10px 14px; margin-bottom:20px; }
+    .exam-modal-input { font-family:var(--mono); font-size:13px; background:var(--dark); border:1px solid var(--border); color:var(--white); padding:12px 14px; width:100%; outline:none; letter-spacing:1px; transition:border-color .2s; margin-bottom:8px; }
+    .exam-modal-input:focus { border-color:var(--amber); }
+    .exam-modal-hint { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:1px; margin-bottom:20px; }
+    .exam-modal-save { font-family:var(--mono); font-size:11px; letter-spacing:2px; background:var(--amber); color:var(--black); border:none; padding:13px 20px; cursor:pointer; font-weight:700; width:100%; transition:opacity .2s; margin-bottom:10px; }
+    .exam-modal-save:hover { opacity:.88; }
+    .exam-modal-remove { font-family:var(--mono); font-size:10px; letter-spacing:1px; color:var(--muted); background:transparent; border:1px solid var(--border); padding:10px; cursor:pointer; width:100%; transition:all .2s; display:none; }
+    .exam-modal-remove:hover { border-color:var(--red); color:var(--red); }
+    .exam-modal-msg { font-family:var(--mono); font-size:9px; letter-spacing:1px; text-align:center; margin-top:8px; min-height:14px; }
+    .exam-modal-msg.ok  { color:var(--green); }
+    .exam-modal-msg.err { color:var(--red); }
+
+    /* ── DAILY ORDERS ── */
+    .do-panel { background: var(--dark); border: 1px solid var(--border-l); margin-bottom: 24px; position: relative; overflow: hidden; }
+    .do-panel::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+    .do-panel-inner { padding: 20px 24px; }
+    .do-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .do-icon { width: 36px; height: 36px; background: rgba(0,229,204,0.1); border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .do-title-block { flex: 1; }
+    .do-title { font-family: var(--cond); font-size: 13px; font-weight: 800; letter-spacing: 3px; color: var(--cyan); }
+    .do-date  { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; margin-top: 2px; }
+    .do-status-badge { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; padding: 4px 10px; border: 1px solid; }
+    .do-status-badge.active   { color: var(--amber); border-color: var(--amber); background: rgba(255,179,0,0.08); }
+    .do-status-badge.complete { color: var(--green); border-color: var(--green); background: rgba(0,230,118,0.08); }
+    .do-objectives { display: flex; gap: 0; margin-bottom: 16px; border: 1px solid var(--border); }
+    .do-obj { flex: 1; padding: 12px 14px; border-right: 1px solid var(--border); }
+    .do-obj:last-child { border-right: none; }
+    .do-obj-label { font-family: var(--mono); font-size: 8px; letter-spacing: 2px; color: var(--muted); margin-bottom: 4px; }
+    .do-obj-val   { font-family: var(--cond); font-size: 20px; font-weight: 800; }
+    .do-obj-val.red   { color: var(--red); }
+    .do-obj-val.amber { color: var(--amber); }
+    .do-obj-val.cyan  { color: var(--cyan); }
+    .do-obj-sub { font-size: 10px; color: var(--text); margin-top: 2px; }
+    .do-execute-btn { width: 100%; padding: 13px; background: var(--cyan); color: var(--black); font-family: var(--cond); font-size: 14px; font-weight: 800; letter-spacing: 3px; border: none; cursor: pointer; transition: opacity .15s; }
+    .do-execute-btn:hover { opacity: .85; }
+    .do-execute-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .do-complete-banner { display: flex; align-items: center; gap: 16px; padding: 20px 24px; }
+    .do-complete-check { width: 44px; height: 44px; background: rgba(0,230,118,0.12); border: 2px solid var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--green); flex-shrink: 0; }
+    .do-complete-title { font-family: var(--cond); font-size: 18px; font-weight: 800; color: var(--green); letter-spacing: 2px; }
+    .do-complete-sub   { font-family: var(--mono); font-size: 9px; color: var(--text); letter-spacing: 1px; margin-top: 3px; }
+    .do-loading { padding: 20px 24px; font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 3px; }
+
     .stat-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 28px; }
     .stat-box { background: var(--dark); border: 1px solid var(--border); padding: 18px 16px; }
     .stat-box-num { font-family: var(--cond); font-size: 32px; font-weight: 900; margin-bottom: 2px; }
@@ -395,14 +997,62 @@
     .q-option.disabled { pointer-events: none; opacity: 0.5; }
     .q-key { font-family: var(--mono); font-size: 12px; color: var(--muted); width: 20px; flex-shrink: 0; padding-top: 1px; }
 
+    /* ── HAMBURGER ── */
+    .topbar-hamburger {
+      display: none; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+      width: 36px; height: 36px; background: transparent; border: 1px solid var(--border);
+      cursor: pointer; padding: 0; flex-shrink: 0;
+    }
+    .topbar-hamburger span {
+      display: block; width: 16px; height: 1.5px; background: var(--white); transition: all .2s;
+    }
+
+    /* ── SIDEBAR BACKDROP (mobile) ── */
+    .sidebar-backdrop {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 99;
+    }
+    .sidebar-backdrop.open { display: block; }
+
     @media (max-width: 900px) {
       #app-main { grid-template-columns: 180px 1fr; }
       .right-panel { display: none; }
     }
     @media (max-width: 600px) {
       #app-main { grid-template-columns: 1fr; }
-      .sidebar { display: none; }
       .cs-grid { grid-template-columns: 1fr; }
+
+      /* Topbar — compact */
+      .topbar { padding: 0 12px; height: 52px; }
+      .topbar-left { gap: 10px; }
+      .topbar-cert { display: none; }
+      .brand-text { font-size: 13px; letter-spacing: 2px; }
+      .topbar-right { gap: 8px; }
+      .topbar-signout { display: none; }
+      .streak-badge, .xp-badge { padding: 4px 8px; font-size: 10px; }
+      .topbar-hamburger { display: flex; }
+
+      /* Sidebar — slide-in overlay */
+      .sidebar {
+        display: flex !important;
+        position: fixed; top: 52px; left: 0; bottom: 0;
+        width: 240px; z-index: 100;
+        transform: translateX(-100%); transition: transform .25s ease;
+        box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+      }
+      .sidebar.open { transform: translateX(0); }
+
+      /* Main content full width */
+      .main { grid-column: 1 / -1; }
+
+      /* Daily orders objectives — stack on mobile */
+      .do-objectives { flex-wrap: wrap; }
+      .do-obj { min-width: 50%; border-bottom: 1px solid var(--border); }
+
+      /* Stat row — 2 col on mobile */
+      .stat-row { grid-template-columns: repeat(2, 1fr); }
+
+      /* Domain breakdown full width */
+      .domain-breakdown { padding: 0; }
     }
   </style>
 </head>
@@ -454,9 +1104,126 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
 <!-- ════════ MAIN APP ════════ -->
 <div id="app-main" style="display:none">
 
+  <!-- SIDEBAR BACKDROP -->
+  <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
+
+  <!-- EXAM DATE MODAL -->
+  <div class="exam-modal-overlay" id="exam-modal-overlay" onclick="handleExamOverlayClick(event)">
+    <div class="exam-modal">
+      <div class="exam-modal-head">
+        <div class="exam-modal-title">📅 Set Exam Date</div>
+        <button class="exam-modal-close" onclick="closeExamModal()">✕ Close</button>
+      </div>
+      <div class="exam-modal-label">Certification</div>
+      <div class="exam-modal-cert-display" id="em-cert-display">—</div>
+      <div class="exam-modal-label">Exam Date</div>
+      <input type="date" class="exam-modal-input" id="em-date-input" />
+      <div class="exam-modal-hint">Enter the date you have booked your exam. If you haven't booked yet, pick your target date.</div>
+      <button class="exam-modal-save" onclick="saveExamDate()">▸ Save Exam Date</button>
+      <button class="exam-modal-remove" id="em-remove-btn" onclick="removeExamDate()">✕ Remove Exam Date</button>
+      <div class="exam-modal-msg" id="em-msg"></div>
+    </div>
+  </div>
+
+  <!-- SHARE PROGRESS MODAL -->
+  <div class="share-modal-overlay" id="share-modal-overlay" onclick="handleShareOverlayClick(event)">
+    <div class="share-modal" id="share-modal">
+      <div class="share-modal-head">
+        <div class="share-modal-title">⬡ Share Your Progress</div>
+        <button class="share-modal-close" onclick="closeShareModal()">✕ Close</button>
+      </div>
+      <div class="share-modal-sub">Pick your format, then open full-size and screenshot to post.</div>
+      <div class="share-format-row">
+        <button class="share-fmt-btn active" id="sfmt-square" onclick="setShareFormat('square')">
+          <span class="sfb-icon">▪</span>
+          <span class="sfb-name">Square 1:1</span>
+          <span class="sfb-sub">Instagram · LinkedIn · Facebook</span>
+        </button>
+        <button class="share-fmt-btn" id="sfmt-landscape" onclick="setShareFormat('landscape')">
+          <span class="sfb-icon">▬</span>
+          <span class="sfb-name">Landscape 1.9:1</span>
+          <span class="sfb-sub">LinkedIn link post · Twitter card</span>
+        </button>
+      </div>
+      <!-- Card preview -->
+      <div class="share-card-wrap">
+        <div class="share-card" id="share-card">
+          <div class="sc-top">
+            <div class="sc-brand">
+              <div class="sc-brand-hex">⬡</div>
+              <div class="sc-brand-text">
+                <div class="sc-brand-name">Ops Academy</div>
+                <div class="sc-brand-sub">Cybersecurity Training</div>
+              </div>
+            </div>
+            <div class="sc-level" id="sc-level">RANK —</div>
+          </div>
+          <div class="sc-profile">
+            <div class="sc-avatar" id="sc-avatar">—</div>
+            <div class="sc-info">
+              <div class="sc-name" id="sc-name">—</div>
+              <div class="sc-meta" id="sc-meta">— · Operator Rank</div>
+            </div>
+          </div>
+          <div class="sc-stats">
+            <div class="sc-stat">
+              <div class="sc-stat-val" id="sc-readiness">—%</div>
+              <div class="sc-stat-lbl">Readiness<br>Score</div>
+              <div class="sc-stat-sub" id="sc-readiness-sub">—</div>
+            </div>
+            <div class="sc-stat">
+              <div class="sc-stat-val" id="sc-answered">—</div>
+              <div class="sc-stat-lbl">Questions<br>Answered</div>
+              <div class="sc-stat-sub">Across all topics</div>
+            </div>
+            <div class="sc-stat">
+              <div class="sc-stat-val amber" id="sc-streak">—</div>
+              <div class="sc-stat-lbl">Day<br>Streak</div>
+              <div class="sc-stat-sub">Keep it going</div>
+            </div>
+            <div class="sc-stat">
+              <div class="sc-stat-val white" id="sc-accuracy">—%</div>
+              <div class="sc-stat-lbl">Avg Drill<br>Score</div>
+              <div class="sc-stat-sub" id="sc-accuracy-sub">—</div>
+            </div>
+            <div class="sc-stat">
+              <div class="sc-stat-val white" id="sc-time">—</div>
+              <div class="sc-stat-lbl">Study<br>Time</div>
+              <div class="sc-stat-sub">Total logged</div>
+            </div>
+            <div class="sc-stat">
+              <div class="sc-stat-val white" id="sc-sessions">—</div>
+              <div class="sc-stat-lbl">Sessions<br>Done</div>
+              <div class="sc-stat-sub">Completed drills</div>
+            </div>
+          </div>
+          <div class="sc-xp-label">
+            <span id="sc-xp-progress-label">XP PROGRESS — — → —</span>
+            <span class="xp-val" id="sc-xp-progress-val">—</span>
+          </div>
+          <div class="sc-xp-bar"><div class="sc-xp-fill" id="sc-xp-fill" style="width:0%"></div></div>
+          <div class="sc-footer">
+            <div class="sc-url">opsacademy.io</div>
+            <div class="sc-tagline">Trained under real pressure.</div>
+          </div>
+        </div>
+      </div>
+      <div class="share-action-row">
+        <button class="share-open-btn" onclick="openShareFullSize()">⬡ Open Full-Size for Screenshot</button>
+        <button class="share-cancel-btn" onclick="closeShareModal()">Cancel</button>
+      </div>
+      <div class="share-tip">
+        💡 Click "Open Full-Size for Screenshot", then use <strong>Cmd+Shift+4</strong> (Mac) or <strong>Win+Shift+S</strong> (Windows) to capture the card and post directly to LinkedIn or Instagram.
+      </div>
+    </div>
+  </div>
+
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar-left">
+      <button class="topbar-hamburger" id="topbar-hamburger" onclick="toggleSidebar()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
       <div class="topbar-brand">
         <div class="brand-icon">
           <svg width="18" height="18" viewBox="0 0 44 44" fill="none">
@@ -488,15 +1255,32 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
 
     <div class="sidebar-nav">
       <div class="sidebar-group-label">Study</div>
-      <div class="sidebar-item active" id="nav-dashboard" onclick="showMain('dashboard')">
+      <div class="sidebar-item active" id="nav-dashboard" onclick="showMain('dashboard');closeSidebar()">
         <div class="sidebar-item-left"><span>▤</span> Dashboard</div>
       </div>
-      <div class="sidebar-item" id="nav-drill" onclick="showMain('drill-placeholder')">
+      <div class="sidebar-item" id="nav-drill" onclick="showMain('drill-placeholder');closeSidebar()">
         <div class="sidebar-item-left"><span>▸</span> Start Drill</div>
       </div>
+      <div class="sidebar-item" id="nav-readiness" onclick="showMain('readiness');closeSidebar()">
+        <div class="sidebar-item-left"><span>◎</span> Readiness Map</div>
+      </div>
+      <div class="sidebar-item" id="nav-qbank" onclick="showMain('qbank');closeSidebar()">
+        <div class="sidebar-item-left"><span>▦</span> Question Bank</div>
+      </div>
+      <div class="sidebar-item" id="nav-certs" onclick="showMain('certs');closeSidebar()">
+        <div class="sidebar-item-left"><span>◈</span> Certifications</div>
+      </div>
       <div class="sidebar-group-label" style="margin-top:8px">Account</div>
-      <div class="sidebar-item"><div class="sidebar-item-left"><span>↗</span> My Progress</div></div>
+      <div class="sidebar-item" id="nav-progress" onclick="showMain('progress');closeSidebar()">
+        <div class="sidebar-item-left"><span>↗</span> My Progress</div>
+      </div>
+      <div class="sidebar-item" id="nav-rank" onclick="showMain('rank');closeSidebar()">
+        <div class="sidebar-item-left"><span>★</span> Rank & XP</div>
+      </div>
       <div class="sidebar-item"><div class="sidebar-item-left"><span>◈</span> Settings</div><span class="sidebar-soon">SOON</span></div>
+      <div class="sidebar-item" id="sb-signout-mobile" onclick="handleSignOut()" style="display:none">
+        <div class="sidebar-item-left"><span>⏻</span> Sign Out</div>
+      </div>
     </div>
 
     <div class="sidebar-domains">
@@ -523,6 +1307,95 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
       <div class="dash-greeting">Welcome back, <span class="name" id="dash-name">—</span></div>
       <div class="dash-sub-text" id="dash-sub">Select a domain below and start drilling.</div>
 
+      <!-- DAILY ORDERS PANEL -->
+      <div class="do-panel" id="daily-orders-panel">
+        <!-- Loading -->
+        <div class="do-loading" id="do-loading">⬡ LOADING DAILY ORDERS...</div>
+
+        <!-- Active -->
+        <div id="do-active" style="display:none">
+          <div class="do-panel-inner">
+            <div class="do-header">
+              <div class="do-icon">⬡</div>
+              <div class="do-title-block">
+                <div class="do-title">DAILY ORDERS</div>
+                <div class="do-date" id="do-date">—</div>
+              </div>
+              <div class="do-status-badge active">ACTIVE</div>
+            </div>
+            <div class="do-objectives">
+              <div class="do-obj">
+                <div class="do-obj-label">REMEDIATION</div>
+                <div class="do-obj-val red" id="do-rem-count">0</div>
+                <div class="do-obj-sub">Wrong from yesterday</div>
+              </div>
+              <div class="do-obj">
+                <div class="do-obj-label">PRIMARY OBJ</div>
+                <div class="do-obj-val amber" id="do-pri-count">0</div>
+                <div class="do-obj-sub">Weak domain drill</div>
+              </div>
+              <div class="do-obj">
+                <div class="do-obj-label">SECONDARY OBJ</div>
+                <div class="do-obj-val cyan" id="do-sec-count">0</div>
+                <div class="do-obj-sub">Consolidation</div>
+              </div>
+              <div class="do-obj">
+                <div class="do-obj-label">TOTAL</div>
+                <div class="do-obj-val cyan" id="do-total-count">0</div>
+                <div class="do-obj-sub">Questions today</div>
+              </div>
+            </div>
+            <button class="do-execute-btn" id="do-execute-btn" onclick="startDailyOrdersDrill()">▸ EXECUTE ORDERS</button>
+          </div>
+        </div>
+
+        <!-- Complete -->
+        <div id="do-complete" style="display:none">
+          <div class="do-complete-banner">
+            <div class="do-complete-check">✓</div>
+            <div>
+              <div class="do-complete-title">ORDERS COMPLETE</div>
+              <div class="do-complete-sub" id="do-complete-sub">Streak maintained · Well done, soldier.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EXAM COUNTDOWN WIDGET -->
+      <div class="exam-widget" id="exam-widget">
+        <!-- Empty state (default) -->
+        <div class="exam-empty" id="exam-empty">
+          <div class="exam-empty-left">
+            <div class="exam-empty-icon">📅</div>
+            <div class="exam-empty-text">
+              <strong>Exam Date Not Set</strong>
+              Book your exam and set the date to activate your countdown timer
+            </div>
+          </div>
+          <button class="exam-set-btn" onclick="openExamModal()">+ Set Exam Date</button>
+        </div>
+        <!-- Active countdown (populated by JS) -->
+        <div class="exam-active" id="exam-active" style="display:none">
+          <div class="exam-icon-col">📅</div>
+          <div class="exam-main">
+            <div class="exam-eyebrow">EXAM COUNTDOWN</div>
+            <div class="exam-cert-name" id="ec-cert-name">—</div>
+            <div class="exam-date-line" id="ec-date-line">—</div>
+            <div class="exam-countdown-nums" id="ec-nums"></div>
+          </div>
+          <div class="exam-right">
+            <div class="exam-readiness-wrap">
+              <div class="exam-readiness-pct" id="ec-readiness">—%</div>
+              <div class="exam-readiness-lbl">Current Readiness</div>
+            </div>
+            <div class="exam-target-line" id="ec-target">—</div>
+            <div class="exam-actions">
+              <button class="exam-set-btn secondary" onclick="openExamModal()">✎ Edit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="stat-row">
         <div class="stat-box">
           <div class="stat-box-num cyan" id="dash-overall">—%</div>
@@ -545,6 +1418,9 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
           <div class="stat-box-label">Mastered (85%+)</div>
         </div>
       </div>
+
+      <!-- DECAY ALERT STRIP (rendered by loadDecayAlerts, hidden until stale domains found) -->
+      <div id="decay-strip" style="display:none;margin-bottom:16px"></div>
 
       <div class="domain-breakdown">
         <div class="db-header">
@@ -590,6 +1466,308 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
           <button class="res-btn secondary" onclick="goToDashboard()">← DASHBOARD</button>
         </div>
         <div class="res-review" id="res-review"></div>
+      </div>
+    </div>
+
+    <!-- READINESS MAP -->
+    <div id="screen-readiness" class="screen">
+      <div class="rm-header">
+        <div class="rm-title">Readiness Map</div>
+        <div class="rm-cert" id="rm-cert-name">—</div>
+      </div>
+      <div class="rm-summary">
+        <div class="rm-sum-box">
+          <div class="rm-sum-val green" id="rm-mastered-count">0</div>
+          <div class="rm-sum-lbl">Domains Mastered</div>
+        </div>
+        <div class="rm-sum-box">
+          <div class="rm-sum-val amber" id="rm-progress-count">0</div>
+          <div class="rm-sum-lbl">In Progress</div>
+        </div>
+        <div class="rm-sum-box">
+          <div class="rm-sum-val muted" id="rm-notstarted-count">0</div>
+          <div class="rm-sum-lbl">Not Started</div>
+        </div>
+      </div>
+      <div class="rm-grid" id="rm-grid">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;">LOADING...</div>
+      </div>
+    </div>
+
+    <!-- CERTIFICATIONS -->
+    <div id="screen-certs" class="screen">
+      <div class="certs-page-eye">⬡ YOUR TRAINING PATH</div>
+      <div class="certs-page-title">Certifications</div>
+      <div class="certs-page-sub">Switch between certifications you are studying, or add a new one to your path.</div>
+
+      <div class="certs-section-label">Available Certifications</div>
+      <div class="certs-grid" id="certs-grid">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;padding:20px;">LOADING...</div>
+      </div>
+
+      <div class="certs-section-label">Coming Soon</div>
+      <div class="certs-grid">
+        <div class="cert-card coming-soon" style="--cc:#7a90b8;--cg:rgba(122,144,184,0.06)">
+          <div class="cert-card-glow"></div>
+          <div class="cert-card-top">
+            <div class="cert-card-status-row">
+              <div class="cert-card-code">COMPTIA PENTEST+</div>
+              <div class="cert-status-badge new">COMING SOON</div>
+            </div>
+            <div class="cert-card-name">CompTIA PenTest+</div>
+            <div class="cert-card-desc">Penetration testing, vulnerability assessment and management, and ethical hacking techniques.</div>
+          </div>
+          <div class="cert-card-bottom"><button class="cert-switch-btn" disabled>COMING SOON</button></div>
+        </div>
+        <div class="cert-card coming-soon" style="--cc:#7a90b8;--cg:rgba(122,144,184,0.06)">
+          <div class="cert-card-glow"></div>
+          <div class="cert-card-top">
+            <div class="cert-card-status-row">
+              <div class="cert-card-code">COMPTIA CYSA+</div>
+              <div class="cert-status-badge new">COMING SOON</div>
+            </div>
+            <div class="cert-card-name">CompTIA CySA+</div>
+            <div class="cert-card-desc">Cybersecurity analytics, threat detection, incident response and security monitoring.</div>
+          </div>
+          <div class="cert-card-bottom"><button class="cert-switch-btn" disabled>COMING SOON</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RANK PROGRESSION -->
+    <div id="screen-rank" class="screen">
+      <div class="rank-page-header">
+        <div class="rank-page-eye">⬡ OPERATOR STATUS</div>
+        <div class="rank-page-title">Rank & XP Progression</div>
+        <div class="rank-page-sub">Global rank across all certifications. Every correct answer counts.</div>
+      </div>
+
+      <!-- Current rank bar -->
+      <div class="rank-global-bar">
+        <div class="rgb-avatar" id="rp-avatar">—</div>
+        <div class="rgb-info">
+          <div class="rgb-rank" id="rp-rank-name">—</div>
+          <div class="rgb-next" id="rp-rank-next">—</div>
+          <div class="rgb-bar-wrap"><div class="rgb-bar-fill" id="rp-bar" style="width:0%"></div></div>
+          <div class="rgb-xp-row">
+            <span id="rp-bar-from">0 XP</span>
+            <span class="rgb-xp-hi" id="rp-bar-sub">—</span>
+            <span id="rp-bar-to">—</span>
+          </div>
+        </div>
+        <div class="rgb-total">
+          <div class="rgb-total-val" id="rp-total-xp">— <span>XP</span></div>
+          <div class="rgb-total-lbl">Total Earned</div>
+        </div>
+      </div>
+
+      <div class="rank-two-col">
+        <!-- Left: full rank timeline -->
+        <div class="rank-panel">
+          <div class="rank-panel-title">◈ All Ranks — Career Progression</div>
+          <div class="rank-timeline" id="rp-timeline">
+            <div class="rank-timeline-line" id="rp-timeline-line"></div>
+          </div>
+        </div>
+
+        <!-- Right: XP sources -->
+        <div class="rank-panel">
+          <div class="rank-panel-title">⬡ How XP is Earned</div>
+          <div class="xp-source-list">
+            <div class="xp-source-item">
+              <div class="xp-source-icon">✓</div>
+              <div class="xp-source-info">
+                <div class="xp-source-name">Correct Answer</div>
+                <div class="xp-source-desc">Every correct answer in any drill</div>
+              </div>
+              <div class="xp-source-val">+10 XP</div>
+            </div>
+            <div class="xp-source-item">
+              <div class="xp-source-icon">✗</div>
+              <div class="xp-source-info">
+                <div class="xp-source-name">Wrong Answer</div>
+                <div class="xp-source-desc">XP for attempting, even if incorrect</div>
+              </div>
+              <div class="xp-source-val">+5 XP</div>
+            </div>
+            <div class="xp-source-item">
+              <div class="xp-source-icon">⬡</div>
+              <div class="xp-source-info">
+                <div class="xp-source-name">Daily Orders</div>
+                <div class="xp-source-desc">Bonus for completing your daily orders</div>
+              </div>
+              <div class="xp-source-val">+50 XP</div>
+            </div>
+            <div class="xp-source-item">
+              <div class="xp-source-icon">💯</div>
+              <div class="xp-source-info">
+                <div class="xp-source-name">Perfect Drill</div>
+                <div class="xp-source-desc">100% score on any drill session</div>
+              </div>
+              <div class="xp-source-val">+30 XP</div>
+            </div>
+            <div class="xp-source-item">
+              <div class="xp-source-icon">🔥</div>
+              <div class="xp-source-info">
+                <div class="xp-source-name">7-Day Streak</div>
+                <div class="xp-source-desc">One-time bonus when you hit 7 days</div>
+              </div>
+              <div class="xp-source-val">+150 XP</div>
+            </div>
+            <div class="xp-source-item">
+              <div class="xp-source-icon">🔥</div>
+              <div class="xp-source-info">
+                <div class="xp-source-name">30-Day Streak</div>
+                <div class="xp-source-desc">One-time bonus for 30 days straight</div>
+              </div>
+              <div class="xp-source-val">+500 XP</div>
+            </div>
+            <div class="xp-source-item">
+              <div class="xp-source-icon">🔥</div>
+              <div class="xp-source-info">
+                <div class="xp-source-name">100-Day Streak</div>
+                <div class="xp-source-desc">Elite operator dedication</div>
+              </div>
+              <div class="xp-source-val">+1500 XP</div>
+            </div>
+            <div class="xp-source-item">
+              <div class="xp-source-icon">◉</div>
+              <div class="xp-source-info">
+                <div class="xp-source-name">Cert Completion</div>
+                <div class="xp-source-desc">Master all domains in a certification</div>
+              </div>
+              <div class="xp-source-val">+500 XP</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY PROGRESS -->
+    <div id="screen-progress" class="screen">
+      <!-- Hero -->
+      <div class="prog-hero">
+        <div class="prog-avatar" id="prog-avatar">—</div>
+        <div class="prog-hero-info">
+          <div class="prog-hero-name" id="prog-name">—</div>
+          <div class="prog-hero-rank" id="prog-rank">—</div>
+          <div class="prog-hero-tags" id="prog-tags"></div>
+        </div>
+        <div class="prog-hero-right">
+          <div class="prog-xp-val" id="prog-xp-val">— <span>XP</span></div>
+          <div class="prog-xp-label" id="prog-xp-label">—</div>
+          <div class="prog-xp-bar-wrap"><div class="prog-xp-bar-fill" id="prog-xp-bar" style="width:0%"></div></div>
+          <div class="prog-xp-sub" id="prog-xp-sub">—</div>
+          <button class="share-prog-btn" onclick="openShareModal()">⬡ SHARE PROGRESS</button>
+        </div>
+      </div>
+      <!-- Stats -->
+      <div class="prog-stats">
+        <div class="prog-stat"><div class="prog-stat-val cyan" id="ps-answered">—</div><div class="prog-stat-lbl">Questions<br>Answered</div></div>
+        <div class="prog-stat"><div class="prog-stat-val" id="ps-accuracy">—</div><div class="prog-stat-lbl">Overall<br>Accuracy</div></div>
+        <div class="prog-stat"><div class="prog-stat-val amber" id="ps-streak">—</div><div class="prog-stat-lbl">Current<br>Streak</div></div>
+        <div class="prog-stat"><div class="prog-stat-val cyan" id="ps-sessions">—</div><div class="prog-stat-lbl">Sessions<br>Completed</div></div>
+        <div class="prog-stat"><div class="prog-stat-val" id="ps-time">—</div><div class="prog-stat-lbl">Total Study<br>Time</div></div>
+        <div class="prog-stat"><div class="prog-stat-val green" id="ps-mastered">—</div><div class="prog-stat-lbl">Domains<br>Mastered</div></div>
+      </div>
+      <!-- Main grid -->
+      <div class="prog-grid">
+        <!-- Left: heatmap + sessions -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="prog-panel">
+            <div class="prog-panel-title">⬡ Activity — Last 16 Weeks</div>
+            <div class="hm-wrap">
+              <div class="hm-months" id="hm-months"></div>
+              <div class="hm-grid" id="hm-grid"></div>
+            </div>
+            <div class="hm-legend">
+              Less
+              <div class="hm-l" style="background:rgba(255,255,255,0.05)"></div>
+              <div class="hm-l" style="background:rgba(0,229,204,0.18)"></div>
+              <div class="hm-l" style="background:rgba(0,229,204,0.40)"></div>
+              <div class="hm-l" style="background:rgba(0,229,204,0.65)"></div>
+              <div class="hm-l" style="background:rgba(0,229,204,0.90)"></div>
+              More
+            </div>
+          </div>
+          <div class="prog-panel">
+            <div class="prog-panel-title">◷ Recent Sessions</div>
+            <table class="sess-table">
+              <thead><tr><th>Date</th><th>Domain</th><th>Questions</th><th>Score</th><th>Time</th></tr></thead>
+              <tbody id="prog-sessions"></tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Right: cert progress -->
+        <div class="prog-panel">
+          <div class="prog-panel-title">◈ Certification Progress</div>
+          <div id="prog-cert-bars"></div>
+        </div>
+      </div>
+      <!-- Badges -->
+      <div class="prog-panel">
+        <div class="prog-panel-title">★ Achievements</div>
+        <div class="prog-badges-grid" id="prog-badges"></div>
+      </div>
+    </div>
+
+    <!-- QUESTION BANK -->
+    <div id="screen-qbank" class="screen">
+      <div class="qb-header">
+        <div class="qb-title-row">
+          <div>
+            <div class="rm-title">Question Bank</div>
+            <div class="rm-cert" id="qb-cert-name">—</div>
+          </div>
+          <div class="qb-total-pill"><span id="qb-count-total">—</span> QUESTIONS</div>
+        </div>
+      </div>
+      <div class="qb-status-row">
+        <button class="qb-status-btn active" data-status="all"      onclick="setQBFilter('status','all')">ALL <span class="qb-status-count" id="qb-count-all">—</span></button>
+        <button class="qb-status-btn unseen"  data-status="unseen"   onclick="setQBFilter('status','unseen')">UNSEEN <span class="qb-status-count" id="qb-count-unseen">—</span></button>
+        <button class="qb-status-btn weak"    data-status="weak"     onclick="setQBFilter('status','weak')">WEAK <span class="qb-status-count" id="qb-count-weak">—</span></button>
+        <button class="qb-status-btn learning" data-status="learning" onclick="setQBFilter('status','learning')">LEARNING <span class="qb-status-count" id="qb-count-learning">—</span></button>
+        <button class="qb-status-btn mastered" data-status="mastered" onclick="setQBFilter('status','mastered')">MASTERED <span class="qb-status-count" id="qb-count-mastered">—</span></button>
+      </div>
+      <div class="qb-filter-row">
+        <select id="qb-filter-domain" class="qb-select" onchange="setQBFilter('domain',this.value)">
+          <option value="all">All Domains</option>
+        </select>
+        <select id="qb-filter-difficulty" class="qb-select" onchange="setQBFilter('difficulty',this.value)">
+          <option value="all">All Difficulties</option>
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+        <div class="qb-page-controls">
+          <span class="qb-page-info" id="qb-page-info">—</span>
+          <button class="qb-page-btn" id="qb-prev" onclick="qbPrevPage()" disabled>◂</button>
+          <button class="qb-page-btn" id="qb-next" onclick="qbNextPage()" disabled>▸</button>
+        </div>
+      </div>
+      <div class="qb-table-wrap">
+        <table class="qb-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Question</th>
+              <th>Domain</th>
+              <th>Difficulty</th>
+              <th>Status</th>
+              <th style="text-align:right">Accuracy</th>
+            </tr>
+          </thead>
+          <tbody id="qb-tbody">
+            <tr><td colspan="6" class="qb-empty">⬡ LOADING QUESTION BANK...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="qb-bottom-row">
+        <span class="qb-page-info" id="qb-page-info-b">—</span>
+        <div style="display:flex;gap:8px">
+          <button class="qb-page-btn" onclick="qbPrevPage()">◂ PREV</button>
+          <button class="qb-page-btn" onclick="qbNextPage()">NEXT ▸</button>
+        </div>
       </div>
     </div>
 
@@ -643,10 +1821,10 @@ const sb = createClient(SB_URL, SB_ANON);
 
 /* ══ CERT DEFINITIONS ══ */
 const CERTS = [
-  { id:'aplus',         code:'COMPTIA A+',       name:'CompTIA A+',        desc:'Hardware, operating systems, networking, security and troubleshooting fundamentals.', cc:'#ff7f4f', cg:'rgba(255,127,79,0.08)',  q:12 },
-  { id:'netplus',       code:'COMPTIA NETWORK+',  name:'CompTIA Network+',  desc:'Subnetting, routing protocols, switching, VLANs and network troubleshooting.',       cc:'#00e5cc', cg:'rgba(0,229,204,0.08)',  q:12 },
-  { id:'ccna',          code:'CISCO CCNA',         name:'Cisco CCNA',        desc:'Cisco IOS, VLANs, OSPF, STP, ACLs and enterprise network design.',                  cc:'#1a6dff', cg:'rgba(26,109,255,0.08)', q:12 },
-  { id:'security_plus', code:'COMPTIA SECURITY+', name:'CompTIA Security+', desc:'Threats, cryptography, risk management, security operations and architecture.',       cc:'#a06fff', cg:'rgba(160,111,255,0.08)',q:18 }
+  { id:'aplus',         code:'COMPTIA A+',       name:'CompTIA A+',        desc:'Hardware, operating systems, networking, security and troubleshooting fundamentals.', cc:'#ff7f4f', cg:'rgba(255,127,79,0.08)',  q:900 },
+  { id:'netplus',       code:'COMPTIA NETWORK+',  name:'CompTIA Network+',  desc:'Subnetting, routing protocols, switching, VLANs and network troubleshooting.',       cc:'#00e5cc', cg:'rgba(0,229,204,0.08)',  q:500 },
+  { id:'ccna',          code:'CISCO CCNA',         name:'Cisco CCNA',        desc:'Cisco IOS, VLANs, OSPF, STP, ACLs and enterprise network design.',                  cc:'#1a6dff', cg:'rgba(26,109,255,0.08)', q:600 },
+  { id:'security_plus', code:'COMPTIA SECURITY+', name:'CompTIA Security+', desc:'Threats, cryptography, risk management, security operations and architecture.',       cc:'#a06fff', cg:'rgba(160,111,255,0.08)',q:500 }
 ];
 
 /* ══ STATE ══ */
@@ -658,7 +1836,8 @@ const S = {
   drillType: 'standard', domain: null,
   domains: [],          // cached domain scores for current cert
   domainVersion: 0,     // incremented whenever drill results update domains; guards stale loadDomainData overwrites
-  questionResults: []   // { domain, is_correct } — tracked per answer for immediate updates
+  questionResults: [],  // { domain, is_correct } — tracked per answer for immediate updates
+  decayMap: {}          // { domainName: daysSinceLastActivity } — populated by loadDecayAlerts
 };
 
 /* ══ INIT ══ */
@@ -702,7 +1881,6 @@ function showPage(page) {
 
 function showMain(screenId) {
   if (screenId === 'drill-placeholder') {
-    // Start a mixed drill from the sidebar
     startDrill(S.cert, 'all', 'standard');
     return;
   }
@@ -711,8 +1889,972 @@ function showMain(screenId) {
   if (el) el.classList.add('active');
   // Update sidebar nav
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  if (screenId === 'dashboard') document.getElementById('nav-dashboard')?.classList.add('active');
-  if (screenId === 'drill')     document.getElementById('nav-drill')?.classList.add('active');
+  if (screenId === 'dashboard')  document.getElementById('nav-dashboard')?.classList.add('active');
+  if (screenId === 'drill')      document.getElementById('nav-drill')?.classList.add('active');
+  if (screenId === 'readiness')  { document.getElementById('nav-readiness')?.classList.add('active'); buildReadinessMap(); }
+  if (screenId === 'qbank')     { document.getElementById('nav-qbank')?.classList.add('active'); loadQuestionBank(); }
+  if (screenId === 'progress')  { document.getElementById('nav-progress')?.classList.add('active'); loadProgress(); }
+  if (screenId === 'rank')      { document.getElementById('nav-rank')?.classList.add('active'); buildRankScreen(); }
+  if (screenId === 'certs')     { document.getElementById('nav-certs')?.classList.add('active'); loadCertsScreen(); }
+}
+
+/* ══ CERTIFICATIONS SCREEN ══ */
+async function loadCertsScreen() {
+  const grid = document.getElementById('certs-grid');
+  grid.innerHTML = '<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;padding:20px;">LOADING...</div>';
+
+  try {
+    // Fetch all completed sessions for this user across all certs
+    const { data: sessions } = await sb.from('drill_sessions')
+      .select('cert, score_pct, questions_attempted, questions_correct, created_at')
+      .eq('user_id', S.user.id).eq('completed', true)
+      .order('created_at', { ascending: false });
+
+    const allSessions = sessions || [];
+
+    // Build per-cert stats
+    const certStats = {};
+    allSessions.forEach(s => {
+      if (!s.cert || !CERTS.find(c => c.id === s.cert)) return;
+      if (!certStats[s.cert]) certStats[s.cert] = { sessions: 0, scoreSum: 0, lastStudied: null, totalQ: 0, totalCorrect: 0 };
+      const cs = certStats[s.cert];
+      cs.sessions++;
+      cs.scoreSum    += s.score_pct || 0;
+      cs.totalQ      += s.questions_attempted || 0;
+      cs.totalCorrect+= s.questions_correct   || 0;
+      if (!cs.lastStudied || s.created_at > cs.lastStudied) cs.lastStudied = s.created_at;
+    });
+
+    // Fetch exam dates for all certs
+    const { data: examDates } = await sb.from('exam_dates')
+      .select('cert, exam_date').eq('user_id', S.user.id);
+    const examDateMap = {};
+    (examDates || []).forEach(e => { examDateMap[e.cert] = e.exam_date; });
+
+    grid.innerHTML = CERTS.map(c => {
+      const cs         = certStats[c.id];
+      const isActive   = c.id === S.cert;
+      const hasStudied = !!cs;
+      const avgScore   = cs ? Math.round(cs.scoreSum / cs.sessions) : 0;
+      const examDate   = examDateMap[c.id];
+
+      // Status badge
+      let statusBadge, statusCls;
+      if (isActive)        { statusBadge = '▸ ACTIVE';      statusCls = 'active'; }
+      else if (hasStudied) { statusBadge = 'IN PROGRESS';   statusCls = 'progress'; }
+      else                 { statusBadge = 'NOT STARTED';   statusCls = 'new'; }
+
+      // Last studied
+      const lastStr = cs?.lastStudied
+        ? timeSince(cs.lastStudied)
+        : 'Never';
+
+      // Exam countdown
+      let examLine = '';
+      if (examDate) {
+        const today   = new Date(); today.setHours(0,0,0,0);
+        const exam    = new Date(examDate + 'T00:00:00');
+        const days    = Math.ceil((exam - today) / 86400000);
+        if (days > 0) examLine = `<div class="cert-card-stat">📅 Exam in <strong>${days} days</strong></div>`;
+        else if (days === 0) examLine = `<div class="cert-card-stat">📅 <strong>Exam today!</strong></div>`;
+        else examLine = `<div class="cert-card-stat" style="color:var(--red)">📅 Exam date passed</div>`;
+      }
+
+      // Progress bar colour and pct
+      const progPct = hasStudied ? Math.min(avgScore, 100) : 0;
+      const progCol = progPct >= 85 ? 'var(--green)' : progPct >= 65 ? 'var(--amber)' : progPct > 0 ? 'var(--red)' : 'var(--border)';
+
+      // Action button
+      let btnHtml;
+      if (isActive) {
+        btnHtml = `<button class="cert-switch-btn" disabled style="opacity:.5;cursor:default">✓ Currently Active</button>`;
+      } else if (hasStudied) {
+        btnHtml = `<button class="cert-switch-btn" onclick="switchCert('${c.id}')">▸ Switch to This Cert</button>
+                   <button class="cert-switch-btn outline" onclick="switchCert('${c.id}')">Continue</button>`;
+      } else {
+        btnHtml = `<button class="cert-switch-btn" onclick="switchCert('${c.id}')">▸ Start Studying</button>`;
+      }
+
+      return `<div class="cert-card ${isActive ? 'active-cert' : ''}" style="--cc:${c.cc};--cg:${c.cg}">
+        <div class="cert-card-glow"></div>
+        <div class="cert-card-top">
+          <div class="cert-card-status-row">
+            <div class="cert-card-code">${c.code}</div>
+            <div class="cert-status-badge ${statusCls}">${statusBadge}</div>
+          </div>
+          <div class="cert-card-name">${c.name}</div>
+          <div class="cert-card-desc">${c.desc}</div>
+          <div class="cert-card-stats">
+            <div class="cert-card-stat">${c.q} questions</div>
+            ${hasStudied ? `<div class="cert-card-stat"><strong>${cs.sessions}</strong> sessions</div>` : ''}
+            ${hasStudied ? `<div class="cert-card-stat">Last: <strong>${lastStr}</strong></div>` : ''}
+            ${examLine}
+          </div>
+          ${hasStudied ? `
+          <div class="cert-card-progress">
+            <div class="cert-card-prog-row">
+              <div class="cert-card-prog-lbl">Avg drill score</div>
+              <div class="cert-card-prog-pct" style="color:${progCol}">${avgScore}%</div>
+            </div>
+            <div class="cert-card-prog-bar">
+              <div class="cert-card-prog-fill" style="width:${progPct}%;background:${progCol}"></div>
+            </div>
+          </div>` : ''}
+        </div>
+        <div class="cert-card-bottom">${btnHtml}</div>
+      </div>`;
+    }).join('');
+
+  } catch (e) {
+    grid.innerHTML = '<div style="font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:1px;padding:20px;">Error loading certifications.</div>';
+  }
+}
+
+async function switchCert(certId) {
+  if (certId === S.cert) return;
+  // Re-use selectCert — it handles all the state + UI wiring
+  await selectCert(certId);
+  // Navigate to dashboard after switch
+  showMain('dashboard');
+}
+
+/* ══ MY PROGRESS ══ */
+const RANKS = [
+  { name:'RECRUIT',    xp:0,      desc:'Just enlisted. First steps into the field.',           icon:'◌' },
+  { name:'CADET',      xp:500,    desc:'Foundations forming. Learning the landscape.',          icon:'◍' },
+  { name:'SPECIALIST', xp:2000,   desc:'Core skills established. One cert under your belt.',   icon:'◉' },
+  { name:'CORPORAL',   xp:6000,   desc:'Trusted operator. Domain knowledge is solid.',         icon:'▲' },
+  { name:'SERGEANT',   xp:15000,  desc:'Multi-cert experience. Leading by example.',           icon:'▲▲' },
+  { name:'STAFF SGT',  xp:30000,  desc:'Four certs deep. Hardened under real pressure.',       icon:'▲▲▲' },
+  { name:'LIEUTENANT', xp:50000,  desc:'Breadth and depth. Six certs of operational mastery.', icon:'★' },
+  { name:'CAPTAIN',    xp:75000,  desc:'Elite operator. Nine certs. Trusted with the hard stuff.', icon:'★★' },
+  { name:'COMMANDER',  xp:110000, desc:'Maximum rank. Multi-cert mastery across the board.',   icon:'★★★' },
+];
+
+function getRank(xp) {
+  let rank = RANKS[0], next = RANKS[1];
+  for (let i = 0; i < RANKS.length; i++) {
+    if (xp >= RANKS[i].xp) { rank = RANKS[i]; next = RANKS[i + 1] || null; }
+  }
+  return { rank, next };
+}
+
+function buildRankScreen() {
+  const xp = S.totalXP || 0;
+  const { rank, next } = getRank(xp);
+  const currentIdx = RANKS.findIndex(r => r.name === rank.name);
+  const barPct = next ? Math.round(((xp - rank.xp) / (next.xp - rank.xp)) * 100) : 100;
+
+  // Hero bar
+  const name   = S.profile?.full_name || S.user?.email?.split('@')[0] || 'Operator';
+  const initials = name.slice(0,2).toUpperCase();
+  document.getElementById('rp-avatar').textContent   = initials;
+  document.getElementById('rp-total-xp').innerHTML   = `${xp.toLocaleString()} <span>XP</span>`;
+  document.getElementById('rp-rank-name').textContent = rank.name;
+  document.getElementById('rp-rank-next').textContent = next
+    ? `Next rank: ${next.name} — ${(next.xp - xp).toLocaleString()} XP to go`
+    : 'Maximum rank achieved — Commander';
+  document.getElementById('rp-bar').style.width      = barPct + '%';
+  document.getElementById('rp-bar-from').textContent = rank.xp.toLocaleString() + ' XP';
+  document.getElementById('rp-bar-to').textContent   = next ? next.xp.toLocaleString() + ' XP' : 'MAX';
+  document.getElementById('rp-bar-sub').textContent  = next
+    ? `${(xp - rank.xp).toLocaleString()} / ${(next.xp - rank.xp).toLocaleString()} XP`
+    : 'Commander achieved';
+
+  // Timeline line progress: what % of the track have we completed visually?
+  // Line goes from rank 0 dot to rank N dot. Progress = currentIdx / (total-1) + fractional
+  const total   = RANKS.length;
+  const progFrac = next
+    ? (currentIdx + (xp - rank.xp) / (next.xp - rank.xp)) / (total - 1)
+    : 1;
+  const progPct = Math.round(progFrac * 100);
+  document.getElementById('rp-timeline-line').style.setProperty('--prog-pct', progPct + '%');
+
+  // Build nodes
+  document.getElementById('rp-timeline').innerHTML =
+    `<div class="rank-timeline-line" id="rp-timeline-line" style="--prog-pct:${progPct}%"></div>` +
+    RANKS.map((r, i) => {
+      const isAchieved = i < currentIdx;
+      const isCurrent  = i === currentIdx;
+      const isLocked   = i > currentIdx;
+      const cls = isAchieved ? 'achieved' : isCurrent ? 'current' : 'locked';
+      const dot = isAchieved ? '✓' : isCurrent ? r.icon : r.icon;
+      const xpLabel = r.xp === 0 ? 'Starting rank' : r.xp.toLocaleString() + ' XP';
+      const badge = isAchieved ? 'ACHIEVED' : isCurrent ? 'CURRENT RANK' : 'LOCKED';
+
+      let progressHtml = '';
+      if (isCurrent && next) {
+        progressHtml = `<div class="rank-node-prog">
+          <div class="rank-node-prog-lbl">${(xp - r.xp).toLocaleString()} / ${(next.xp - r.xp).toLocaleString()} XP — ${barPct}% to ${next.name}</div>
+          <div class="rank-node-prog-bar"><div class="rank-node-prog-fill" style="width:${barPct}%"></div></div>
+        </div>`;
+      }
+
+      return `<div class="rank-node ${cls}">
+        <div class="rank-node-dot">${isAchieved ? '✓' : r.icon}</div>
+        <div class="rank-node-card">
+          <div class="rank-node-header">
+            <div class="rank-node-name">${r.name}</div>
+            <div class="rank-node-xp ${isAchieved ? 'achieved' : ''}">${xpLabel}</div>
+          </div>
+          <div class="rank-node-desc">${r.desc}</div>
+          <div class="rank-node-badge ${cls}">${badge}</div>
+          ${progressHtml}
+        </div>
+      </div>`;
+    }).join('');
+}
+
+const BADGES = [
+  { icon:'🎯', name:'First Round',     desc:'Answer your first question',    check: s => s.answered >= 1 },
+  { icon:'🧠', name:'Century',         desc:'Answer 100 questions',           check: s => s.answered >= 100 },
+  { icon:'🚀', name:'Veteran',         desc:'Answer 500 questions',           check: s => s.answered >= 500 },
+  { icon:'💯', name:'Sharp Shooter',   desc:'80%+ overall accuracy',          check: s => s.accuracy >= 80 },
+  { icon:'🔥', name:'Week Warrior',    desc:'7-day streak',                   check: s => s.streak >= 7 },
+  { icon:'⚔', name:'Iron Discipline', desc:'30-day streak',                  check: s => s.streak >= 30 },
+  { icon:'⬡', name:'Domain Master',   desc:'Master at least one domain',     check: s => s.domainsMastered >= 1 },
+  { icon:'🛡', name:'Full Sweep',      desc:'Master all domains in a cert',   check: s => s.allDomainsComplete },
+  { icon:'⚡', name:'Perfect Score',   desc:'Score 100% on a drill',          check: s => s.hasPerfect },
+  { icon:'🎖', name:'Exam Ready',      desc:'Reach 85%+ overall readiness',   check: s => s.readiness >= 85 },
+  { icon:'🌐', name:'Multi-Cert',      desc:'Study across 2+ certifications', check: s => s.certsStudied >= 2 },
+  { icon:'★',  name:'Commander',       desc:'Reach Commander rank',           check: s => s.xp >= 25000 },
+];
+
+async function loadProgress() {
+  try {
+    const name  = S.profile?.full_name || S.user?.email?.split('@')[0] || 'Operator';
+    const init  = name.slice(0, 2).toUpperCase();
+    document.getElementById('prog-avatar').textContent = init;
+    document.getElementById('prog-name').textContent   = name.toUpperCase();
+
+    // XP + rank
+    const xp = S.totalXP || 0;
+    const { rank, next } = getRank(xp);
+    const barPct = next ? Math.round(((xp - rank.xp) / (next.xp - rank.xp)) * 100) : 100;
+    document.getElementById('prog-xp-val').innerHTML   = `${xp.toLocaleString()} <span>XP</span>`;
+    document.getElementById('prog-rank').textContent   = rank.name;
+    document.getElementById('prog-xp-label').textContent = next ? `${rank.name} → ${next.name}` : 'MAX RANK';
+    document.getElementById('prog-xp-bar').style.width  = barPct + '%';
+    document.getElementById('prog-xp-sub').textContent  = next ? `${xp - rank.xp} / ${next.xp - rank.xp} XP` : 'Commander achieved';
+    document.getElementById('ps-streak').textContent   = S.streak + ' 🔥';
+
+    // Tags
+    const joined = new Date(S.user?.created_at || Date.now());
+    const joinStr = joined.toLocaleDateString('en-GB', { month:'short', year:'numeric' });
+    const cert = CERTS.find(c => c.id === S.cert);
+    document.getElementById('prog-tags').innerHTML = [
+      `<span class="prog-tag">Joined ${joinStr}</span>`,
+      cert ? `<span class="prog-tag">${cert.name} Track</span>` : '',
+      S.streak >= 3 ? `<span class="prog-tag">🔥 ${S.streak}-Day Streak</span>` : '',
+    ].filter(Boolean).join('');
+
+    // Fetch question answers
+    const { data: answers } = await sb.from('question_answers')
+      .select('is_correct').eq('user_id', S.user.id);
+    const totalAnswered = (answers || []).length;
+    const totalCorrect  = (answers || []).filter(a => a.is_correct).length;
+    const accuracy      = totalAnswered ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+
+    // Fetch drill sessions
+    const sixteenWeeksAgo = new Date(Date.now() - 16 * 7 * 86400000).toISOString();
+    const { data: allSessions } = await sb.from('drill_sessions')
+      .select('cert, created_at, questions_attempted, questions_correct, score_pct, duration_secs, completed')
+      .eq('user_id', S.user.id).eq('completed', true)
+      .order('created_at', { ascending: false });
+
+    const sessions   = allSessions || [];
+    const totalSecs  = sessions.reduce((s, r) => s + (r.duration_secs || 0), 0);
+    const totalMins  = Math.round(totalSecs / 60);
+    const studyTime  = totalMins >= 60 ? (totalMins / 60).toFixed(1) + 'h' : totalMins + 'm';
+    const domMastered = (S.domains || []).filter(d => d.mastered).length;
+
+    document.getElementById('ps-answered').textContent = totalAnswered.toLocaleString();
+    document.getElementById('ps-accuracy').textContent = accuracy + '%';
+    document.getElementById('ps-sessions').textContent = sessions.length;
+    document.getElementById('ps-time').textContent     = studyTime;
+    document.getElementById('ps-mastered').textContent = domMastered;
+
+    // Heatmap
+    buildHeatmap(sessions.filter(s => s.created_at >= sixteenWeeksAgo));
+
+    // Recent sessions table (last 8)
+    const recent = sessions.slice(0, 8);
+    document.getElementById('prog-sessions').innerHTML = recent.length
+      ? recent.map(s => {
+          const pct  = s.score_pct || 0;
+          const cls  = pct >= 80 ? 'good' : pct >= 60 ? 'ok' : 'poor';
+          const mins = s.duration_secs ? Math.round(s.duration_secs / 60) + ' min' : '—';
+          const dom  = (s.cert || s.domain || 'Mixed').toUpperCase();
+          const when = timeSince(s.created_at);
+          return `<tr>
+            <td>${when}</td>
+            <td><span class="sess-domain">${dom}</span></td>
+            <td>${s.questions_attempted || '—'} questions</td>
+            <td><span class="sess-score ${cls}">${pct}%</span></td>
+            <td>${mins}</td>
+          </tr>`;
+        }).join('')
+      : '<tr><td colspan="5" style="text-align:center;padding:20px;font-family:var(--mono);font-size:9px;color:var(--muted)">NO SESSIONS YET</td></tr>';
+
+    // Cert progress bars
+    const certAnswerMap = {};
+    sessions.forEach(s => {
+      if (!certAnswerMap[s.cert]) certAnswerMap[s.cert] = { attempts: 0, scoreSum: 0 };
+      certAnswerMap[s.cert].attempts++;
+      certAnswerMap[s.cert].scoreSum += s.score_pct || 0;
+    });
+    const certsStudied = Object.keys(certAnswerMap).length;
+    document.getElementById('prog-cert-bars').innerHTML = CERTS.map(c => {
+      const cm  = certAnswerMap[c.id];
+      const pct = cm ? Math.round(cm.scoreSum / cm.attempts) : 0;
+      const has = !!cm;
+      return `<div class="cert-prog-item ${has ? '' : 'cert-prog-unseen'}">
+        <div class="cert-prog-header">
+          <div class="cert-prog-name" style="color:${c.cc}">${c.name}</div>
+          <div class="cert-prog-pct" style="color:${c.cc}">${has ? pct + '%' : '—'}</div>
+        </div>
+        <div class="cert-prog-bar"><div class="cert-prog-fill" style="width:${pct}%;background:linear-gradient(90deg,${c.cc},${c.cc}88)"></div></div>
+        <div class="cert-prog-meta">${has ? cm.attempts + ' sessions completed' : 'Not yet studied'}</div>
+      </div>`;
+    }).join('');
+
+    // Badges
+    const allDomainsComplete = S.domains?.length > 0 && S.domains.every(d => d.mastered);
+    const hasPerfect = sessions.some(s => s.score_pct === 100);
+    const readiness  = S.domains?.filter(d => !d.unstarted).length
+      ? Math.round(S.domains.filter(d => !d.unstarted).reduce((a, d) => a + d.pct, 0) / S.domains.filter(d => !d.unstarted).length)
+      : 0;
+    const statsForBadges = {
+      answered: totalAnswered, accuracy, streak: S.streak || 0,
+      domainsMastered: domMastered, allDomainsComplete, hasPerfect,
+      readiness, certsStudied, xp
+    };
+    document.getElementById('prog-badges').innerHTML = BADGES.map(b => {
+      const earned = b.check(statsForBadges);
+      return `<div class="badge-card ${earned ? 'earned' : 'locked'}">
+        <span class="badge-icon-lg">${b.icon}</span>
+        <div class="badge-name-sm">${b.name}</div>
+        <div class="badge-desc-sm">${b.desc}</div>
+      </div>`;
+    }).join('');
+
+  } catch (e) { console.error('Progress load error', e); }
+}
+
+function buildHeatmap(sessions) {
+  // Build date->count map
+  const dateMap = {};
+  sessions.forEach(s => {
+    const d = s.created_at?.split('T')[0];
+    if (d) dateMap[d] = (dateMap[d] || 0) + 1;
+  });
+
+  const today  = new Date();
+  const days   = 16 * 7; // 112 days
+  const start  = new Date(today);
+  start.setDate(start.getDate() - days + 1);
+
+  // Month labels
+  const monthsSeen = {};
+  const months = [];
+  let col = 0;
+  for (let i = 0; i < days; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    if (d.getDay() === 0) { // new week = new column
+      const m = d.toLocaleDateString('en-GB', { month:'short' });
+      if (!monthsSeen[m + d.getFullYear()]) {
+        monthsSeen[m + d.getFullYear()] = true;
+        months.push({ col, label: m });
+      }
+      col++;
+    }
+  }
+  document.getElementById('hm-months').innerHTML = months.map(m =>
+    `<div class="hm-month-lbl" style="grid-column:${m.col + 1}">${m.label}</div>`
+  ).join('');
+
+  // Cells
+  const cells = [];
+  for (let i = 0; i < days; i++) {
+    const d = new Date(start);
+    d.setDate(d.getDate() + i);
+    const key   = d.toISOString().split('T')[0];
+    const count = dateMap[key] || 0;
+    const lvl   = count === 0 ? '' : count === 1 ? 'l1' : count === 2 ? 'l2' : count <= 4 ? 'l3' : 'l4';
+    const label = d.toLocaleDateString('en-GB', { day:'2-digit', month:'short' }) + (count ? ` · ${count} session${count > 1 ? 's' : ''}` : '');
+    cells.push(`<div class="hm-cell ${lvl}" title="${label}"></div>`);
+  }
+  document.getElementById('hm-grid').innerHTML = cells.join('');
+}
+
+/* ══ KNOWLEDGE DECAY ══ */
+async function loadDecayAlerts(certId) {
+  try {
+    const strip = document.getElementById('decay-strip');
+    if (!strip) return;
+
+    // 1. Get all questions for this cert (id → domain map)
+    const { data: questions } = await sb.from('questions')
+      .select('id, domain').eq('cert', certId).eq('active', true);
+    if (!questions?.length) return;
+    const qDomainMap = {};
+    questions.forEach(q => { qDomainMap[q.id] = q.domain; });
+
+    // 2. Get last answer date per question for this user (last 90 days to keep it light)
+    const since90 = new Date(Date.now() - 90 * 86400000).toISOString();
+    const qIds = questions.map(q => q.id);
+
+    // Batch into 500s (Supabase .in() limit)
+    const domainLastMap = {}; // domain → ISO date string
+    for (let i = 0; i < qIds.length; i += 500) {
+      const batch = qIds.slice(i, i + 500);
+      const { data: answers } = await sb.from('question_answers')
+        .select('question_id, created_at')
+        .eq('user_id', S.user.id)
+        .in('question_id', batch)
+        .gte('created_at', since90)
+        .order('created_at', { ascending: false });
+
+      (answers || []).forEach(a => {
+        const domain = qDomainMap[a.question_id];
+        if (domain && (!domainLastMap[domain] || a.created_at > domainLastMap[domain])) {
+          domainLastMap[domain] = a.created_at;
+        }
+      });
+    }
+
+    // 3. Calculate days since last activity per domain
+    const today = new Date(); today.setHours(0,0,0,0);
+    S.decayMap = {};
+    const staleItems = []; // { name, days, pct }
+
+    (S.domains || []).forEach(d => {
+      if (d.unstarted) return; // never started — handled by readiness map
+      const last = domainLastMap[d.name];
+      if (!last) {
+        // Has answers historically but none in 90d window — treat as 90
+        S.decayMap[d.name] = 90;
+        staleItems.push({ name: d.name, days: 90, pct: d.pct });
+        return;
+      }
+      const lastDate = new Date(last); lastDate.setHours(0,0,0,0);
+      const days = Math.floor((today - lastDate) / 86400000);
+      S.decayMap[d.name] = days;
+      if (days >= 7) staleItems.push({ name: d.name, days, pct: d.pct });
+    });
+
+    // 4. Re-render domain rows now that decayMap is populated
+    renderDomainUI(certId, S.domains);
+
+    // 5. Render the alert strip
+    if (!staleItems.length) { strip.style.display = 'none'; return; }
+
+    // Sort: worst first
+    staleItems.sort((a, b) => b.days - a.days);
+
+    // Only surface critical/danger in the strip (7d get badge only, not strip)
+    const alertItems = staleItems.filter(d => d.days >= 14);
+    if (!alertItems.length) { strip.style.display = 'none'; return; }
+
+    strip.style.display = 'block';
+    strip.innerHTML = `<div class="decay-strip-inner">
+      <div class="decay-strip-header">
+        <div class="decay-strip-title">⚠ Knowledge Decay — ${alertItems.length} Domain${alertItems.length > 1 ? 's' : ''} Need Attention</div>
+        <div class="decay-strip-sub">Domains not practiced in 14+ days start to fade. Drill them to maintain readiness.</div>
+      </div>
+      <div class="decay-items">
+        ${alertItems.map(d => {
+          const level   = d.days >= 21 ? 'critical-item' : 'danger-item';
+          const icon    = d.days >= 21 ? '🔴' : '🟠';
+          const label   = d.days >= 21
+            ? `Critical — ${d.days} days since last practice`
+            : `Fading — ${d.days} days since last practice`;
+          const safeName = d.name.replace(/'/g, "\\'");
+          return `<div class="decay-item ${level}">
+            <div class="decay-item-icon">${icon}</div>
+            <div class="decay-item-info">
+              <div class="decay-item-name">${d.name}</div>
+              <div class="decay-item-meta">${label}</div>
+            </div>
+            <div class="decay-item-pct">${d.pct}% readiness</div>
+            <button class="decay-drill-btn" onclick="startDomainDrill('${certId}','${safeName}')">▸ DRILL NOW</button>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+
+  } catch (e) { console.error('Decay load error', e); }
+}
+
+/* ══ EXAM COUNTDOWN ══ */
+async function loadExamCountdown(certId) {
+  try {
+    const { data } = await sb.from('exam_dates')
+      .select('*').eq('user_id', S.user.id).eq('cert', certId).single();
+
+    if (!data) { showExamEmpty(); return; }
+    renderExamCountdown(data);
+  } catch (_) { showExamEmpty(); }
+}
+
+function showExamEmpty() {
+  document.getElementById('exam-empty').style.display  = 'flex';
+  document.getElementById('exam-active').style.display = 'none';
+}
+
+function renderExamCountdown(data) {
+  const today     = new Date(); today.setHours(0,0,0,0);
+  const examDay   = new Date(data.exam_date + 'T00:00:00');
+  const diffMs    = examDay - today;
+  const diffDays  = Math.ceil(diffMs / 86400000);
+
+  const cert = CERTS.find(c => c.id === data.cert);
+
+  document.getElementById('exam-empty').style.display  = 'none';
+  document.getElementById('exam-active').style.display = 'flex';
+  document.getElementById('ec-cert-name').textContent  = cert?.name || data.cert.toUpperCase();
+
+  const dateStr = examDay.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  if (diffDays < 0) {
+    document.getElementById('ec-date-line').textContent = `Exam was ${dateStr} — update your date`;
+    document.getElementById('ec-nums').innerHTML = `<div style="font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:2px;">EXAM DATE PASSED — PLEASE UPDATE</div>`;
+  } else if (diffDays === 0) {
+    document.getElementById('ec-date-line').textContent = 'Today is exam day — good luck!';
+    document.getElementById('ec-nums').innerHTML = `<div class="exam-cd-block red"><div class="exam-cd-val">TODAY</div><div class="exam-cd-lbl">EXAM DAY</div></div>`;
+  } else {
+    document.getElementById('ec-date-line').textContent = `Booked: ${dateStr}`;
+    const weeks = Math.floor(diffDays / 7);
+    const days  = diffDays % 7;
+    const urgency = diffDays <= 14 ? 'red' : diffDays <= 30 ? 'amber' : '';
+    let numsHtml = '';
+    if (weeks > 0) {
+      numsHtml += `<div class="exam-cd-block ${urgency}"><div class="exam-cd-val">${weeks}</div><div class="exam-cd-lbl">WEEK${weeks !== 1 ? 'S' : ''}</div></div>`;
+      numsHtml += `<div class="exam-cd-sep">:</div>`;
+    }
+    numsHtml += `<div class="exam-cd-block ${urgency}"><div class="exam-cd-val">${days}</div><div class="exam-cd-lbl">DAY${days !== 1 ? 'S' : ''}</div></div>`;
+    numsHtml += `<div style="font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:1px;margin-left:4px;align-self:center;">${diffDays} days total</div>`;
+    document.getElementById('ec-nums').innerHTML = numsHtml;
+  }
+
+  // Readiness
+  const startedDomains = (S.domains || []).filter(d => !d.unstarted);
+  const readiness = startedDomains.length
+    ? Math.round(startedDomains.reduce((a, d) => a + d.pct, 0) / startedDomains.length) : 0;
+  const rEl = document.getElementById('ec-readiness');
+  rEl.textContent = readiness + '%';
+  rEl.className = 'exam-readiness-pct ' + (readiness >= 85 ? 'green' : readiness >= 65 ? 'amber' : 'red');
+
+  // Daily target suggestion
+  const targetEl = document.getElementById('ec-target');
+  if (diffDays > 0 && readiness < 85) {
+    const gap       = 85 - readiness;
+    const qPerDay   = Math.ceil((gap / 100) * 50); // rough heuristic
+    targetEl.textContent = `Aim for ~${qPerDay} questions/day to reach 85%`;
+  } else if (readiness >= 85) {
+    targetEl.textContent = '✓ Readiness target met — keep it up';
+    targetEl.style.color = 'var(--green)';
+  } else {
+    targetEl.textContent = '';
+  }
+}
+
+function openExamModal() {
+  const cert = CERTS.find(c => c.id === S.cert);
+  document.getElementById('em-cert-display').textContent = cert?.name || S.cert?.toUpperCase() || '—';
+  document.getElementById('em-msg').textContent = '';
+
+  // Pre-fill if date already exists
+  sb.from('exam_dates').select('exam_date').eq('user_id', S.user.id).eq('cert', S.cert).single()
+    .then(({ data }) => {
+      document.getElementById('em-date-input').value = data?.exam_date || '';
+      document.getElementById('em-remove-btn').style.display = data ? 'block' : 'none';
+    });
+
+  document.getElementById('exam-modal-overlay').classList.add('open');
+}
+
+function closeExamModal() {
+  document.getElementById('exam-modal-overlay').classList.remove('open');
+}
+
+function handleExamOverlayClick(e) {
+  if (e.target === document.getElementById('exam-modal-overlay')) closeExamModal();
+}
+
+async function saveExamDate() {
+  const dateVal = document.getElementById('em-date-input').value;
+  const msgEl   = document.getElementById('em-msg');
+  if (!dateVal) { msgEl.textContent = 'Please enter a date.'; msgEl.className = 'exam-modal-msg err'; return; }
+
+  const today = new Date().toISOString().split('T')[0];
+  if (dateVal < today) { msgEl.textContent = 'Date must be today or in the future.'; msgEl.className = 'exam-modal-msg err'; return; }
+
+  try {
+    await sb.from('exam_dates').upsert({
+      user_id: S.user.id, cert: S.cert, exam_date: dateVal, updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id,cert' });
+    msgEl.textContent = '✓ Exam date saved.'; msgEl.className = 'exam-modal-msg ok';
+    setTimeout(() => {
+      closeExamModal();
+      loadExamCountdown(S.cert);
+    }, 800);
+  } catch (e) {
+    msgEl.textContent = 'Error saving — please try again.'; msgEl.className = 'exam-modal-msg err';
+  }
+}
+
+async function removeExamDate() {
+  const msgEl = document.getElementById('em-msg');
+  try {
+    await sb.from('exam_dates').delete().eq('user_id', S.user.id).eq('cert', S.cert);
+    msgEl.textContent = 'Exam date removed.'; msgEl.className = 'exam-modal-msg ok';
+    setTimeout(() => { closeExamModal(); showExamEmpty(); }, 800);
+  } catch (_) {
+    msgEl.textContent = 'Error removing — please try again.'; msgEl.className = 'exam-modal-msg err';
+  }
+}
+
+/* ══ SHARE PROGRESS ══ */
+const ShareState = { format: 'square', data: null };
+
+function openShareModal() {
+  // Pull current data from the already-loaded progress screen
+  const name     = document.getElementById('prog-name')?.textContent || '—';
+  const rank     = document.getElementById('prog-rank')?.textContent || '—';
+  const xpVal    = document.getElementById('prog-xp-val')?.textContent?.replace(' XP','').trim() || '0';
+  const xpLabel  = document.getElementById('prog-xp-label')?.textContent || '—';
+  const xpBarW   = document.getElementById('prog-xp-bar')?.style.width || '0%';
+  const xpSub    = document.getElementById('prog-xp-sub')?.textContent || '—';
+  const answered = document.getElementById('ps-answered')?.textContent || '—';
+  const accuracy = document.getElementById('ps-accuracy')?.textContent || '—';
+  const streak   = document.getElementById('ps-streak')?.textContent?.replace(' 🔥','').trim() || '—';
+  const sessions = document.getElementById('ps-sessions')?.textContent || '—';
+  const time     = document.getElementById('ps-time')?.textContent || '—';
+  const mastered = document.getElementById('ps-mastered')?.textContent || '—';
+
+  // Compute readiness from S.domains
+  const startedDomains = (S.domains || []).filter(d => !d.unstarted);
+  const readiness = startedDomains.length
+    ? Math.round(startedDomains.reduce((a, d) => a + d.pct, 0) / startedDomains.length)
+    : 0;
+  const cert = CERTS.find(c => c.id === S.cert);
+
+  // Populate card
+  const initials = name.slice(0, 2).toUpperCase();
+  document.getElementById('sc-avatar').textContent  = initials;
+  document.getElementById('sc-name').textContent    = name;
+  document.getElementById('sc-meta').textContent    = (cert?.name || S.cert?.toUpperCase() || '—') + ' · Operator Rank';
+  document.getElementById('sc-level').textContent   = rank;
+  document.getElementById('sc-readiness').textContent = readiness + '%';
+  document.getElementById('sc-readiness-sub').textContent = cert?.name || S.cert || '—';
+  document.getElementById('sc-answered').textContent  = answered;
+  document.getElementById('sc-streak').textContent    = streak;
+  document.getElementById('sc-accuracy').textContent  = accuracy;
+  document.getElementById('sc-accuracy-sub').textContent = (sessions !== '—' ? sessions + ' sessions' : '—');
+  document.getElementById('sc-time').textContent     = time;
+  document.getElementById('sc-sessions').textContent = sessions;
+  document.getElementById('sc-xp-progress-label').textContent = 'XP PROGRESS — ' + xpLabel;
+  document.getElementById('sc-xp-progress-val').textContent = xpSub;
+  document.getElementById('sc-xp-fill').style.width = xpBarW;
+
+  document.getElementById('share-modal-overlay').classList.add('open');
+}
+
+function closeShareModal() {
+  document.getElementById('share-modal-overlay').classList.remove('open');
+}
+
+function handleShareOverlayClick(e) {
+  if (e.target === document.getElementById('share-modal-overlay')) closeShareModal();
+}
+
+function setShareFormat(fmt) {
+  ShareState.format = fmt;
+  document.getElementById('sfmt-square').classList.toggle('active', fmt === 'square');
+  document.getElementById('sfmt-landscape').classList.toggle('active', fmt === 'landscape');
+  const card = document.getElementById('share-card');
+  if (fmt === 'landscape') { card.classList.add('landscape'); }
+  else                     { card.classList.remove('landscape'); }
+}
+
+function openShareFullSize() {
+  const card   = document.getElementById('share-card');
+  const isLand = ShareState.format === 'landscape';
+  const w      = isLand ? 1200 : 800;
+  const h      = isLand ? 632  : 800;
+  const cardHTML = card.outerHTML;
+
+  const html = `<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #060c1e; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .share-card {
+    width: ${w}px; height: ${h}px;
+    background: #060c1e;
+    background-image: radial-gradient(rgba(26,109,255,0.10) 1px, transparent 1px);
+    background-size: 30px 30px;
+    padding: ${isLand ? '40px 52px' : '52px'}; position: relative; overflow: hidden;
+    font-family: 'Barlow Condensed', sans-serif;
+  }
+  .share-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #00e5cc, #1a6dff);
+  }
+  .sc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: ${isLand ? '28px' : '36px'}; }
+  .sc-brand { display: flex; align-items: center; gap: 14px; }
+  .sc-brand-hex { font-size: 32px; color: #00e5cc; line-height: 1; }
+  .sc-brand-text .sc-brand-name { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 6px; text-transform: uppercase; color: #f0f4f8; }
+  .sc-brand-text .sc-brand-sub  { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 4px; color: #4a6080; }
+  .sc-level { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 2px; background: rgba(0,229,204,0.1); border: 1px solid rgba(0,229,204,0.3); color: #00e5cc; padding: 8px 18px; }
+  .sc-profile { display: flex; align-items: center; gap: 22px; margin-bottom: ${isLand ? '28px' : '36px'}; }
+  .sc-avatar {
+    width: ${isLand ? '70px' : '80px'}; height: ${isLand ? '70px' : '80px'}; border-radius: 50%;
+    background: linear-gradient(135deg, #00e5cc, #1a6dff);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif; font-size: ${isLand ? '26px' : '30px'}; font-weight: 900; color: #060c1e;
+    border: 3px solid rgba(0,229,204,0.4); flex-shrink: 0;
+  }
+  .sc-info .sc-name { font-family: 'Barlow Condensed', sans-serif; font-size: ${isLand ? '36px' : '42px'}; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: #f0f4f8; line-height: 1; margin-bottom: 6px; }
+  .sc-info .sc-meta { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 3px; color: #4a6080; }
+  .sc-stats { display: grid; grid-template-columns: repeat(${isLand ? '6' : '3'}, 1fr); gap: ${isLand ? '12px' : '16px'}; margin-bottom: ${isLand ? '24px' : '32px'}; }
+  .sc-stat { background: rgba(255,255,255,0.03); border: 1px solid #1a2444; padding: ${isLand ? '16px 14px' : '20px 16px'}; }
+  .sc-stat-val { font-family: 'Barlow Condensed', sans-serif; font-size: ${isLand ? '32px' : '42px'}; font-weight: 900; color: #00e5cc; line-height: 1; margin-bottom: 6px; }
+  .sc-stat-val.amber { color: #ffb300; }
+  .sc-stat-val.white { color: #f0f4f8; }
+  .sc-stat-lbl { font-family: 'Share Tech Mono', monospace; font-size: ${isLand ? '9px' : '10px'}; letter-spacing: 2px; color: #4a6080; text-transform: uppercase; line-height: 1.4; }
+  .sc-stat-sub { font-family: 'Share Tech Mono', monospace; font-size: ${isLand ? '8px' : '9px'}; letter-spacing: 1px; color: #2a3a5a; margin-top: 4px; }
+  .sc-xp-label { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .sc-xp-label span { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 2px; color: #4a6080; }
+  .sc-xp-label span.xp-val { color: #00e5cc; }
+  .sc-xp-bar { height: 6px; background: #1a2444; overflow: hidden; margin-bottom: 20px; }
+  .sc-xp-fill { height: 100%; background: linear-gradient(90deg, #00e5cc, #1a6dff); }
+  .sc-footer { display: flex; justify-content: space-between; align-items: center; }
+  .sc-url { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 2px; color: #2a3a5a; }
+  .sc-tagline { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 2px; color: #2a3a5a; font-style: italic; }
+  /* reuse inner element classes */
+  .sc-brand-name, .sc-brand-sub, .sc-brand-hex { display: block; }
+</style>
+</head><body>
+${cardHTML}
+</body></html>`;
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url  = URL.createObjectURL(blob);
+  window.open(url, '_blank', `width=${w},height=${h},toolbar=no,menubar=no`);
+}
+
+/* ══ QUESTION BANK ══ */
+const QB = {
+  all: [], statusMap: {}, filtered: [],
+  page: 0, pageSize: 30,
+  filters: { domain: 'all', difficulty: 'all', status: 'all' },
+  loaded: false, loadedCert: null
+};
+
+async function loadQuestionBank() {
+  const cert = CERTS.find(c => c.id === S.cert);
+  document.getElementById('qb-cert-name').textContent = cert?.name || S.cert?.toUpperCase() || '—';
+
+  if (QB.loaded && QB.loadedCert === S.cert) { renderQBank(); return; }
+
+  document.getElementById('qb-tbody').innerHTML =
+    '<tr><td colspan="6" class="qb-empty">⬡ LOADING QUESTION BANK...</td></tr>';
+
+  try {
+    // 1. Fetch all questions for this cert
+    const { data: questions } = await sb.from('questions')
+      .select('id, question_text, domain, difficulty')
+      .eq('cert', S.cert).eq('active', true)
+      .order('domain').order('difficulty');
+
+    QB.all = questions || [];
+
+    // 2. Fetch user answer history filtered by this cert's question IDs
+    QB.statusMap = {};
+    if (QB.all.length) {
+      const qIds = QB.all.map(q => q.id);
+      // Supabase supports up to 1000 items in .in() — batch if needed
+      const batchSize = 500;
+      for (let i = 0; i < qIds.length; i += batchSize) {
+        const batch = qIds.slice(i, i + batchSize);
+        const { data: answers } = await sb.from('question_answers')
+          .select('question_id, is_correct')
+          .eq('user_id', S.user.id)
+          .in('question_id', batch);
+        (answers || []).forEach(a => {
+          if (!QB.statusMap[a.question_id]) QB.statusMap[a.question_id] = { total: 0, correct: 0 };
+          QB.statusMap[a.question_id].total++;
+          if (a.is_correct) QB.statusMap[a.question_id].correct++;
+        });
+      }
+    }
+
+    QB.loaded = true; QB.loadedCert = S.cert;
+    QB.filters = { domain: 'all', difficulty: 'all', status: 'all' };
+    QB.page = 0;
+
+    // Build domain filter options
+    const domains = [...new Set(QB.all.map(q => q.domain))].sort();
+    document.getElementById('qb-filter-domain').innerHTML =
+      '<option value="all">All Domains</option>' +
+      domains.map(d => `<option value="${d}">${d}</option>`).join('');
+
+    // Reset status buttons
+    document.querySelectorAll('.qb-status-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.qb-status-btn[data-status="all"]')?.classList.add('active');
+
+    applyQBFilters();
+  } catch (e) {
+    document.getElementById('qb-tbody').innerHTML =
+      '<tr><td colspan="6" class="qb-empty">ERROR LOADING DATA — PLEASE TRY AGAIN</td></tr>';
+  }
+}
+
+function qbStatus(qid) {
+  const s = QB.statusMap[qid];
+  if (!s || s.total === 0) return 'unseen';
+  const r = s.correct / s.total;
+  return r >= 0.8 ? 'mastered' : r >= 0.5 ? 'learning' : 'weak';
+}
+
+function applyQBFilters() {
+  const { domain, difficulty, status } = QB.filters;
+  QB.filtered = QB.all.filter(q => {
+    if (domain !== 'all' && q.domain !== domain) return false;
+    if (difficulty !== 'all' && q.difficulty !== difficulty) return false;
+    if (status !== 'all' && qbStatus(q.id) !== status) return false;
+    return true;
+  });
+  QB.page = 0;
+  renderQBank();
+}
+
+function renderQBank() {
+  const { filtered, page, pageSize, all } = QB;
+  const start = page * pageSize;
+  const end   = Math.min(start + pageSize, filtered.length);
+  const slice = filtered.slice(start, end);
+
+  // Status counts
+  const counts = { unseen: 0, weak: 0, learning: 0, mastered: 0 };
+  all.forEach(q => counts[qbStatus(q.id)]++);
+  document.getElementById('qb-count-total').textContent   = all.length;
+  document.getElementById('qb-count-all').textContent     = all.length;
+  document.getElementById('qb-count-unseen').textContent  = counts.unseen;
+  document.getElementById('qb-count-weak').textContent    = counts.weak;
+  document.getElementById('qb-count-learning').textContent= counts.learning;
+  document.getElementById('qb-count-mastered').textContent= counts.mastered;
+
+  const pageInfo = filtered.length ? `${start + 1}–${end} of ${filtered.length}` : '0 results';
+  document.getElementById('qb-page-info').textContent   = pageInfo;
+  document.getElementById('qb-page-info-b').textContent = pageInfo;
+  document.getElementById('qb-prev').disabled = page === 0;
+  document.getElementById('qb-next').disabled = end >= filtered.length;
+
+  if (!slice.length) {
+    document.getElementById('qb-tbody').innerHTML =
+      '<tr><td colspan="6" class="qb-empty">NO QUESTIONS MATCH THIS FILTER</td></tr>';
+    return;
+  }
+
+  const statusCls = { unseen:'grey', weak:'red', learning:'amber', mastered:'green' };
+  const statusLbl = { unseen:'UNSEEN', weak:'WEAK', learning:'LEARNING', mastered:'MASTERED' };
+  const diffCls   = { easy:'green', medium:'amber', hard:'red' };
+
+  document.getElementById('qb-tbody').innerHTML = slice.map((q, i) => {
+    const st  = qbStatus(q.id);
+    const sm  = QB.statusMap[q.id];
+    const acc = sm ? Math.round((sm.correct / sm.total) * 100) + '%' : '—';
+    const att = sm ? sm.total + (sm.total === 1 ? ' attempt' : ' attempts') : '';
+    const txt = q.question_text.length > 95 ? q.question_text.slice(0, 93) + '…' : q.question_text;
+    return `<tr class="qb-row">
+      <td class="qb-num">${start + i + 1}</td>
+      <td class="qb-text">${txt}</td>
+      <td><span class="qb-domain-tag">${q.domain}</span></td>
+      <td><span class="qb-diff-badge ${diffCls[q.difficulty] || 'grey'}">${q.difficulty.toUpperCase()}</span></td>
+      <td><span class="qb-status-badge ${statusCls[st]}">${statusLbl[st]}</span></td>
+      <td class="qb-acc">${acc}<br><span class="qb-attempts">${att}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function setQBFilter(type, value) {
+  QB.filters[type] = value;
+  if (type === 'status') {
+    document.querySelectorAll('.qb-status-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.querySelector(`.qb-status-btn[data-status="${value}"]`);
+    if (btn) btn.classList.add('active', value !== 'all' ? value : '');
+  }
+  applyQBFilters();
+}
+
+function qbNextPage() {
+  QB.page++;
+  renderQBank();
+  document.getElementById('screen-qbank').scrollTo(0, 0);
+}
+function qbPrevPage() {
+  QB.page = Math.max(0, QB.page - 1);
+  renderQBank();
+  document.getElementById('screen-qbank').scrollTo(0, 0);
+}
+
+/* ══ READINESS MAP ══ */
+function buildReadinessMap() {
+  const cert    = CERTS.find(c => c.id === S.cert);
+  const domains = S.domains || [];
+
+  document.getElementById('rm-cert-name').textContent = cert?.name || S.cert?.toUpperCase() || '—';
+
+  const mastered   = domains.filter(d => d.mastered).length;
+  const inProgress = domains.filter(d => !d.mastered && !d.unstarted).length;
+  const notStarted = domains.filter(d => d.unstarted).length;
+
+  document.getElementById('rm-mastered-count').textContent   = mastered;
+  document.getElementById('rm-progress-count').textContent   = inProgress;
+  document.getElementById('rm-notstarted-count').textContent = notStarted;
+
+  if (!domains.length) {
+    document.getElementById('rm-grid').innerHTML =
+      `<div style="grid-column:1/-1;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;padding:20px 0;">NO DOMAIN DATA YET — COMPLETE A DRILL TO BEGIN.</div>`;
+    return;
+  }
+
+  const sorted = [...domains].sort((a, b) => {
+    if (a.mastered && !b.mastered) return 1;
+    if (!a.mastered && b.mastered) return -1;
+    if (a.unstarted && !b.unstarted) return 1;
+    if (!a.unstarted && b.unstarted) return -1;
+    return a.pct - b.pct;
+  });
+
+  document.getElementById('rm-grid').innerHTML = sorted.map(d => {
+    const cls     = d.mastered ? 'green' : d.unstarted ? 'grey' : d.pct >= 65 ? 'amber' : 'red';
+    const cardCls = 'rm-' + cls;
+    const badge   = d.mastered ? 'MASTERED' : d.unstarted ? 'NOT STARTED' : d.pct >= 65 ? 'PROGRESSING' : 'NEEDS WORK';
+    const pctTxt  = d.unstarted ? '—' : d.pct + '%';
+    const meta    = d.unstarted ? 'No attempts yet' : `${d.correct || 0} correct of ${d.total || 0} attempted`;
+    const certId  = S.cert;
+    const domEsc  = (d.name || '').replace(/'/g, "\\'");
+
+    return `
+      <div class="rm-card ${cardCls}" onclick="${d.mastered ? '' : `startDomainDrill('${certId}','${domEsc}')`}">
+        ${d.mastered ? '<div class="rm-mastered-tick">✓</div>' : ''}
+        <div class="rm-card-pct ${cls}">${pctTxt}</div>
+        <div class="rm-card-name">${d.name}</div>
+        <span class="rm-card-badge ${cls}">${badge}</span>
+        <div class="rm-card-bar-track">
+          <div class="rm-card-bar-fill ${cls}" style="width:${d.pct}%"></div>
+        </div>
+        <div class="rm-card-meta">${meta}</div>
+        <button class="rm-drill-btn" onclick="event.stopPropagation();startDomainDrill('${certId}','${domEsc}')">▸ DRILL THIS DOMAIN</button>
+      </div>`;
+  }).join('');
 }
 
 /* ══ CERT SELECT ══ */
@@ -778,6 +2920,9 @@ async function selectCert(certId) {
   document.getElementById('dash-name').textContent    = first;
 
   await loadDomainData(certId);
+
+  loadExamCountdown(certId);  // async, non-blocking
+  loadDecayAlerts(certId);    // async, non-blocking
 
   showMain('dashboard');
   showPage('app');
@@ -890,10 +3035,18 @@ function renderDomainUI(certId, domains) {
   } else {
     document.getElementById('db-content').innerHTML = domains.map(d => {
       const cls = d.mastered ? 'high' : d.pct >= 65 ? 'mid' : d.unstarted ? 'none' : 'low';
+      const days = S.decayMap[d.name];
+      let decayBadge = '';
+      if (!d.unstarted && days !== undefined) {
+        if (days >= 21) decayBadge = `<span class="decay-badge critical">⚠ ${days}d</span>`;
+        else if (days >= 14) decayBadge = `<span class="decay-badge danger">⚠ ${days}d</span>`;
+        else if (days >= 7)  decayBadge = `<span class="decay-badge stale">↻ ${days}d</span>`;
+      }
       return `<div class="db-row">
         <div class="db-row-head">
           <span class="db-row-name">${d.name}</span>
-          <div style="display:flex;align-items:center;gap:0">
+          <div style="display:flex;align-items:center;gap:6px">
+            ${decayBadge}
             <span class="db-row-score ${cls}">${d.unstarted ? 'NOT STARTED' : d.pct + '%' + (d.mastered ? ' ✓' : '')}</span>
             ${d.mastered ? '' : `<button class="db-drill-btn" onclick="startDomainDrill('${certId}','${d.name.replace(/'/g,"\\'")}')">DRILL</button>`}
           </div>
@@ -980,7 +3133,9 @@ async function loadStatsAsync() {
 
 /* ══ NAVIGATION ══ */
 function goToCertSelect() {
-  S.cert = null; S.certObj = null; S.domains = [];
+  S.cert = null; S.certObj = null; S.domains = []; S.decayMap = {};
+  const strip = document.getElementById('decay-strip');
+  if (strip) { strip.style.display = 'none'; strip.innerHTML = ''; }
   showPage('cert-select');
   buildCertSelect();
 }
@@ -1000,6 +3155,11 @@ function goToDashboard() {
   // Either way, no DB re-fetch here — avoids race conditions entirely.
   renderDomainUI(S.cert, S.domains);
 
+  // Load daily orders, exam countdown, knowledge decay (async, non-blocking)
+  loadDailyOrders(S.cert);
+  loadExamCountdown(S.cert);
+  loadDecayAlerts(S.cert);
+
   // Show the screen AFTER rendering so bars are at their target widths on first paint.
   // This prevents the CSS transition firing from 0% → correct% on screen reveal.
   showMain('dashboard');
@@ -1010,6 +3170,246 @@ function confirmBack() {
     if (!confirm('Leave drill? Progress will not be saved.')) return;
   }
   goToDashboard();
+}
+
+/* ══ DAILY ORDERS ══ */
+async function loadDailyOrders(certId) {
+  const panel = document.getElementById('daily-orders-panel');
+  if (!panel) return;
+  document.getElementById('do-loading').style.display = 'block';
+  document.getElementById('do-active').style.display   = 'none';
+  document.getElementById('do-complete').style.display = 'none';
+
+  const today    = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+  try {
+    // 1. Check today's orders
+    const { data: todayOrders } = await sb.from('daily_orders')
+      .select('*').eq('user_id', S.user.id).eq('cert', certId).eq('date', today).single();
+
+    if (todayOrders) {
+      // Today's orders exist — if complete, pre-fetch or generate tomorrow's
+      if (todayOrders.completed) {
+        const { data: tomorrowOrders } = await sb.from('daily_orders')
+          .select('*').eq('user_id', S.user.id).eq('cert', certId).eq('date', tomorrow).single();
+        if (tomorrowOrders) {
+          // Tomorrow's already been issued by cron — show them as "next orders"
+          renderDailyOrders(tomorrowOrders, true);
+        } else {
+          // Cron hasn't run yet — generate tomorrow's client-side so user isn't left waiting
+          const next = await generateDailyOrders(certId, tomorrow);
+          renderDailyOrders(next, true);
+        }
+      } else {
+        renderDailyOrders(todayOrders, false);
+      }
+      return;
+    }
+
+    // 2. No today orders — generate them now (new user or cron missed)
+    const orders = await generateDailyOrders(certId, today);
+    if (orders) { renderDailyOrders(orders, false); return; }
+
+    // 3. Total fallback — show a friendly error state
+    document.getElementById('do-loading').style.display = 'none';
+    document.getElementById('do-active').innerHTML = `
+      <div class="do-panel-inner">
+        <div class="do-header">
+          <div class="do-icon">⬡</div>
+          <div class="do-title-block">
+            <div class="do-title">DAILY ORDERS</div>
+            <div class="do-date">Unable to load — please refresh</div>
+          </div>
+        </div>
+      </div>`;
+    document.getElementById('do-active').style.display = 'block';
+
+  } catch (e) {
+    console.error('Daily orders error:', e);
+    document.getElementById('do-loading').style.display = 'none';
+    document.getElementById('do-active').innerHTML = `
+      <div class="do-panel-inner">
+        <div class="do-header">
+          <div class="do-icon">⬡</div>
+          <div class="do-title-block">
+            <div class="do-title">DAILY ORDERS</div>
+            <div class="do-date" style="color:var(--red)">Error loading orders — refresh to retry</div>
+          </div>
+        </div>
+      </div>`;
+    document.getElementById('do-active').style.display = 'block';
+  }
+}
+
+async function generateDailyOrders(certId, today) {
+  const yesterday = new Date(Date.now() - 86400000).toISOString();
+
+  // 1. Wrong question IDs from last 24 hrs (via question_answers)
+  let remIds = [];
+  try {
+    const { data: wrong } = await sb.from('question_answers')
+      .select('question_id, questions!inner(cert)')
+      .eq('user_id', S.user.id).eq('is_correct', false)
+      .eq('questions.cert', certId)
+      .gte('created_at', yesterday);
+    remIds = [...new Set((wrong || []).map(r => r.question_id))].slice(0, 5);
+  } catch (_) {}
+
+  // 2. Determine weak vs strong domains from S.domains
+  const domains    = S.domains || [];
+  const weakDoms   = domains.filter(d => !d.unstarted && d.pct < 85).map(d => d.name);
+  const strongDoms = domains.filter(d => d.pct >= 85).map(d => d.name);
+
+  // 3. Pull primary questions from weak domains
+  let primaryIds = [];
+  if (weakDoms.length) {
+    try {
+      const { data: rows } = await sb.from('questions')
+        .select('id').eq('cert', certId).eq('active', true)
+        .in('domain', weakDoms).limit(50);
+      primaryIds = shuffle(rows || [])
+        .map(r => r.id).filter(id => !remIds.includes(id)).slice(0, 8);
+    } catch (_) {}
+  }
+
+  // 4. Pull secondary questions from strong domains
+  let secIds = [];
+  if (strongDoms.length) {
+    try {
+      const { data: rows } = await sb.from('questions')
+        .select('id').eq('cert', certId).eq('active', true)
+        .in('domain', strongDoms).limit(30);
+      secIds = shuffle(rows || [])
+        .map(r => r.id)
+        .filter(id => !remIds.includes(id) && !primaryIds.includes(id))
+        .slice(0, 3);
+    } catch (_) {}
+  }
+
+  // 5. If nothing at all, pull random questions
+  let allIds = [...remIds, ...primaryIds, ...secIds];
+  if (allIds.length === 0) {
+    try {
+      const { data: rows } = await sb.from('questions')
+        .select('id').eq('cert', certId).eq('active', true).limit(50);
+      allIds = shuffle(rows || []).map(r => r.id).slice(0, 10);
+      primaryIds = allIds;
+    } catch (_) {}
+  }
+
+  const record = {
+    user_id: S.user.id, cert: certId, date: today,
+    question_ids: allIds,
+    remediation_count: remIds.length,
+    primary_count: primaryIds.length,
+    secondary_count: secIds.length,
+    completed: false
+  };
+
+  try {
+    const { data } = await sb.from('daily_orders').insert(record).select().single();
+    return data || record;
+  } catch (_) { return record; }
+}
+
+function renderDailyOrders(orders, isNextDay = false) {
+  document.getElementById('do-loading').style.display = 'none';
+  if (orders.completed) {
+    document.getElementById('do-active').style.display   = 'none';
+    document.getElementById('do-complete').style.display = 'block';
+    const when = orders.completed_at
+      ? new Date(orders.completed_at).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })
+      : 'today';
+    document.getElementById('do-complete-sub').textContent =
+      `Completed at ${when} · Streak maintained · Well done, soldier.`;
+  } else {
+    document.getElementById('do-active').style.display   = 'block';
+    document.getElementById('do-complete').style.display = 'none';
+    // For next-day pre-loaded orders, show tomorrow's date + a "ready" notice
+    const targetDate = isNextDay
+      ? new Date(Date.now() + 86400000)
+      : new Date();
+    const dateStr = targetDate.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric', timeZone:'UTC' }).toUpperCase();
+    const issuedLabel = isNextDay ? ' · NEXT ORDERS — READY' : ' · ISSUED 2359Z';
+    document.getElementById('do-date').textContent = dateStr + issuedLabel;
+    // Show a notice banner if displaying next-day orders
+    const existingNotice = document.getElementById('do-nextday-notice');
+    if (isNextDay) {
+      if (!existingNotice) {
+        const notice = document.createElement('div');
+        notice.id = 'do-nextday-notice';
+        notice.style.cssText = 'font-size:11px;color:var(--amber);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;opacity:0.85;';
+        notice.textContent = '⚡ Today\'s orders complete — tomorrow\'s orders are ready early';
+        const doDate = document.getElementById('do-date');
+        doDate.parentNode.insertBefore(notice, doDate.nextSibling);
+      }
+    } else {
+      if (existingNotice) existingNotice.remove();
+    }
+    const total = (orders.question_ids || []).length;
+    document.getElementById('do-rem-count').textContent   = orders.remediation_count || 0;
+    document.getElementById('do-pri-count').textContent   = orders.primary_count || 0;
+    document.getElementById('do-sec-count').textContent   = orders.secondary_count || 0;
+    document.getElementById('do-total-count').textContent = total;
+    // Store orders ID for completion
+    S.dailyOrdersId  = orders.id || null;
+    S.dailyOrdersIds = orders.question_ids || [];
+  }
+}
+
+async function startDailyOrdersDrill() {
+  if (!S.dailyOrdersIds || S.dailyOrdersIds.length === 0) {
+    alert('No orders generated yet. Try refreshing the dashboard.');
+    return;
+  }
+  const btn = document.getElementById('do-execute-btn');
+  if (btn) btn.disabled = true;
+
+  // Fetch the actual question rows by ID
+  try {
+    const { data: rows, error } = await sb.from('questions')
+      .select('*').in('id', S.dailyOrdersIds).eq('active', true);
+    if (error || !rows?.length) { alert('Could not load today\'s questions. Please try again.'); if (btn) btn.disabled = false; return; }
+
+    // Preserve remediation-first order, then primary, then secondary
+    const ordered = S.dailyOrdersIds
+      .map(id => rows.find(r => r.id === id))
+      .filter(Boolean);
+
+    const { data: sess } = await sb.from('drill_sessions').insert({
+      user_id: S.user.id, cert: S.cert, domain: 'daily_orders',
+      questions_attempted: 0, questions_correct: 0, xp_earned: 0, completed: false
+    }).select().single();
+
+    Object.assign(S, {
+      drillType: 'daily_orders', domain: 'daily_orders',
+      questions: ordered, idx: 0,
+      sessionId: sess?.id || null, sessionStart: Date.now(),
+      correct: 0, sessionXP: 0, answered: false,
+      questionResults: [], pendingAnswers: []
+    });
+
+    document.getElementById('drill-type-tag').textContent = 'DAILY ORDERS';
+    renderQ();
+    showMain('drill');
+  } catch (e) {
+    alert('Error loading questions. Please try again.');
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function completeDailyOrders() {
+  // Mark daily orders as done in DB
+  if (S.dailyOrdersId) {
+    try {
+      await sb.from('daily_orders').update({
+        completed: true, completed_at: new Date().toISOString()
+      }).eq('id', S.dailyOrdersId);
+    } catch (_) {}
+  }
+  // Streak now only updates on daily orders completion
+  await updateStreak();
 }
 
 /* ══ DRILL ══ */
@@ -1157,16 +3557,36 @@ async function finish() {
       score_pct: pct, duration_secs: dur, xp_earned: S.sessionXP, completed: true
     }).eq('id', S.sessionId).then(() => {});
   }
+  // Bonus XP: perfect score
+  let bonusXP = 0; let bonusLabel = '';
+  if (pct === 100) {
+    bonusXP += 30;
+    bonusLabel += ' +30 PERFECT BONUS';
+  }
+  // Bonus XP: daily orders completion
+  if (S.drillType === 'daily_orders') {
+    bonusXP += 50;
+    bonusLabel += ' +50 ORDERS BONUS';
+  }
+  S.sessionXP += bonusXP;
+  S._bonusLabel = bonusLabel.trim();
+
   if (S.sessionXP > 0) {
     sb.from('xp_events').insert({
       user_id: S.user.id, amount: S.sessionXP, source: 'drill_session',
       session_id: S.sessionId || null,
-      metadata: { cert: S.cert, domain: S.domain, score_pct: pct }
+      metadata: { cert: S.cert, domain: S.domain, score_pct: pct, bonus: bonusXP }
     }).then(() => {});
   }
 
+  // Check cert completion bonus (all domains mastered for this cert)
+  checkCertCompletionBonus();
+
   S.totalXP += S.sessionXP;
-  updateStreak();
+  QB.loaded = false; // invalidate QB cache so status reflects new answers
+  if (S.drillType === 'daily_orders') {
+    await completeDailyOrders();
+  }
 
   // Results UI
   const pctEl = document.getElementById('res-pct');
@@ -1177,12 +3597,16 @@ async function finish() {
   document.getElementById('res-correct').textContent = S.correct;
   document.getElementById('res-total').textContent   = S.questions.length;
   document.getElementById('res-time').textContent    = (dur/60).toFixed(1);
-  document.getElementById('res-xp').textContent      = `⬡  +${S.sessionXP} XP EARNED`;
+  document.getElementById('res-xp').textContent = `⬡  +${S.sessionXP} XP EARNED${S._bonusLabel ? '  ·  ' + S._bonusLabel : ''}`;
 
-  const eyebrowMap = { diagnostic:'DIAGNOSTIC COMPLETE', domain:'DOMAIN DRILL COMPLETE', standard:'DRILL COMPLETE' };
+  const eyebrowMap = { diagnostic:'DIAGNOSTIC COMPLETE', domain:'DOMAIN DRILL COMPLETE', standard:'DRILL COMPLETE', daily_orders:'ORDERS COMPLETE' };
   document.getElementById('res-eye').textContent = eyebrowMap[S.drillType] || 'DRILL COMPLETE';
 
-  if (S.drillType === 'diagnostic' || S.drillType === 'domain') {
+  if (S.drillType === 'daily_orders') {
+    document.getElementById('res-btns').innerHTML = `
+      <button class="res-btn primary" onclick="goToDashboard()">▸ VIEW PROGRESS</button>
+    `;
+  } else if (S.drillType === 'diagnostic' || S.drillType === 'domain') {
     document.getElementById('res-btns').innerHTML = `
       <button class="res-btn primary" onclick="goToDashboard()">▸ VIEW PROGRESS</button>
       <button class="res-btn secondary" onclick="startDomainDrill('${S.cert}','${(S.domain||'').replace(/'/g,"\\'")}')">↺ DRILL AGAIN</button>
@@ -1311,17 +3735,88 @@ async function updateStreak() {
   try {
     const today = new Date().toISOString().split('T')[0];
     const { data: st } = await sb.from('streaks').select('*').eq('user_id', S.user.id).single();
-    if (!st || st.last_activity === today) return;
+
+    if (!st) {
+      await sb.from('streaks').insert({
+        user_id: S.user.id, current_streak: 1, longest_streak: 1, last_activity: today
+      });
+      S.streak = 1;
+      document.getElementById('tb-streak').textContent   = 1;
+      document.getElementById('dash-streak').textContent = '1 🔥';
+      return;
+    }
+
+    if (st.last_activity === today) return;
+
     const yest = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-    const newStreak = st.last_activity === yest ? st.current_streak + 1 : 1;
+    const newStreak = st.last_activity === yest ? (st.current_streak || 0) + 1 : 1;
     S.streak = newStreak;
     await sb.from('streaks').update({
-      current_streak: newStreak, longest_streak: Math.max(st.longest_streak, newStreak),
-      last_activity: today, updated_at: new Date().toISOString()
+      current_streak: newStreak,
+      longest_streak: Math.max(st.longest_streak || 0, newStreak),
+      last_activity: today,
+      updated_at: new Date().toISOString()
     }).eq('user_id', S.user.id);
     document.getElementById('tb-streak').textContent   = newStreak;
     document.getElementById('dash-streak').textContent = newStreak + ' 🔥';
+
+    // Streak milestone XP bonuses (awarded once per milestone hit)
+    const STREAK_MILESTONES = { 7: 150, 30: 500, 100: 1500 };
+    const bonus = STREAK_MILESTONES[newStreak];
+    if (bonus) {
+      await sb.from('xp_events').insert({
+        user_id: S.user.id, amount: bonus, source: 'streak_milestone',
+        metadata: { streak: newStreak }
+      });
+      S.totalXP += bonus;
+      document.getElementById('tb-xp').textContent   = S.totalXP.toLocaleString();
+      document.getElementById('dash-xp').textContent = S.totalXP.toLocaleString();
+    }
   } catch (_) {}
+}
+
+/* ══ CERT COMPLETION BONUS ══ */
+async function checkCertCompletionBonus() {
+  try {
+    // All domains mastered?
+    if (!S.domains?.length) return;
+    const allMastered = S.domains.every(d => d.mastered && !d.unstarted) && S.domains.some(d => !d.unstarted);
+    if (!allMastered) return;
+
+    // Check if already awarded for this cert
+    const { data: existing } = await sb.from('xp_events')
+      .select('id').eq('user_id', S.user.id).eq('source', 'cert_completion')
+      .contains('metadata', { cert: S.cert }).limit(1);
+    if (existing?.length) return; // already awarded
+
+    const bonus = 500;
+    await sb.from('xp_events').insert({
+      user_id: S.user.id, amount: bonus, source: 'cert_completion',
+      metadata: { cert: S.cert }
+    });
+    S.totalXP += bonus;
+    document.getElementById('tb-xp').textContent   = S.totalXP.toLocaleString();
+    document.getElementById('dash-xp').textContent = S.totalXP.toLocaleString();
+  } catch (_) {}
+}
+
+/* ══ MOBILE SIDEBAR ══ */
+function toggleSidebar() {
+  const sidebar  = document.querySelector('.sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  const isOpen   = sidebar.classList.contains('open');
+  if (isOpen) { closeSidebar(); } else { openSidebar(); }
+}
+function openSidebar() {
+  document.querySelector('.sidebar').classList.add('open');
+  document.getElementById('sidebar-backdrop').classList.add('open');
+  // Show sign-out in sidebar on mobile
+  const mobileSignout = document.getElementById('sb-signout-mobile');
+  if (mobileSignout) mobileSignout.style.display = 'flex';
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebar-backdrop').classList.remove('open');
 }
 
 /* ══ AUTH ══ */
