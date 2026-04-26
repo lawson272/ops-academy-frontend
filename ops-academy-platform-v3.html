@@ -3248,7 +3248,7 @@ async function generateDailyOrders(certId, today) {
 
   // 2. Determine weak vs strong domains from S.domains
   const domains    = S.domains || [];
-  const weakDoms   = domains.filter(d => !d.unstarted && d.pct < 85).map(d => d.name);
+  const weakDoms   = domains.filter(d => d.pct < 85).map(d => d.name);
   const strongDoms = domains.filter(d => d.pct >= 85).map(d => d.name);
 
   // 3. Pull primary questions from weak domains
