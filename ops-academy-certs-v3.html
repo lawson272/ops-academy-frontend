@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Certifications | Ops Academy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;800;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #060c1e; --dark: #0b1228; --panel: #101830; --border: #1a2444; --border-l: #243060;
+      --cyan: #00e5cc; --cyan-dim: rgba(0,229,204,0.08); --cyan-glow: rgba(0,229,204,0.18);
+      --blue: #1a6dff; --blue-dim: rgba(26,109,255,0.08);
+      --white: #f0f4f8; --off: #ccd6f6; --muted: #4a6080; --text: #7a90b8;
+      --mono: 'Share Tech Mono', monospace; --cond: 'Barlow Condensed', sans-serif; --body: 'Barlow', sans-serif;
+    }
+    html, body { background: var(--black); color: var(--white); font-family: var(--body); overflow-x: hidden; }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: radial-gradient(rgba(26,109,255,0.12) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px; height: 64px;
+      background: rgba(6,12,30,0.92); border-bottom: 1px solid var(--border); backdrop-filter: blur(12px);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-wm { display: flex; flex-direction: column; line-height: 1.05; }
+    .nav-logo-ops  { font-family: var(--cond); font-size: 15px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; color: var(--white); }
+    .nav-logo-acad { font-family: var(--cond); font-size: 15px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; color: var(--cyan); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
+    .nav-cta { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; background: var(--cyan); color: var(--black); padding: 9px 22px; text-decoration: none; font-weight: 700; transition: all 0.2s; border-radius: 2px; }
+    .nav-cta:hover { background: #1ffce3; box-shadow: 0 0 24px var(--cyan-glow); }
+
+    .hero {
+      min-height: 50vh; display: flex; align-items: flex-end;
+      padding: 120px 40px 56px; border-bottom: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .hero-glow { position: absolute; top: -80px; right: 0; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(ellipse, rgba(26,109,255,0.06) 0%, transparent 65%); pointer-events: none; }
+    .hero-content { position: relative; z-index: 2; max-width: 700px; }
+    .hero-tag { font-family: var(--mono); font-size: 11px; color: var(--cyan); letter-spacing: 3px; display: flex; align-items: center; gap: 12px; margin-bottom: 28px; text-transform: uppercase; }
+    .hero-tag::before { content: ''; width: 32px; height: 1px; background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+    h1 { font-family: var(--cond); font-size: clamp(48px, 6vw, 84px); font-weight: 900; text-transform: uppercase; line-height: 0.9; }
+    h1 span { color: var(--cyan); }
+    .hero-sub { font-size: 17px; font-weight: 300; color: var(--text); line-height: 1.7; max-width: 520px; margin-top: 24px; }
+
+    /* FILTER */
+    .filter-bar {
+      display: flex; gap: 0; border-bottom: 1px solid var(--border);
+      padding: 0 40px; background: var(--dark); position: sticky; top: 64px; z-index: 50; overflow-x: auto;
+    }
+    .filter-btn {
+      font-family: var(--mono); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+      padding: 18px 24px; border: none; background: transparent; color: var(--muted);
+      cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap;
+    }
+    .filter-btn:hover { color: var(--off); }
+    .filter-btn.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+    /* DOMAIN SECTIONS */
+    .domain-section { padding: 64px 40px; position: relative; z-index: 1; }
+    .domain-section:nth-child(even) { background: var(--dark); }
+    .domain-header { display: flex; align-items: center; gap: 20px; margin-bottom: 40px; }
+    .domain-icon-lg { font-size: 32px; }
+    .domain-title { font-family: var(--cond); font-size: 36px; font-weight: 900; text-transform: uppercase; }
+    .domain-title span { color: var(--cyan); }
+    .domain-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-top: 4px; }
+
+    .cert-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+    .cert-card {
+      background: var(--black); padding: 32px 28px; position: relative; overflow: hidden;
+      transition: background 0.2s; border-top: 3px solid transparent; cursor: default;
+    }
+    .cert-card:hover { background: var(--panel); border-top-color: var(--cyan); }
+    .cert-badge { display: inline-block; font-family: var(--mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px; border-radius: 2px; margin-bottom: 16px; }
+    .cert-badge.beginner { background: rgba(0,229,204,0.1); color: var(--cyan); border: 1px solid rgba(0,229,204,0.2); }
+    .cert-badge.intermediate { background: rgba(26,109,255,0.1); color: #6699ff; border: 1px solid rgba(26,109,255,0.2); }
+    .cert-badge.advanced { background: rgba(255,71,87,0.08); color: #ff7080; border: 1px solid rgba(255,71,87,0.15); }
+    .cert-name { font-family: var(--cond); font-size: 22px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; line-height: 1.1; }
+    .cert-vendor { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 2px; margin-bottom: 14px; }
+    .cert-desc { font-size: 13px; font-weight: 300; color: var(--text); line-height: 1.65; margin-bottom: 20px; }
+    .cert-meta { display: flex; gap: 16px; flex-wrap: wrap; }
+    .cert-meta-item { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+    .cert-meta-item span { color: var(--off); }
+    .cert-card.soon { background: transparent; border: 1px dashed var(--border); border-top: 3px solid transparent; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; min-height: 200px; opacity: 0.5; cursor: not-allowed; }
+    .cert-card.soon:hover { background: transparent; border-top-color: transparent; }
+    .cert-card.soon .soon-label { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+    .cert-card.soon .soon-name { font-family: var(--cond); font-size: 20px; font-weight: 800; text-transform: uppercase; color: var(--border-l); }
+    .cert-card.soon .soon-vendor { font-family: var(--mono); font-size: 10px; color: var(--border-l); letter-spacing: 2px; margin-top: 4px; }
+
+    /* ACTIVE CARD CLICK HINT */
+    .cert-card:not(.soon) { cursor: pointer; }
+    .cert-card:not(.soon)::after { content: 'View Details →'; position: absolute; bottom: 16px; right: 20px; font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--cyan); opacity: 0; transition: opacity 0.2s; text-transform: uppercase; }
+    .cert-card:not(.soon):hover::after { opacity: 1; }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; z-index: 500; background: rgba(6,12,30,0); pointer-events: none; transition: background 0.3s; }
+    .modal-overlay.open { background: rgba(6,12,30,0.82); pointer-events: all; backdrop-filter: blur(4px); }
+    .modal-panel {
+      position: fixed; top: 0; right: 0; bottom: 0; z-index: 501;
+      width: min(680px, 100vw); background: var(--dark);
+      border-left: 1px solid var(--border);
+      transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .modal-panel.open { transform: translateX(0); }
+    .modal-top {
+      padding: 28px 36px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-shrink: 0;
+    }
+    .modal-close {
+      font-family: var(--mono); font-size: 18px; color: var(--muted); background: none; border: none;
+      cursor: pointer; line-height: 1; padding: 4px 8px; transition: color 0.2s; flex-shrink: 0; margin-top: 2px;
+    }
+    .modal-close:hover { color: var(--white); }
+    .modal-vendor { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 3px; margin-bottom: 8px; }
+    .modal-title { font-family: var(--cond); font-size: 42px; font-weight: 900; text-transform: uppercase; line-height: 1; }
+    .modal-tagline { font-size: 14px; font-weight: 300; color: var(--text); margin-top: 10px; line-height: 1.5; }
+    .modal-body { flex: 1; overflow-y: auto; padding: 32px 36px; display: flex; flex-direction: column; gap: 32px; }
+    .modal-body::-webkit-scrollbar { width: 4px; }
+    .modal-body::-webkit-scrollbar-track { background: transparent; }
+    .modal-body::-webkit-scrollbar-thumb { background: var(--border-l); border-radius: 2px; }
+    .modal-section-label { font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: var(--cyan); text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .modal-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); }
+    .exam-item { background: var(--black); padding: 16px 20px; }
+    .exam-item-label { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+    .exam-item-val { font-family: var(--cond); font-size: 18px; font-weight: 700; color: var(--off); line-height: 1.2; }
+    .domain-rows { display: flex; flex-direction: column; gap: 10px; }
+    .domain-row-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .domain-row-name { font-size: 13px; font-weight: 400; color: var(--off); }
+    .domain-row-pct { font-family: var(--mono); font-size: 11px; color: var(--cyan); }
+    .domain-bar-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .domain-bar-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+    .modal-why { font-size: 14px; font-weight: 300; color: var(--text); line-height: 1.75; }
+    .modal-why strong { color: var(--off); font-weight: 500; }
+    .modal-jobs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .modal-job-pill { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; padding: 6px 14px; border: 1px solid var(--border); color: var(--muted); border-radius: 2px; }
+    .modal-footer { padding: 24px 36px; border-top: 1px solid var(--border); display: flex; gap: 12px; flex-shrink: 0; background: var(--dark); }
+    .modal-cta { flex: 1; font-family: var(--mono); font-size: 11px; letter-spacing: 3px; background: var(--cyan); color: var(--black); padding: 14px 24px; text-decoration: none; font-weight: 700; text-transform: uppercase; text-align: center; display: block; border-radius: 2px; transition: all 0.2s; border: none; cursor: pointer; }
+    .modal-cta:hover { background: #1ffce3; box-shadow: 0 0 32px var(--cyan-glow); }
+    .modal-cta-sec { font-family: var(--mono); font-size: 11px; letter-spacing: 2px; background: transparent; color: var(--muted); padding: 14px 20px; border: 1px solid var(--border); text-decoration: none; font-weight: 400; text-transform: uppercase; text-align: center; display: block; border-radius: 2px; transition: all 0.2s; cursor: pointer; }
+    .modal-cta-sec:hover { color: var(--off); border-color: var(--border-l); }
+
+    /* CTA */
+    .cta { text-align: center; padding: 80px 40px; border-top: 1px solid var(--border); position: relative; z-index: 1; }
+    .btn-primary { font-family: var(--mono); font-size: 12px; letter-spacing: 3px; background: var(--cyan); color: var(--black); padding: 16px 36px; text-decoration: none; font-weight: 700; text-transform: uppercase; transition: all 0.2s; display: inline-block; border-radius: 2px; }
+    .btn-primary:hover { background: #1ffce3; box-shadow: 0 0 40px var(--cyan-glow); }
+    .cta h2 { font-family: var(--cond); font-size: clamp(36px, 4vw, 56px); font-weight: 900; text-transform: uppercase; margin-bottom: 16px; }
+    .cta h2 span { color: var(--cyan); }
+    .cta p { color: var(--text); font-size: 16px; max-width: 440px; margin: 0 auto 36px; font-weight: 300; }
+
+    footer { padding: 32px 40px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+    .footer-logo { font-family: var(--cond); font-size: 16px; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; }
+    .footer-logo span { color: var(--cyan); }
+    .footer-copy { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+
+    /* ── MOBILE NAV CTA ── */
+    .nav-mobile-cta {
+      display: none;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
+      background: var(--cyan); color: var(--black); padding: 9px 18px;
+      text-decoration: none; font-weight: 700; transition: all 0.2s; border-radius: 2px;
+      white-space: nowrap;
+    }
+    .nav-mobile-cta:hover { background: #1ffce3; }
+
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; } .nav-links { display: none; }
+      .hero, .domain-section { padding: 80px 20px 48px; }
+      .cert-grid { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 16px; text-align: center; padding: 24px; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 0 16px; }
+      .nav-mobile-cta { display: block; }
+      .nav-logo-ops, .nav-logo-acad { font-size: 13px; letter-spacing: 3px; }
+
+      .hero { padding: 100px 20px 40px; }
+      h1 { font-size: 48px; }
+
+      .filter-bar {
+        padding: 0 16px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .filter-bar::-webkit-scrollbar { display: none; }
+
+      .domain-section { padding: 48px 16px 40px; }
+
+      /* Modal: slides up from bottom on mobile */
+      .modal-panel {
+        width: 100vw;
+        top: auto;
+        bottom: 0;
+        right: 0;
+        height: 85vh;
+        transform: translateY(100%);
+        border-left: none;
+        border-top: 1px solid var(--border);
+        border-radius: 0;
+      }
+      .modal-panel.open { transform: translateY(0); }
+      .modal-top { padding: 20px 20px 16px; }
+      .modal-title { font-size: 28px; }
+      .modal-body { padding: 24px 20px; }
+      .modal-footer { padding: 16px 20px; }
+
+      .cta { padding: 56px 20px; }
+      .btn-primary { min-height: 44px; display: inline-flex; align-items: center; }
+      .nav-mobile-cta { min-height: 44px; display: flex; align-items: center; }
+      .filter-btn { min-height: 44px; }
+    }
+    @media (max-width: 480px) {
+      h1 { font-size: 40px; }
+      .hero { padding: 90px 16px 32px; }
+      .exam-grid { grid-template-columns: 1fr; }
+      .domain-section { padding: 40px 16px 32px; }
+      .cta { padding: 40px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="ops-academy-v3.html">
+    <svg width="36" height="36" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="nav-g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00e5cc"/><stop offset="100%" stop-color="#1a6dff"/></linearGradient></defs>
+      <path fill-rule="evenodd" fill="url(#nav-g)" d="M7,0 L37,0 L44,7 L44,37 L37,44 L7,44 L0,37 L0,7 Z M15,11 L29,11 L33,15 L33,29 L29,33 L15,33 L11,29 L11,15 Z"/>
+      <polyline points="17,16 26,22 17,28" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+    </svg>
+    <div class="nav-logo-wm"><span class="nav-logo-ops">OPS</span><span class="nav-logo-acad">ACADEMY</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="ops-academy-certs-v3.html" class="active">Certifications</a>
+    <a href="ops-academy-about-v3.html">About</a>
+    <a href="ops-academy-v3.html#pricing">Pricing</a>
+    <a class="nav-cta" href="ops-academy-login-v3.html">▸ Get Started</a>
+  </div>
+  <a class="nav-mobile-cta" href="ops-academy-login-v3.html">▸ Get Started</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Certification Catalogue</div>
+    <h1>Find Your<br><span>Next Cert</span></h1>
+    <p class="hero-sub">4 certifications available at launch across IT, Networking and Cybersecurity — with Cloud and AI coming soon. Every one built for adaptive drilling, not passive study.</p>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterDomain('all', this)">All Certs</button>
+  <button class="filter-btn" onclick="filterDomain('it', this)">IT Fundamentals</button>
+  <button class="filter-btn" onclick="filterDomain('network', this)">Networking</button>
+  <button class="filter-btn" onclick="filterDomain('cyber', this)">Cybersecurity</button>
+  <button class="filter-btn" onclick="filterDomain('cloud', this)">Cloud</button>
+  <button class="filter-btn" onclick="filterDomain('ai', this)">AI & ML</button>
+</div>
+
+<!-- IT FUNDAMENTALS -->
+<div class="domain-section" data-domain="it">
+  <div class="domain-header">
+    <div class="domain-icon-lg">🖥️</div>
+    <div>
+      <div class="domain-title"><span>IT</span> Fundamentals</div>
+      <div class="domain-sub">1 CERT AVAILABLE AT LAUNCH</div>
+    </div>
+  </div>
+  <div class="cert-grid">
+    <div class="cert-card" onclick="openCert('aplus')">
+      <div class="cert-badge beginner">Beginner</div>
+      <div class="cert-name">CompTIA A+</div>
+      <div class="cert-vendor">COMPTIA</div>
+      <p class="cert-desc">The gold-standard entry-level IT cert. Covers hardware, software, operating systems and troubleshooting workflows.</p>
+      <div class="cert-meta"><div class="cert-meta-item">Questions: <span>200+</span></div><div class="cert-meta-item">Domains: <span>9</span></div></div>
+    </div>
+    <div class="cert-card soon">
+      <div class="soon-label">Coming Soon</div>
+      <div class="soon-name">CompTIA ITF+</div>
+      <div class="soon-vendor">COMPTIA</div>
+    </div>
+    <div class="cert-card soon">
+      <div class="soon-label">Coming Soon</div>
+      <div class="soon-name">CompTIA Linux+</div>
+      <div class="soon-vendor">COMPTIA</div>
+    </div>
+  </div>
+</div>
+
+<!-- NETWORKING -->
+<div class="domain-section" data-domain="network">
+  <div class="domain-header">
+    <div class="domain-icon-lg">🌐</div>
+    <div>
+      <div class="domain-title"><span>Networking</span></div>
+      <div class="domain-sub">2 CERTS AVAILABLE AT LAUNCH</div>
+    </div>
+  </div>
+  <div class="cert-grid">
+    <div class="cert-card" onclick="openCert('netplus')">
+      <div class="cert-badge beginner">Beginner</div>
+      <div class="cert-name">CompTIA Network+</div>
+      <div class="cert-vendor">COMPTIA</div>
+      <p class="cert-desc">Core networking knowledge: protocols, infrastructure, troubleshooting, and network security concepts.</p>
+      <div class="cert-meta"><div class="cert-meta-item">Questions: <span>90</span></div><div class="cert-meta-item">Domains: <span>5</span></div></div>
+    </div>
+    <div class="cert-card" onclick="openCert('ccna')">
+      <div class="cert-badge intermediate">Intermediate</div>
+      <div class="cert-name">Cisco CCNA</div>
+      <div class="cert-vendor">CISCO</div>
+      <p class="cert-desc">Industry-leading networking cert from Cisco. Covers IP routing, switching, WAN, security and automation.</p>
+      <div class="cert-meta"><div class="cert-meta-item">Questions: <span>120</span></div><div class="cert-meta-item">Domains: <span>6</span></div></div>
+    </div>
+    <div class="cert-card soon">
+      <div class="soon-label">Coming Soon</div>
+      <div class="soon-name">Cisco CCNP</div>
+      <div class="soon-vendor">CISCO</div>
+    </div>
+  </div>
+</div>
+
+<!-- CYBERSECURITY -->
+<div class="domain-section" data-domain="cyber">
+  <div class="domain-header">
+    <div class="domain-icon-lg">🔒</div>
+    <div>
+      <div class="domain-title"><span>Cyber</span>security</div>
+      <div class="domain-sub">1 CERT AVAILABLE AT LAUNCH</div>
+    </div>
+  </div>
+  <div class="cert-grid">
+    <div class="cert-card" onclick="openCert('secplus')">
+      <div class="cert-badge intermediate">Intermediate</div>
+      <div class="cert-name">CompTIA Security+</div>
+      <div class="cert-vendor">COMPTIA</div>
+      <p class="cert-desc">The baseline standard for security roles. Covers threats, vulnerabilities, architecture, risk and cryptography.</p>
+      <div class="cert-meta"><div class="cert-meta-item">Questions: <span>90</span></div><div class="cert-meta-item">Domains: <span>5</span></div></div>
+    </div>
+    <div class="cert-card soon">
+      <div class="soon-label">Coming Soon</div>
+      <div class="soon-name">CEH</div>
+      <div class="soon-vendor">EC-COUNCIL</div>
+    </div>
+    <div class="cert-card soon">
+      <div class="soon-label">Coming Soon</div>
+      <div class="soon-name">CISSP</div>
+      <div class="soon-vendor">ISC²</div>
+    </div>
+  </div>
+</div>
+
+<!-- CLOUD -->
+<div class="domain-section" data-domain="cloud">
+  <div class="domain-header">
+    <div class="domain-icon-lg">☁️</div>
+    <div>
+      <div class="domain-title"><span>Cloud</span></div>
+      <div class="domain-sub">COMING SOON</div>
+    </div>
+  </div>
+  <div class="cert-grid">
+    <div class="cert-card soon">
+      <div class="soon-label">Coming Soon</div>
+      <div class="soon-name">Azure Fundamentals</div>
+      <div class="soon-vendor">MICROSOFT</div>
+    </div>
+    <div class="cert-card soon">
+      <div class="soon-label">Coming Soon</div>
+      <div class="soon-name">AWS Solutions Architect</div>
+      <div class="soon-vendor">AMAZON WEB SERVICES</div>
+    </div>
+    <div class="cert-card soon">
+      <div class="soon-label">Coming Soon</div>
+      <div class="soon-name">GCP Associate</div>
+      <div class="soon-vendor">GOOGLE CLOUD</div>
+    </div>
+  </div>
+</div>
+
+<!-- AI -->
+<div class="domain-section" data-domain="ai">
+  <div class="domain-header">
+    <div class="domain-icon-lg">🤖</div>
+    <div>
+      <div class="domain-title">AI <span>&</span> ML</div>
+      <div class="domain-sub">COMING SOON</div>
+    </div>
+  </div>
+  <div class="cert-grid">
+    <div class="cert-card soon">
+      <div class="soon-label">Coming Soon</div>
+      <div class="soon-name">AI-900</div>
+      <div class="soon-vendor">MICROSOFT AZURE</div>
+    </div>
+    <div class="cert-card soon">
+      <div class="soon-label">Coming Soon</div>
+      <div class="soon-name">AWS ML Specialty</div>
+      <div class="soon-vendor">AMAZON WEB SERVICES</div>
+    </div>
+    <div class="cert-card soon">
+      <div class="soon-label">Coming Soon</div>
+      <div class="soon-name">Google ML Engineer</div>
+      <div class="soon-vendor">GOOGLE CLOUD</div>
+    </div>
+  </div>
+</div>
+
+<div class="cta">
+  <h2>Ready to <span>Start Drilling?</span></h2>
+  <p>Pick your cert, complete your diagnostic, and get a personalised drill plan in under 5 minutes.</p>
+  <a class="btn-primary" href="ops-academy-login-v3.html">▸ Create Your Account</a>
+</div>
+
+<footer>
+  <div class="footer-logo">OPS <span>ACADEMY</span></div>
+  <div class="footer-copy">© 2026 OPS ACADEMY // ITOPSACADEMY.COM</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeCert()"></div>
+<div class="modal-panel" id="modalPanel">
+  <div class="modal-top">
+    <div>
+      <div class="modal-vendor" id="mVendor"></div>
+      <div class="modal-title" id="mTitle"></div>
+      <div id="mBadge" style="margin-top:10px;"></div>
+      <div class="modal-tagline" id="mTagline"></div>
+    </div>
+    <button class="modal-close" onclick="closeCert()">✕</button>
+  </div>
+  <div class="modal-body">
+    <div>
+      <div class="modal-section-label">Description</div>
+      <p class="modal-why" id="mDesc"></p>
+    </div>
+    <div>
+      <div class="modal-section-label">Exam at a Glance</div>
+      <div class="exam-grid" id="mExam"></div>
+    </div>
+    <div>
+      <div class="modal-section-label">Domain Breakdown</div>
+      <div class="domain-rows" id="mDomains"></div>
+    </div>
+    <div>
+      <div class="modal-section-label">Career Relevance</div>
+      <p class="modal-why" id="mWhy"></p>
+    </div>
+    <div>
+      <div class="modal-section-label">Common Job Titles</div>
+      <div class="modal-jobs" id="mJobs"></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a class="modal-cta" href="ops-academy-login-v3.html">▸ Start Drilling This Cert</a>
+    <button class="modal-cta-sec" onclick="closeCert()">Close</button>
+  </div>
+</div>
+
+<script>
+  /* ── FILTER ── */
+  function filterDomain(domain, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.domain-section').forEach(s => {
+      s.style.display = (domain === 'all' || s.dataset.domain === domain) ? 'block' : 'none';
+    });
+  }
+
+  /* ── CERT DATA ── */
+  const certData = {
+    aplus: {
+      name: 'CompTIA A+',
+      vendor: 'COMPTIA',
+      badge: 'beginner',
+      tagline: 'The entry point for every IT career. Required by more employers than any other IT cert.',
+      desc: 'CompTIA A+ is the industry benchmark for establishing a career in IT. Recognised by over 5,000 employers worldwide, it validates the foundational skills needed to support the core technologies found in any organisation — from hardware and operating systems to cloud and cybersecurity basics.',
+      exam: [
+        { label: 'Exams Required', val: '2 (Core 1 + Core 2)' },
+        { label: 'Questions Per Exam', val: 'Up to 90' },
+        { label: 'Duration', val: '90 minutes each' },
+        { label: 'Passing Score', val: '675 / 900 · 700 / 900' },
+        { label: 'Question Format', val: 'MCQ + Performance-based' },
+        { label: 'Validity', val: '3 years' },
+      ],
+      domains: [
+        { name: 'Hardware & Network Troubleshooting', pct: 29 },
+        { name: 'Networking', pct: 20 },
+        { name: 'Hardware', pct: 17 },
+        { name: 'Operating Systems', pct: 22 },
+        { name: 'Security', pct: 12 },
+      ],
+      why: 'A+ is the <strong>#1 required entry-level cert</strong> for help desk, IT support, and field technician roles. It proves you can handle real hardware, troubleshoot real problems, and operate confidently across Windows, macOS, Linux, iOS and Android environments.',
+      jobs: ['IT Support Specialist', 'Help Desk Technician', 'Field Service Technician', 'Desktop Support Analyst', 'IT Administrator']
+    },
+    netplus: {
+      name: 'CompTIA Network+',
+      vendor: 'COMPTIA',
+      badge: 'beginner',
+      tagline: 'The definitive vendor-neutral networking cert. Prove you can build, manage and secure networks.',
+      desc: 'CompTIA Network+ validates the core networking skills needed to design, configure, manage and troubleshoot wired and wireless networks. It is widely regarded as the essential stepping stone between A+ and more advanced networking certifications like CCNA.',
+      exam: [
+        { label: 'Exams Required', val: '1' },
+        { label: 'Questions', val: 'Up to 90' },
+        { label: 'Duration', val: '90 minutes' },
+        { label: 'Passing Score', val: '720 / 900' },
+        { label: 'Question Format', val: 'MCQ + Performance-based' },
+        { label: 'Validity', val: '3 years' },
+      ],
+      domains: [
+        { name: 'Networking Fundamentals', pct: 24 },
+        { name: 'Network Implementations', pct: 19 },
+        { name: 'Network Operations', pct: 16 },
+        { name: 'Network Security', pct: 19 },
+        { name: 'Network Troubleshooting', pct: 22 },
+      ],
+      why: 'Network+ is the gateway into networking careers and a prerequisite employer expectation for anyone heading towards <strong>CCNA, CCNP or any cloud certification</strong>. It demonstrates you can manage real infrastructure, not just read about it.',
+      jobs: ['Network Administrator', 'Network Technician', 'Systems Administrator', 'IT Support Engineer', 'Network Analyst']
+    },
+    ccna: {
+      name: 'Cisco CCNA',
+      vendor: 'CISCO',
+      badge: 'intermediate',
+      tagline: 'The world\'s most recognised networking certification. Cisco\'s gold standard for network engineers.',
+      desc: 'The Cisco Certified Network Associate (CCNA) certification validates your ability to install, configure, operate and troubleshoot medium-sized routed and switched networks. It is the most widely respected intermediate networking credential in the industry and opens doors to enterprise-level roles globally.',
+      exam: [
+        { label: 'Exams Required', val: '1 (200-301)' },
+        { label: 'Questions', val: '100–120' },
+        { label: 'Duration', val: '120 minutes' },
+        { label: 'Passing Score', val: '825 / 1000' },
+        { label: 'Question Format', val: 'MCQ + Drag & Drop + Simlets' },
+        { label: 'Validity', val: '3 years' },
+      ],
+      domains: [
+        { name: 'Network Fundamentals', pct: 20 },
+        { name: 'Network Access', pct: 20 },
+        { name: 'IP Connectivity', pct: 25 },
+        { name: 'IP Services', pct: 10 },
+        { name: 'Security Fundamentals', pct: 15 },
+        { name: 'Automation & Programmability', pct: 10 },
+      ],
+      why: 'CCNA is the <strong>benchmark credential for network engineers globally</strong>. Employers hiring for any infrastructure or networking role treat CCNA as a strong differentiator. It is also the required foundation for all Cisco professional-level certifications including CCNP.',
+      jobs: ['Network Engineer', 'Systems Engineer', 'Infrastructure Engineer', 'Network Operations Analyst', 'NOC Engineer']
+    },
+    secplus: {
+      name: 'CompTIA Security+',
+      vendor: 'COMPTIA',
+      badge: 'intermediate',
+      tagline: 'The global baseline for cybersecurity professionals. Trusted by the US Department of Defense.',
+      desc: 'CompTIA Security+ is the most widely adopted cybersecurity certification in the world. It establishes the core knowledge required of any cybersecurity role and provides a springboard into intermediate-level cybersecurity jobs. Security+ meets DoD 8570 compliance requirements, making it essential for government and defence contractors.',
+      exam: [
+        { label: 'Exams Required', val: '1 (SY0-701)' },
+        { label: 'Questions', val: 'Up to 90' },
+        { label: 'Duration', val: '90 minutes' },
+        { label: 'Passing Score', val: '750 / 900' },
+        { label: 'Question Format', val: 'MCQ + Performance-based' },
+        { label: 'Validity', val: '3 years' },
+      ],
+      domains: [
+        { name: 'General Security Concepts', pct: 12 },
+        { name: 'Threats, Vulnerabilities & Mitigations', pct: 22 },
+        { name: 'Security Architecture', pct: 18 },
+        { name: 'Security Operations', pct: 28 },
+        { name: 'Security Program Management & Oversight', pct: 20 },
+      ],
+      why: 'Security+ is the <strong>most in-demand entry cybersecurity credential</strong> globally. It unlocks roles across government, finance, healthcare, and enterprise IT. Recommended prerequisite: CompTIA Network+ or two years of IT experience with a security focus.',
+      jobs: ['Security Analyst', 'SOC Analyst', 'Systems Administrator', 'IT Auditor', 'Security Engineer', 'Penetration Tester (Junior)']
+    }
+  };
+
+  /* ── OPEN / CLOSE ── */
+  function openCert(id) {
+    const d = certData[id];
+    if (!d) return;
+
+    document.getElementById('mVendor').textContent = d.vendor;
+    document.getElementById('mTitle').textContent = d.name;
+    document.getElementById('mTagline').textContent = d.tagline;
+    document.getElementById('mDesc').innerHTML = d.desc;
+    document.getElementById('mWhy').innerHTML = d.why;
+
+    const badgeEl = document.getElementById('mBadge');
+    badgeEl.innerHTML = `<span class="cert-badge ${d.badge}">${d.badge}</span>`;
+
+    const examEl = document.getElementById('mExam');
+    examEl.innerHTML = d.exam.map(e => `
+      <div class="exam-item">
+        <div class="exam-item-label">${e.label}</div>
+        <div class="exam-item-val">${e.val}</div>
+      </div>`).join('');
+
+    const domEl = document.getElementById('mDomains');
+    domEl.innerHTML = d.domains.map(dom => `
+      <div>
+        <div class="domain-row-label">
+          <span class="domain-row-name">${dom.name}</span>
+          <span class="domain-row-pct">${dom.pct}%</span>
+        </div>
+        <div class="domain-bar-track"><div class="domain-bar-fill" style="width:${dom.pct}%"></div></div>
+      </div>`).join('');
+
+    document.getElementById('mJobs').innerHTML = d.jobs.map(j => `<div class="modal-job-pill">${j}</div>`).join('');
+
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('modalPanel').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCert() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.getElementById('modalPanel').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCert(); });
+</script>
+</body>
+</html>
