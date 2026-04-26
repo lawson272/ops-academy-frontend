@@ -3204,6 +3204,24 @@ async function selectCert(certId) {
 }
 
 /* ══ LOAD DOMAIN DATA ══ */
+
+// Confidence-weighted domain readiness.
+// Raw accuracy is scaled by how many questions have been answered,
+// preventing volatile swings from tiny sample sizes.
+//
+//  1/1  correct →   5%   (not 100%)
+//  5/5  correct →  25%
+// 10/10 correct →  50%
+// 17/20 correct →  85%   ← mastery threshold
+// 20/20 correct → 100%
+const DOMAIN_MIN_SAMPLE = 20;
+function calcDomainPct(correct, total) {
+  if (total === 0) return 0;
+  const raw        = correct / total;
+  const confidence = Math.min(1, total / DOMAIN_MIN_SAMPLE);
+  return Math.round(raw * confidence * 100);
+}
+
 async function getDomainScores(certId) {
   try {
     const { data: answers } = await sb.from('question_answers')
@@ -3234,8 +3252,8 @@ async function getDomainScores(certId) {
       name,
       total:    st.total,
       correct:  st.correct,
-      pct:      st.total > 0 ? Math.round((st.correct / st.total) * 100) : 0,
-      mastered: st.total > 0 && Math.round((st.correct / st.total) * 100) >= 85,
+      pct:      calcDomainPct(st.correct, st.total),
+      mastered: calcDomainPct(st.correct, st.total) >= 85,
       unstarted: st.total === 0
     })).sort((a, b) => {
       if (a.mastered && !b.mastered) return 1;
@@ -3323,6 +3341,7 @@ function renderDomainUI(certId, domains) {
           <div style="display:flex;align-items:center;gap:6px">
             ${decayBadge}
             <span class="db-row-score ${cls}">${d.unstarted ? 'NOT STARTED' : d.pct + '%' + (d.mastered ? ' ✓' : '')}</span>
+            ${!d.unstarted ? `<span style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:0.5px">${d.total} ans</span>` : ''}
             ${d.mastered ? '' : `<button class="db-drill-btn" onclick="startDomainDrill('${certId}','${d.name.replace(/'/g,"\\'")}')">DRILL</button>`}
           </div>
         </div>
@@ -3988,16 +4007,16 @@ function applyDrillResultsToDomains() {
     if (existing) {
       existing.total++;
       if (r.is_correct) existing.correct++;
-      existing.pct      = Math.round((existing.correct / existing.total) * 100);
-      existing.mastered = existing.pct >= 85;
+      existing.pct       = calcDomainPct(existing.correct, existing.total);
+      existing.mastered  = existing.pct >= 85;
       existing.unstarted = false;
     } else {
       // Domain not yet in cache — add it
+      const newCorrect = r.is_correct ? 1 : 0;
       S.domains.push({
-        name: r.domain, total: 1,
-        correct: r.is_correct ? 1 : 0,
-        pct: r.is_correct ? 100 : 0,
-        mastered: r.is_correct, unstarted: false
+        name: r.domain, total: 1, correct: newCorrect,
+        pct: calcDomainPct(newCorrect, 1),
+        mastered: false, unstarted: false
       });
     }
   });
