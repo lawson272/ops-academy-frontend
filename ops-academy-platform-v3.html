@@ -2921,6 +2921,7 @@ async function selectCert(certId) {
 
   await loadDomainData(certId);
 
+  loadDailyOrders(certId);    // async, non-blocking
   loadExamCountdown(certId);  // async, non-blocking
   loadDecayAlerts(certId);    // async, non-blocking
 
