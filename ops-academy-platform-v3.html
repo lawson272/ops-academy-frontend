@@ -980,6 +980,18 @@
     .res-btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
     .res-btn.secondary:hover { border-color: var(--border-l); color: var(--white); }
 
+    /* ── DRILL RATING ── */
+    .drill-rating { margin: 24px 0 0; padding-top: 24px; border-top: 1px solid var(--border); max-width: 560px; }
+    .rating-label { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 12px; }
+    .rating-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+    .rating-opt { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; background: transparent; border: 1px solid var(--border); color: var(--text); padding: 9px 16px; cursor: pointer; transition: all 0.2s; }
+    .rating-opt:hover:not(.selected) { border-color: var(--border-l); color: var(--white); }
+    .rating-opt.selected { cursor: default; border-color: transparent; color: var(--black); font-weight: 700; }
+    .rating-opt.easy.selected   { background: #4a8fff; }
+    .rating-opt.right.selected  { background: var(--green); }
+    .rating-opt.hard.selected   { background: var(--amber); }
+    .rating-thanks { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; margin-top: 12px; }
+
     /* ── REVIEW SECTION ── */
     .res-review { margin-top: 40px; border-top: 1px solid var(--border); padding-top: 32px; max-width: 640px; }
     .res-review-label { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
@@ -1518,6 +1530,15 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
         <div class="res-btns" id="res-btns">
           <button class="res-btn primary" onclick="drillAgain()">▸ DRILL AGAIN</button>
           <button class="res-btn secondary" onclick="goToDashboard()">← DASHBOARD</button>
+        </div>
+        <div class="drill-rating" id="drill-rating">
+          <div class="rating-label">How was that drill?</div>
+          <div class="rating-opts">
+            <button class="rating-opt easy"  onclick="rateDrill('too_easy')">TOO EASY</button>
+            <button class="rating-opt right" onclick="rateDrill('about_right')">ABOUT RIGHT</button>
+            <button class="rating-opt hard"  onclick="rateDrill('too_hard')">TOO HARD</button>
+          </div>
+          <div class="rating-thanks" id="rating-thanks" style="display:none">✓ Thanks — that helps us calibrate.</div>
         </div>
         <div class="res-review" id="res-review"></div>
       </div>
@@ -3809,6 +3830,11 @@ async function finish() {
   // Apply this drill's results to domain scores immediately (no DB wait needed)
   applyDrillResultsToDomains();
 
+  // Reset drill rating widget
+  document.querySelectorAll('.rating-opt').forEach(b => b.classList.remove('selected'));
+  const ratingThanks = document.getElementById('rating-thanks');
+  if (ratingThanks) ratingThanks.style.display = 'none';
+
   showMain('results');
   document.querySelector('.main').scrollTo({ top: 0 });
 }
@@ -3979,6 +4005,25 @@ async function checkCertCompletionBonus() {
     document.getElementById('tb-xp').textContent   = S.totalXP.toLocaleString();
     document.getElementById('dash-xp').textContent = S.totalXP.toLocaleString();
   } catch (_) {}
+}
+
+/* ══ DRILL RATING ══ */
+async function rateDrill(rating) {
+  // Visual feedback immediately
+  const clsMap = { too_easy: 'easy', about_right: 'right', too_hard: 'hard' };
+  document.querySelectorAll('.rating-opt').forEach(b => b.classList.remove('selected'));
+  document.querySelector(`.rating-opt.${clsMap[rating]}`)?.classList.add('selected');
+  const thanks = document.getElementById('rating-thanks');
+  if (thanks) thanks.style.display = 'block';
+
+  // Persist to DB — fire and forget
+  if (S.sessionId) {
+    try {
+      await sb.from('drill_sessions')
+        .update({ difficulty_rating: rating })
+        .eq('id', S.sessionId);
+    } catch (_) {}
+  }
 }
 
 /* ══ QUESTION FLAGS ══ */
