@@ -3193,42 +3193,54 @@ function showDailyOrdersError(msg) {
 }
 
 async function loadDailyOrders(certId) {
+  console.log('[DO] called — certId:', certId, '| user:', S.user?.id);
   const panel = document.getElementById('daily-orders-panel');
+  console.log('[DO] panel element:', panel ? 'found' : 'MISSING');
   if (!panel) return;
-  document.getElementById('do-loading').style.display = 'block';
-  document.getElementById('do-active').style.display   = 'none';
-  document.getElementById('do-complete').style.display = 'none';
+
+  const loadingEl  = document.getElementById('do-loading');
+  const activeEl   = document.getElementById('do-active');
+  const completeEl = document.getElementById('do-complete');
+  console.log('[DO] do-loading:', loadingEl ? 'found' : 'MISSING', '| do-active:', activeEl ? 'found' : 'MISSING', '| do-complete:', completeEl ? 'found' : 'MISSING');
+
+  if (loadingEl)  loadingEl.style.display  = 'block';
+  if (activeEl)   activeEl.style.display   = 'none';
+  if (completeEl) completeEl.style.display = 'none';
 
   // Safety timeout — if anything hangs for >8s, show a friendly error
   const timeout = setTimeout(() => showDailyOrdersError('Timed out — please refresh'), 8000);
 
   const today = new Date().toISOString().split('T')[0];
+  console.log('[DO] querying Supabase for date:', today);
 
   try {
     // 1. Check today's orders
     const { data: todayRows, error: todayErr } = await sb.from('daily_orders')
       .select('*').eq('user_id', S.user.id).eq('cert', certId).eq('date', today).limit(1);
-    if (todayErr) console.warn('daily_orders fetch error:', todayErr);
+    console.log('[DO] query done — rows:', todayRows?.length, '| error:', todayErr);
+    if (todayErr) console.warn('[DO] fetch error detail:', todayErr);
 
     const todayOrders = todayRows?.[0] || null;
 
     if (todayOrders) {
-      // Today's orders found — show them as-is (complete or active)
+      console.log('[DO] found orders — completed:', todayOrders.completed);
       clearTimeout(timeout);
       renderDailyOrders(todayOrders, false);
       return;
     }
 
     // 2. No orders for today — generate them (new user or cron missed)
+    console.log('[DO] no orders found — generating...');
     const orders = await generateDailyOrders(certId, today);
     clearTimeout(timeout);
+    console.log('[DO] generated orders:', !!orders);
     if (orders) { renderDailyOrders(orders, false); return; }
 
     showDailyOrdersError('Unable to load — please refresh');
 
   } catch (e) {
     clearTimeout(timeout);
-    console.error('Daily orders error:', e);
+    console.error('[DO] caught error:', e);
     showDailyOrdersError('Error loading orders — refresh to retry');
   }
 }
