@@ -625,6 +625,37 @@
     .qb-bottom-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; flex-wrap: wrap; gap: 8px; }
     @media (max-width: 600px) { #screen-qbank { padding: 16px; } .qb-text { max-width: 200px; } .qb-table th:nth-child(3), .qb-table td:nth-child(3) { display: none; } }
 
+    /* ── SETTINGS SCREEN ── */
+    #screen-settings { padding: 32px; }
+    .sett-header { margin-bottom: 32px; }
+    .sett-eye { font-family: var(--mono); font-size: 10px; color: var(--cyan); letter-spacing: 4px; margin-bottom: 8px; }
+    .sett-title { font-family: var(--cond); font-size: 36px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
+    .sett-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+    .sett-sections { display: flex; flex-direction: column; gap: 24px; max-width: 640px; }
+    .sett-section { background: var(--dark); border: 1px solid var(--border); }
+    .sett-section-title { font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: var(--cyan); text-transform: uppercase; padding: 14px 20px; border-bottom: 1px solid var(--border); }
+    .sett-row { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 16px; }
+    .sett-row:last-child { border-bottom: none; }
+    .sett-row-label { flex: 1; min-width: 0; }
+    .sett-row-name { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+    .sett-row-desc { font-family: var(--mono); font-size: 9px; color: var(--muted); letter-spacing: 1px; line-height: 1.5; }
+    .sett-input { background: var(--panel); border: 1px solid var(--border); color: var(--white); font-family: var(--body); font-size: 13px; padding: 8px 12px; outline: none; width: 200px; transition: border-color 0.2s; }
+    .sett-input:focus { border-color: var(--cyan); }
+    .sett-save-btn { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; background: var(--cyan); color: var(--black); border: none; padding: 9px 16px; cursor: pointer; font-weight: 700; transition: opacity 0.2s; white-space: nowrap; flex-shrink: 0; }
+    .sett-save-btn:hover { opacity: 0.85; }
+    .sett-save-btn:disabled { opacity: 0.5; cursor: default; }
+    .sett-email-val { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+    .sett-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+    .sett-opt { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; background: transparent; border: 1px solid var(--border); color: var(--text); padding: 7px 14px; cursor: pointer; transition: all 0.2s; }
+    .sett-opt:hover { border-color: var(--border-l); color: var(--white); }
+    .sett-opt.active { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
+    .sett-danger-btn { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 16px; cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; }
+    .sett-danger-btn:hover:not(:disabled) { border-color: var(--red); color: var(--red); }
+    .sett-soon-tag { font-family: var(--mono); font-size: 8px; color: var(--muted); border: 1px solid var(--border); padding: 2px 6px; letter-spacing: 1px; margin-left: 8px; vertical-align: middle; }
+    .sett-feedback { font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: var(--green); flex-shrink: 0; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .sett-feedback.show { opacity: 1; }
+    @media (max-width: 600px) { #screen-settings { padding: 16px; } .sett-row { flex-direction: column; align-items: flex-start; gap: 12px; } .sett-input { width: 100%; } }
+
     /* ── CERTIFICATIONS SCREEN ── */
     #screen-certs { padding: 32px; }
     .certs-page-eye { font-family:var(--mono); font-size:10px; color:var(--cyan); letter-spacing:4px; margin-bottom:8px; }
@@ -1277,7 +1308,7 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
       <div class="sidebar-item" id="nav-rank" onclick="showMain('rank');closeSidebar()">
         <div class="sidebar-item-left"><span>★</span> Rank & XP</div>
       </div>
-      <div class="sidebar-item"><div class="sidebar-item-left"><span>◈</span> Settings</div><span class="sidebar-soon">SOON</span></div>
+      <div class="sidebar-item" id="nav-settings" onclick="showMain('settings');closeSidebar()"><div class="sidebar-item-left"><span>◈</span> Settings</div></div>
       <div class="sidebar-item" id="sb-signout-mobile" onclick="handleSignOut()" style="display:none">
         <div class="sidebar-item-left"><span>⏻</span> Sign Out</div>
       </div>
@@ -1771,6 +1802,94 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
       </div>
     </div>
 
+    <!-- SETTINGS -->
+    <div id="screen-settings" class="screen">
+      <div class="sett-header">
+        <div class="sett-eye">◈ CONFIGURATION</div>
+        <div class="sett-title">Settings</div>
+        <div class="sett-sub">Personalise your training environment</div>
+      </div>
+      <div class="sett-sections">
+
+        <!-- PROFILE -->
+        <div class="sett-section">
+          <div class="sett-section-title">Profile</div>
+          <div class="sett-row">
+            <div class="sett-row-label">
+              <div class="sett-row-name">Display Name</div>
+              <div class="sett-row-desc">Shown on rank cards and progress sharing</div>
+            </div>
+            <input id="sett-name-input" class="sett-input" type="text" placeholder="Your name" maxlength="40"
+              onkeydown="if(event.key==='Enter')saveDisplayName()"/>
+            <button class="sett-save-btn" id="sett-name-btn" onclick="saveDisplayName()">SAVE</button>
+            <span class="sett-feedback" id="sett-name-feedback">✓ SAVED</span>
+          </div>
+          <div class="sett-row">
+            <div class="sett-row-label">
+              <div class="sett-row-name">Email</div>
+              <div class="sett-row-desc">Your account email — cannot be changed here</div>
+            </div>
+            <div class="sett-email-val" id="sett-email-display">—</div>
+          </div>
+        </div>
+
+        <!-- STUDY SETTINGS -->
+        <div class="sett-section">
+          <div class="sett-section-title">Study Settings</div>
+          <div class="sett-row">
+            <div class="sett-row-label">
+              <div class="sett-row-name">Questions per Drill</div>
+              <div class="sett-row-desc">How many questions each drill session runs</div>
+            </div>
+            <div class="sett-opts" id="sett-drill-count-opts">
+              <button class="sett-opt" data-val="5"  onclick="setDrillCount(5)">5</button>
+              <button class="sett-opt" data-val="10" onclick="setDrillCount(10)">10</button>
+              <button class="sett-opt" data-val="15" onclick="setDrillCount(15)">15</button>
+              <button class="sett-opt" data-val="20" onclick="setDrillCount(20)">20</button>
+            </div>
+          </div>
+          <div class="sett-row">
+            <div class="sett-row-label">
+              <div class="sett-row-name">Difficulty Weighting</div>
+              <div class="sett-row-desc">How questions are selected during mixed drills</div>
+            </div>
+            <div class="sett-opts" id="sett-diff-opts">
+              <button class="sett-opt" data-val="balanced" onclick="setDiffWeight('balanced')">Balanced</button>
+              <button class="sett-opt" data-val="weak"     onclick="setDiffWeight('weak')">Favour Weak</button>
+              <button class="sett-opt" data-val="random"   onclick="setDiffWeight('random')">Random</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACCOUNT -->
+        <div class="sett-section">
+          <div class="sett-section-title">Account</div>
+          <div class="sett-row">
+            <div class="sett-row-label">
+              <div class="sett-row-name">Sign Out</div>
+              <div class="sett-row-desc">End your current session</div>
+            </div>
+            <button class="sett-danger-btn" onclick="handleSignOut()">SIGN OUT</button>
+          </div>
+          <div class="sett-row">
+            <div class="sett-row-label">
+              <div class="sett-row-name">Reset Progress <span class="sett-soon-tag">COMING SOON</span></div>
+              <div class="sett-row-desc">Clear drill history for the active cert</div>
+            </div>
+            <button class="sett-danger-btn" disabled style="opacity:.35;cursor:default">RESET</button>
+          </div>
+          <div class="sett-row">
+            <div class="sett-row-label">
+              <div class="sett-row-name">Delete Account <span class="sett-soon-tag">COMING SOON</span></div>
+              <div class="sett-row-desc">Permanently remove your account and all data</div>
+            </div>
+            <button class="sett-danger-btn" disabled style="opacity:.35;cursor:default">DELETE</button>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /screen-settings -->
+
   </div><!-- /main -->
 
   <!-- RIGHT PANEL -->
@@ -1896,6 +2015,7 @@ function showMain(screenId) {
   if (screenId === 'progress')  { document.getElementById('nav-progress')?.classList.add('active'); loadProgress(); }
   if (screenId === 'rank')      { document.getElementById('nav-rank')?.classList.add('active'); buildRankScreen(); }
   if (screenId === 'certs')     { document.getElementById('nav-certs')?.classList.add('active'); loadCertsScreen(); }
+  if (screenId === 'settings')  { document.getElementById('nav-settings')?.classList.add('active'); loadSettingsScreen(); }
 }
 
 /* ══ CERTIFICATIONS SCREEN ══ */
@@ -3431,7 +3551,8 @@ async function startDrill(certId, difficulty, type='standard', domain=null) {
     return;
   }
 
-  const questions = shuffle(rows).slice(0, 10);
+  const drillCount = parseInt(localStorage.getItem('oa_drill_count') || '10');
+  const questions = shuffle(rows).slice(0, drillCount);
   const sessionDomain = type === 'diagnostic' ? 'diagnostic'
                       : type === 'domain'     ? domain
                       : difficulty === 'all'  ? 'mixed' : difficulty;
@@ -3801,6 +3922,71 @@ async function checkCertCompletionBonus() {
     document.getElementById('tb-xp').textContent   = S.totalXP.toLocaleString();
     document.getElementById('dash-xp').textContent = S.totalXP.toLocaleString();
   } catch (_) {}
+}
+
+/* ══ SETTINGS ══ */
+function loadSettingsScreen() {
+  // Display name
+  const name = S.profile?.full_name || S.user?.user_metadata?.full_name || '';
+  const input = document.getElementById('sett-name-input');
+  if (input && name && name !== S.user?.email) input.value = name;
+
+  // Email
+  const emailEl = document.getElementById('sett-email-display');
+  if (emailEl) emailEl.textContent = S.user?.email || '—';
+
+  // Drill count
+  const drillCount = parseInt(localStorage.getItem('oa_drill_count') || '10');
+  document.querySelectorAll('#sett-drill-count-opts .sett-opt').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.val) === drillCount);
+  });
+
+  // Difficulty weighting
+  const diffWeight = localStorage.getItem('oa_diff_weight') || 'balanced';
+  document.querySelectorAll('#sett-diff-opts .sett-opt').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === diffWeight);
+  });
+}
+
+async function saveDisplayName() {
+  const input = document.getElementById('sett-name-input');
+  const name = input?.value?.trim();
+  if (!name) return;
+
+  const btn = document.getElementById('sett-name-btn');
+  const feedback = document.getElementById('sett-name-feedback');
+  btn.textContent = '...';
+  btn.disabled = true;
+
+  try {
+    await sb.auth.updateUser({ data: { full_name: name } });
+    S.profile = { ...S.profile, full_name: name };
+    // Update visible name instances on other screens
+    const first = name.split(' ')[0];
+    document.querySelectorAll('.dash-greeting .name').forEach(el => el.textContent = first);
+    document.querySelectorAll('.prog-hero-name').forEach(el => el.textContent = name.toUpperCase());
+    btn.textContent = 'SAVE';
+    btn.disabled = false;
+    if (feedback) { feedback.classList.add('show'); setTimeout(() => feedback.classList.remove('show'), 2500); }
+  } catch (e) {
+    btn.textContent = 'SAVE';
+    btn.disabled = false;
+    alert('Could not save — please try again.');
+  }
+}
+
+function setDrillCount(n) {
+  localStorage.setItem('oa_drill_count', n);
+  document.querySelectorAll('#sett-drill-count-opts .sett-opt').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.val) === n);
+  });
+}
+
+function setDiffWeight(val) {
+  localStorage.setItem('oa_diff_weight', val);
+  document.querySelectorAll('#sett-diff-opts .sett-opt').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.val === val);
+  });
 }
 
 /* ══ MOBILE SIDEBAR ══ */
