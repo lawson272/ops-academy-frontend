@@ -317,15 +317,35 @@
     .footer-links a:hover { color: var(--cyan); }
     .footer-copy { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 1px; }
 
-    /* ── MOBILE NAV CTA ── */
-    .nav-mobile-cta {
+    /* ── HAMBURGER + MOBILE NAV ── */
+    .nav-hamburger {
       display: none;
-      font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
-      background: var(--cyan); color: var(--black); padding: 9px 18px;
-      text-decoration: none; font-weight: 700; transition: all 0.2s; border-radius: 2px;
-      white-space: nowrap;
+      flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+      width: 36px; height: 36px; background: transparent; border: 1px solid var(--border);
+      cursor: pointer; padding: 0; flex-shrink: 0;
     }
-    .nav-mobile-cta:hover { background: #1ffce3; }
+    .nav-hamburger span { display: block; width: 16px; height: 1.5px; background: var(--white); transition: all .25s; }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    .mobile-nav {
+      display: none; position: fixed; top: 64px; left: 0; right: 0;
+      background: rgba(6,12,30,0.98); border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(16px); z-index: 99; padding: 8px 24px 20px;
+      flex-direction: column;
+    }
+    .mobile-nav.open { display: flex; }
+    .mobile-nav a {
+      font-family: var(--mono); font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--text); text-decoration: none; padding: 14px 0;
+      border-bottom: 1px solid var(--border); transition: color .2s;
+    }
+    .mobile-nav a.active, .mobile-nav a:hover { color: var(--cyan); }
+    .mobile-nav .mobile-cta {
+      margin-top: 12px; background: var(--cyan); color: var(--black); font-weight: 700;
+      text-align: center; padding: 14px; border: none; border-radius: 2px;
+    }
+    .mobile-nav .mobile-cta:hover { background: #1ffce3; color: var(--black); }
 
     @media (max-width: 1100px) {
       .hero { grid-template-columns: 1fr; min-height: auto; padding: 120px 40px 60px; }
@@ -337,7 +357,7 @@
     @media (max-width: 768px) {
       nav { padding: 0 16px; }
       .nav-links { display: none; }
-      .nav-mobile-cta { display: block; }
+      .nav-hamburger { display: flex; }
       .nav-logo-ops, .nav-logo-acad { font-size: 13px; letter-spacing: 3px; }
 
       .hero { padding: 100px 20px 40px; }
@@ -374,7 +394,6 @@
       .footer-links { flex-direction: column; gap: 12px; align-items: center; }
 
       .btn-primary, .btn-ghost { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
-      .nav-cta, .nav-mobile-cta { min-height: 44px; display: flex; align-items: center; }
     }
     @media (max-width: 480px) {
       .stats-bar { grid-template-columns: 1fr; }
@@ -402,8 +421,20 @@
     <a href="#pricing">Pricing</a>
     <a class="nav-cta" href="/login">▸ Get Started</a>
   </div>
-  <a class="nav-mobile-cta" href="/login">▸ Get Started</a>
+  <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div class="mobile-nav" id="mobile-nav">
+  <a href="/certifications" onclick="closeMobileNav()">Certifications</a>
+  <a href="/about" onclick="closeMobileNav()">About</a>
+  <a href="#pricing" onclick="closeMobileNav()">Pricing</a>
+  <a href="/login" class="mobile-cta">▸ Get Started</a>
+</div>
+<script>
+function toggleMobileNav(){document.getElementById('nav-hamburger').classList.toggle('open');document.getElementById('mobile-nav').classList.toggle('open');}
+function closeMobileNav(){document.getElementById('nav-hamburger').classList.remove('open');document.getElementById('mobile-nav').classList.remove('open');}
+</script>
 
 <!-- HERO -->
 <div class="hero">
