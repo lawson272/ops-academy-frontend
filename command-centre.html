@@ -2199,7 +2199,7 @@ function init() {
   if (needsRefresh) sb.auth.refreshSession().catch(() => {});
 
   buildCertSelect();
-  loadStatsAsync();
+  await loadStatsAsync();
 
   // Resume last cert if user has been here before
   const lastCert = localStorage.getItem('oa_last_cert');
