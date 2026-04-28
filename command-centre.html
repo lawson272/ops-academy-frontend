@@ -2191,7 +2191,7 @@ function init() {
     }
   } catch(_) {}
 
-  if (!user) { window.location.href = 'ops-academy-login-v3.html'; return; }
+  if (!user) { window.location.href = '/login'; return; }
 
   S.user = user;
   S.profile = { full_name: user.user_metadata?.full_name || user.email || 'Operator' };
@@ -4341,7 +4341,7 @@ function closeSidebar() {
 /* ══ AUTH ══ */
 async function handleSignOut() {
   await sb.auth.signOut();
-  window.location.href = 'ops-academy-login-v3.html';
+  window.location.href = '/login';
 }
 
 /* ══ UTILS ══ */
