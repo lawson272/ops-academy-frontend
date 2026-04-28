@@ -2199,8 +2199,17 @@ function init() {
   if (needsRefresh) sb.auth.refreshSession().catch(() => {});
 
   buildCertSelect();
-  showPage('cert-select');
   loadStatsAsync();
+
+  // Resume last cert if user has been here before
+  const lastCert = localStorage.getItem('oa_last_cert');
+  const validCert = lastCert && CERTS.find(c => c.id === lastCert);
+  if (validCert) {
+    await selectCert(lastCert);
+  } else {
+    showPage('cert-select');
+  }
+
   checkOnboarding();
 }
 
@@ -3265,6 +3274,7 @@ async function selectCert(certId) {
 
   S.cert    = certId;
   S.certObj = CERTS.find(c => c.id === certId);
+  localStorage.setItem('oa_last_cert', certId);
 
   // Populate app nav
   const first = (S.profile?.full_name || S.user?.email || 'Operator').split(' ')[0];
