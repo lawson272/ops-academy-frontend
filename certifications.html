@@ -279,7 +279,7 @@ function closeMobileNav(){document.getElementById('nav-hamburger').classList.rem
   <div class="hero-content">
     <div class="hero-tag">Certification Catalogue</div>
     <h1>Find Your<br><span>Next Cert</span></h1>
-    <p class="hero-sub">4 certifications available at launch across IT, Networking and Cybersecurity — with Cloud and AI coming soon. Every one built for adaptive drilling, not passive study.</p>
+    <p class="hero-sub">5 certifications available at launch across IT, Networking and Cybersecurity — with Cloud and AI coming soon. Every one built for adaptive drilling, not passive study.</p>
   </div>
 </div>
 
@@ -360,7 +360,7 @@ function closeMobileNav(){document.getElementById('nav-hamburger').classList.rem
     <div class="domain-icon-lg">🔒</div>
     <div>
       <div class="domain-title"><span>Cyber</span>security</div>
-      <div class="domain-sub">1 CERT AVAILABLE AT LAUNCH</div>
+      <div class="domain-sub">2 CERTS AVAILABLE AT LAUNCH</div>
     </div>
   </div>
   <div class="cert-grid">
@@ -371,15 +371,17 @@ function closeMobileNav(){document.getElementById('nav-hamburger').classList.rem
       <p class="cert-desc">The baseline standard for security roles. Covers threats, vulnerabilities, architecture, risk and cryptography.</p>
       <div class="cert-meta"><div class="cert-meta-item">Questions: <span>90</span></div><div class="cert-meta-item">Domains: <span>5</span></div></div>
     </div>
+    <div class="cert-card" onclick="openCert('cissp')">
+      <div class="cert-badge advanced">Advanced</div>
+      <div class="cert-name">ISC2 CISSP</div>
+      <div class="cert-vendor">ISC²</div>
+      <p class="cert-desc">The gold standard for security professionals. Covers all eight domains from risk management to software development security.</p>
+      <div class="cert-meta"><div class="cert-meta-item">Questions: <span>800</span></div><div class="cert-meta-item">Domains: <span>8</span></div></div>
+    </div>
     <div class="cert-card soon">
       <div class="soon-label">Coming Soon</div>
       <div class="soon-name">CEH</div>
       <div class="soon-vendor">EC-COUNCIL</div>
-    </div>
-    <div class="cert-card soon">
-      <div class="soon-label">Coming Soon</div>
-      <div class="soon-name">CISSP</div>
-      <div class="soon-vendor">ISC²</div>
     </div>
   </div>
 </div>
@@ -575,6 +577,34 @@ function closeMobileNav(){document.getElementById('nav-hamburger').classList.rem
       ],
       why: 'CCNA is the <strong>benchmark credential for network engineers globally</strong>. Employers hiring for any infrastructure or networking role treat CCNA as a strong differentiator. It is also the required foundation for all Cisco professional-level certifications including CCNP.',
       jobs: ['Network Engineer', 'Systems Engineer', 'Infrastructure Engineer', 'Network Operations Analyst', 'NOC Engineer']
+    },
+    cissp: {
+      name: 'ISC2 CISSP',
+      vendor: 'ISC²',
+      badge: 'advanced',
+      tagline: 'The gold standard for security professionals. Proof that you can design, implement and manage a best-in-class security programme.',
+      desc: 'The Certified Information Systems Security Professional (CISSP) is the most globally recognised advanced cybersecurity certification. Awarded by ISC², it validates deep technical and managerial knowledge across eight domains covering the full scope of information security. CISSP holders are trusted to lead security programmes at enterprise scale.',
+      exam: [
+        { label: 'Exams Required', val: '1 (CAT format)' },
+        { label: 'Questions', val: '125–175 (adaptive)' },
+        { label: 'Duration', val: 'Up to 4 hours' },
+        { label: 'Passing Score', val: '700 / 1000' },
+        { label: 'Question Format', val: 'MCQ + Advanced Innovative' },
+        { label: 'Experience Required', val: '5 years in 2+ domains' },
+        { label: 'Validity', val: '3 years (CPE required)' },
+      ],
+      domains: [
+        { name: 'Security & Risk Management', pct: 16 },
+        { name: 'Asset Security', pct: 10 },
+        { name: 'Security Architecture & Engineering', pct: 13 },
+        { name: 'Communication & Network Security', pct: 13 },
+        { name: 'Identity & Access Management', pct: 13 },
+        { name: 'Security Assessment & Testing', pct: 12 },
+        { name: 'Security Operations', pct: 13 },
+        { name: 'Software Development Security', pct: 10 },
+      ],
+      why: 'CISSP is the <strong>definitive credential for senior security roles</strong> worldwide. It is required or preferred for CISO, Security Architect, Security Manager, and Lead Analyst positions. Holders consistently command the highest salaries in cybersecurity. Recommended for professionals with at least five years of hands-on security experience.',
+      jobs: ['CISO', 'Security Architect', 'Security Manager', 'Security Consultant', 'IT Director', 'Security Auditor', 'Lead Security Analyst']
     },
     secplus: {
       name: 'CompTIA Security+',
