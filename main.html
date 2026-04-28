@@ -1225,7 +1225,39 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
     <div class="cs-eyebrow">Select Certification</div>
     <h1 class="cs-title">CHOOSE YOUR<br><span class="cyan">CERT</span></h1>
     <p class="cs-sub">Select the certification you're studying for. Your dashboard tracks progress domain by domain until you hit 85% mastery.</p>
-    <div class="cs-grid" id="cert-grid"></div>
+
+    <div class="certs-section-label" style="margin-bottom:16px;">IT Fundamentals</div>
+    <div class="cs-grid" id="cert-grid-it_fundamentals"></div>
+
+    <div class="certs-section-label" style="margin-top:32px;margin-bottom:16px;">Networking</div>
+    <div class="cs-grid" id="cert-grid-networking"></div>
+
+    <div class="certs-section-label" style="margin-top:32px;margin-bottom:16px;">Cybersecurity</div>
+    <div class="cs-grid" id="cert-grid-cybersecurity"></div>
+
+    <div class="certs-section-label" style="margin-top:32px;margin-bottom:16px;">Cloud</div>
+    <div class="cs-grid">
+      <div class="cs-card" style="--cc:#7a90b8;--cg:rgba(122,144,184,0.06);opacity:.45;pointer-events:none;">
+        <div class="cs-card-glow"></div>
+        <div class="cs-code" style="color:#7a90b8;">COMING SOON</div>
+        <div class="cs-name">Cloud Certifications</div>
+        <div class="cs-desc">AWS, Azure and GCP certifications — in development.</div>
+        <div class="cs-meta"><span class="cs-badge" style="background:rgba(122,144,184,0.15);color:#7a90b8;">COMING SOON</span></div>
+        <button class="cs-btn" disabled style="opacity:.4;">COMING SOON</button>
+      </div>
+    </div>
+
+    <div class="certs-section-label" style="margin-top:32px;margin-bottom:16px;">AI &amp; ML</div>
+    <div class="cs-grid">
+      <div class="cs-card" style="--cc:#7a90b8;--cg:rgba(122,144,184,0.06);opacity:.45;pointer-events:none;">
+        <div class="cs-card-glow"></div>
+        <div class="cs-code" style="color:#7a90b8;">COMING SOON</div>
+        <div class="cs-name">AI &amp; ML Certifications</div>
+        <div class="cs-desc">Artificial intelligence and machine learning certifications — in development.</div>
+        <div class="cs-meta"><span class="cs-badge" style="background:rgba(122,144,184,0.15);color:#7a90b8;">COMING SOON</span></div>
+        <button class="cs-btn" disabled style="opacity:.4;">COMING SOON</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1637,12 +1669,54 @@ function checkGate(){const val=document.getElementById('gate-input').value.trim(
       <div class="certs-page-title">Certifications</div>
       <div class="certs-page-sub">Switch between certifications you are studying, or add a new one to your path.</div>
 
-      <div class="certs-section-label">Available Certifications</div>
-      <div class="certs-grid" id="certs-grid">
+      <div class="certs-section-label">IT Fundamentals</div>
+      <div class="certs-grid" id="certs-grid-it_fundamentals">
         <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;padding:20px;">LOADING...</div>
       </div>
 
-      <div class="certs-section-label">Coming Soon</div>
+      <div class="certs-section-label" style="margin-top:32px;">Networking</div>
+      <div class="certs-grid" id="certs-grid-networking">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;padding:20px;">LOADING...</div>
+      </div>
+
+      <div class="certs-section-label" style="margin-top:32px;">Cybersecurity</div>
+      <div class="certs-grid" id="certs-grid-cybersecurity">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;padding:20px;">LOADING...</div>
+      </div>
+
+      <div class="certs-section-label" style="margin-top:32px;">Cloud</div>
+      <div class="certs-grid">
+        <div class="cert-card coming-soon" style="--cc:#7a90b8;--cg:rgba(122,144,184,0.06)">
+          <div class="cert-card-glow"></div>
+          <div class="cert-card-top">
+            <div class="cert-card-status-row">
+              <div class="cert-card-code">COMING SOON</div>
+              <div class="cert-status-badge new">COMING SOON</div>
+            </div>
+            <div class="cert-card-name">Cloud Certifications</div>
+            <div class="cert-card-desc">AWS, Azure and GCP certifications — in development.</div>
+          </div>
+          <div class="cert-card-bottom"><button class="cert-switch-btn" disabled>COMING SOON</button></div>
+        </div>
+      </div>
+
+      <div class="certs-section-label" style="margin-top:32px;">AI &amp; ML</div>
+      <div class="certs-grid">
+        <div class="cert-card coming-soon" style="--cc:#7a90b8;--cg:rgba(122,144,184,0.06)">
+          <div class="cert-card-glow"></div>
+          <div class="cert-card-top">
+            <div class="cert-card-status-row">
+              <div class="cert-card-code">COMING SOON</div>
+              <div class="cert-status-badge new">COMING SOON</div>
+            </div>
+            <div class="cert-card-name">AI &amp; ML Certifications</div>
+            <div class="cert-card-desc">Artificial intelligence and machine learning certifications — in development.</div>
+          </div>
+          <div class="cert-card-bottom"><button class="cert-switch-btn" disabled>COMING SOON</button></div>
+        </div>
+      </div>
+
+      <div class="certs-section-label" style="margin-top:32px;">Cybersecurity — Coming Soon</div>
       <div class="certs-grid">
         <div class="cert-card coming-soon" style="--cc:#7a90b8;--cg:rgba(122,144,184,0.06)">
           <div class="cert-card-glow"></div>
@@ -2077,10 +2151,11 @@ const sb = createClient(SB_URL, SB_ANON);
 
 /* ══ CERT DEFINITIONS ══ */
 const CERTS = [
-  { id:'aplus',         code:'COMPTIA A+',       name:'CompTIA A+',        desc:'Hardware, operating systems, networking, security and troubleshooting fundamentals.', cc:'#ff7f4f', cg:'rgba(255,127,79,0.08)',  q:900 },
-  { id:'netplus',       code:'COMPTIA NETWORK+',  name:'CompTIA Network+',  desc:'Subnetting, routing protocols, switching, VLANs and network troubleshooting.',       cc:'#00e5cc', cg:'rgba(0,229,204,0.08)',  q:500 },
-  { id:'ccna',          code:'CISCO CCNA',         name:'Cisco CCNA',        desc:'Cisco IOS, VLANs, OSPF, STP, ACLs and enterprise network design.',                  cc:'#1a6dff', cg:'rgba(26,109,255,0.08)', q:600 },
-  { id:'security_plus', code:'COMPTIA SECURITY+', name:'CompTIA Security+', desc:'Threats, cryptography, risk management, security operations and architecture.',       cc:'#a06fff', cg:'rgba(160,111,255,0.08)',q:500 }
+  { id:'aplus',         category:'it_fundamentals', code:'COMPTIA A+',        name:'CompTIA A+',        desc:'Hardware, operating systems, networking, security and troubleshooting fundamentals.', cc:'#ff7f4f', cg:'rgba(255,127,79,0.08)',  q:900 },
+  { id:'netplus',       category:'networking',      code:'COMPTIA NETWORK+',  name:'CompTIA Network+',  desc:'Subnetting, routing protocols, switching, VLANs and network troubleshooting.',       cc:'#00e5cc', cg:'rgba(0,229,204,0.08)',  q:500 },
+  { id:'ccna',          category:'networking',      code:'CISCO CCNA',        name:'Cisco CCNA',        desc:'Cisco IOS, VLANs, OSPF, STP, ACLs and enterprise network design.',                  cc:'#1a6dff', cg:'rgba(26,109,255,0.08)', q:600 },
+  { id:'security_plus', category:'cybersecurity',   code:'COMPTIA SECURITY+', name:'CompTIA Security+', desc:'Threats, cryptography, risk management, security operations and architecture.',       cc:'#a06fff', cg:'rgba(160,111,255,0.08)',q:500 },
+  { id:'cissp',         category:'cybersecurity',   code:'ISC2 CISSP',        name:'ISC2 CISSP',        desc:'Security and risk management, cryptography, architecture, IAM, and all eight CISSP domains.', cc:'#e8c840', cg:'rgba(232,200,64,0.08)',  q:800 }
 ];
 
 /* ══ STATE ══ */
@@ -2170,8 +2245,14 @@ function showMain(screenId) {
 
 /* ══ CERTIFICATIONS SCREEN ══ */
 async function loadCertsScreen() {
-  const grid = document.getElementById('certs-grid');
-  grid.innerHTML = '<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;padding:20px;">LOADING...</div>';
+  const gridIT   = document.getElementById('certs-grid-it_fundamentals');
+  const gridNet  = document.getElementById('certs-grid-networking');
+  const gridCyb  = document.getElementById('certs-grid-cybersecurity');
+  const loadMsg  = '<div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:2px;padding:20px;">LOADING...</div>';
+  if (gridIT)   gridIT.innerHTML   = loadMsg;
+  if (gridNet)  gridNet.innerHTML  = loadMsg;
+  if (gridCyb)  gridCyb.innerHTML  = loadMsg;
+  const grid = gridIT; // kept for error handler reference
 
   try {
     // Fetch all completed sessions for this user across all certs
@@ -2201,7 +2282,7 @@ async function loadCertsScreen() {
     const examDateMap = {};
     (examDates || []).forEach(e => { examDateMap[e.cert] = e.exam_date; });
 
-    grid.innerHTML = CERTS.map(c => {
+    const buildCard = c => {
       const cs         = certStats[c.id];
       const isActive   = c.id === S.cert;
       const hasStudied = !!cs;
@@ -2273,10 +2354,19 @@ async function loadCertsScreen() {
         </div>
         <div class="cert-card-bottom">${btnHtml}</div>
       </div>`;
-    }).join('');
+    };
+
+    const renderGroup = cat => CERTS.filter(c => c.category === cat).map(buildCard).join('');
+    const none = '<div style="padding:20px;font-family:var(--mono);font-size:10px;color:var(--muted);">None available.</div>';
+
+    if (gridIT)  gridIT.innerHTML  = renderGroup('it_fundamentals')  || none;
+    if (gridNet) gridNet.innerHTML = renderGroup('networking')        || none;
+    if (gridCyb) gridCyb.innerHTML = renderGroup('cybersecurity')     || none;
 
   } catch (e) {
-    grid.innerHTML = '<div style="font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:1px;padding:20px;">Error loading certifications.</div>';
+    if (gridIT)  gridIT.innerHTML  = '<div style="font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:1px;padding:20px;">Error loading certifications.</div>';
+    if (gridNet) gridNet.innerHTML = '';
+    if (gridCyb) gridCyb.innerHTML = '';
   }
 }
 
@@ -3132,7 +3222,7 @@ function buildCertSelect() {
   const first = (S.profile?.full_name || S.user?.email || 'Operator').split(' ')[0];
   document.getElementById('cs-username').textContent = first;
 
-  document.getElementById('cert-grid').innerHTML = CERTS.map(c => `
+  const buildCsCard = c => `
     <div class="cs-card" style="--cc:${c.cc};--cg:${c.cg}">
       <div class="cs-card-glow"></div>
       <div class="cs-code">${c.code}</div>
@@ -3144,7 +3234,10 @@ function buildCertSelect() {
       </div>
       <button class="cs-btn" id="cs-btn-${c.id}" onclick="selectCert('${c.id}')">▸ ENTER CERT</button>
     </div>
-  `).join('');
+  `;
+  document.getElementById('cert-grid-it_fundamentals').innerHTML = CERTS.filter(c => c.category === 'it_fundamentals').map(buildCsCard).join('');
+  document.getElementById('cert-grid-networking').innerHTML      = CERTS.filter(c => c.category === 'networking').map(buildCsCard).join('');
+  document.getElementById('cert-grid-cybersecurity').innerHTML   = CERTS.filter(c => c.category === 'cybersecurity').map(buildCsCard).join('');
 
   // Async: update buttons for returning users
   loadCertStatuses();
