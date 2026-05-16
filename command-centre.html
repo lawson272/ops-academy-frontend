@@ -2368,10 +2368,8 @@ async function loadCertsScreen() {
 
 async function switchCert(certId) {
   if (certId === S.cert) return;
-  // Re-use selectCert — it handles all the state + UI wiring
+  // selectCert handles calibration check + navigation
   await selectCert(certId);
-  // Navigate to dashboard after switch
-  showMain('dashboard');
 }
 
 /* ══ MY PROGRESS ══ */
@@ -3282,12 +3280,24 @@ async function selectCert(certId) {
 
   await loadDomainData(certId);
 
-  loadDailyOrders(certId);    // async, non-blocking
-  loadExamCountdown(certId);  // async, non-blocking
-  loadDecayAlerts(certId);    // async, non-blocking
+  // Check if user has any prior completed sessions for this cert
+  const { data: priorSessions } = await sb.from('drill_sessions')
+    .select('id').eq('user_id', S.user.id).eq('cert', certId)
+    .eq('completed', true).limit(1);
 
-  showMain('dashboard');
+  const hasHistory = priorSessions && priorSessions.length > 0;
+
   showPage('app');
+
+  if (!hasHistory) {
+    // First time with this cert — run calibration before showing dashboard
+    await startCalibration(certId);
+  } else {
+    loadDailyOrders(certId);    // async, non-blocking
+    loadExamCountdown(certId);  // async, non-blocking
+    loadDecayAlerts(certId);    // async, non-blocking
+    showMain('dashboard');
+  }
 }
 
 /* ══ LOAD DOMAIN DATA ══ */
@@ -3787,6 +3797,71 @@ async function completeDailyOrders() {
   await updateStreak();
 }
 
+/* ══ CALIBRATION ══ */
+async function startCalibration(certId) {
+  showMain('drill');
+  document.getElementById('loading-text').textContent = 'LOADING CALIBRATION...';
+
+  // Fetch all active questions for this cert
+  const { data: allQ, error } = await sb.from('questions')
+    .select('*').eq('cert', certId).eq('active', true);
+
+  if (error || !allQ?.length) {
+    // No questions yet — skip calibration and go straight to dashboard
+    loadDailyOrders(certId);
+    loadExamCountdown(certId);
+    loadDecayAlerts(certId);
+    showMain('dashboard');
+    return;
+  }
+
+  // Group questions by domain and shuffle within each domain
+  const domainBuckets = {};
+  allQ.forEach(q => {
+    if (!domainBuckets[q.domain]) domainBuckets[q.domain] = [];
+    domainBuckets[q.domain].push(q);
+  });
+  const buckets = Object.values(domainBuckets).map(qs => shuffle([...qs]));
+
+  // Round-robin pick up to 10 questions — ensures every domain is represented
+  const calibQ = [];
+  const ptrs = new Array(buckets.length).fill(0);
+  outer: while (calibQ.length < 10) {
+    let anyLeft = false;
+    for (let i = 0; i < buckets.length; i++) {
+      if (ptrs[i] < buckets[i].length) {
+        calibQ.push(buckets[i][ptrs[i]++]);
+        anyLeft = true;
+        if (calibQ.length >= 10) break outer;
+      }
+    }
+    if (!anyLeft) break;
+  }
+
+  // Create a drill session record
+  const { data: sess } = await sb.from('drill_sessions').insert({
+    user_id: S.user.id, cert: certId, domain: 'calibration',
+    questions_attempted: 0, questions_correct: 0, xp_earned: 0, completed: false
+  }).select().single();
+
+  const certObj = CERTS.find(c => c.id === certId);
+
+  Object.assign(S, {
+    cert: certId, drillType: 'calibration', domain: null,
+    questions: calibQ, idx: 0,
+    sessionId: sess?.id || null, sessionStart: Date.now(),
+    correct: 0, sessionXP: 0, answered: false,
+    questionResults: [],
+    pendingAnswers: []
+  });
+
+  document.getElementById('drill-type-tag').textContent =
+    'CALIBRATION · ' + (certObj?.code || certId.toUpperCase());
+
+  renderQ();
+  showMain('drill');
+}
+
 /* ══ DRILL ══ */
 async function startDrill(certId, difficulty, type='standard', domain=null) {
   showMain('drill');
@@ -3978,10 +4053,14 @@ async function finish() {
   document.getElementById('res-time').textContent    = (dur/60).toFixed(1);
   document.getElementById('res-xp').textContent = `⬡  +${S.sessionXP} XP EARNED${S._bonusLabel ? '  ·  ' + S._bonusLabel : ''}`;
 
-  const eyebrowMap = { diagnostic:'DIAGNOSTIC COMPLETE', domain:'DOMAIN DRILL COMPLETE', standard:'DRILL COMPLETE', daily_orders:'ORDERS COMPLETE' };
+  const eyebrowMap = { calibration:'CALIBRATION COMPLETE', diagnostic:'DIAGNOSTIC COMPLETE', domain:'DOMAIN DRILL COMPLETE', standard:'DRILL COMPLETE', daily_orders:'ORDERS COMPLETE' };
   document.getElementById('res-eye').textContent = eyebrowMap[S.drillType] || 'DRILL COMPLETE';
 
-  if (S.drillType === 'daily_orders') {
+  if (S.drillType === 'calibration') {
+    document.getElementById('res-btns').innerHTML = `
+      <button class="res-btn primary" onclick="goToDashboard()">▸ VIEW YOUR DASHBOARD</button>
+    `;
+  } else if (S.drillType === 'daily_orders') {
     document.getElementById('res-btns').innerHTML = `
       <button class="res-btn primary" onclick="goToDashboard()">▸ VIEW PROGRESS</button>
     `;
