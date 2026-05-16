@@ -294,7 +294,7 @@ function closeMobileNav(){document.getElementById('nav-hamburger').classList.rem
   <div class="hero-content">
     <div class="hero-tag">Certification Catalogue</div>
     <h1>Find Your<br><span>Next Cert</span></h1>
-    <p class="hero-sub">5 certifications available at launch across IT, Networking and Cybersecurity — with Cloud and AI coming soon. Every one built for adaptive drilling, not passive study.</p>
+    <p class="hero-sub">8 certifications across IT, Networking, Cybersecurity and Cloud — all built for adaptive drilling, not passive study.</p>
   </div>
 </div>
 
@@ -375,7 +375,7 @@ function closeMobileNav(){document.getElementById('nav-hamburger').classList.rem
     <div class="domain-icon-lg">🔒</div>
     <div>
       <div class="domain-title"><span>Cyber</span>security</div>
-      <div class="domain-sub">2 CERTS AVAILABLE AT LAUNCH</div>
+      <div class="domain-sub">3 CERTS AVAILABLE</div>
     </div>
   </div>
   <div class="cert-grid">
@@ -393,10 +393,12 @@ function closeMobileNav(){document.getElementById('nav-hamburger').classList.rem
       <p class="cert-desc">The gold standard for security professionals. Covers all eight domains from risk management to software development security.</p>
       <div class="cert-meta"><div class="cert-meta-item">Questions: <span>800</span></div><div class="cert-meta-item">Domains: <span>8</span></div></div>
     </div>
-    <div class="cert-card soon">
-      <div class="soon-label">Coming Soon</div>
-      <div class="soon-name">CEH</div>
-      <div class="soon-vendor">EC-COUNCIL</div>
+    <div class="cert-card" onclick="openCert('cism')">
+      <div class="cert-badge advanced">Advanced</div>
+      <div class="cert-name">ISACA CISM</div>
+      <div class="cert-vendor">ISACA</div>
+      <p class="cert-desc">The management-level cybersecurity cert for those who design and oversee security programmes, not just operate them.</p>
+      <div class="cert-meta"><div class="cert-meta-item">Questions: <span>150</span></div><div class="cert-meta-item">Domains: <span>4</span></div></div>
     </div>
   </div>
 </div>
@@ -407,19 +409,23 @@ function closeMobileNav(){document.getElementById('nav-hamburger').classList.rem
     <div class="domain-icon-lg">☁️</div>
     <div>
       <div class="domain-title"><span>Cloud</span></div>
-      <div class="domain-sub">COMING SOON</div>
+      <div class="domain-sub">2 CERTS AVAILABLE</div>
     </div>
   </div>
   <div class="cert-grid">
-    <div class="cert-card soon">
-      <div class="soon-label">Coming Soon</div>
-      <div class="soon-name">Azure Fundamentals</div>
-      <div class="soon-vendor">MICROSOFT</div>
+    <div class="cert-card" onclick="openCert('azure')">
+      <div class="cert-badge beginner">Beginner</div>
+      <div class="cert-name">Microsoft Azure AZ-900</div>
+      <div class="cert-vendor">MICROSOFT</div>
+      <p class="cert-desc">Microsoft's entry-level cloud cert. Covers core cloud concepts, Azure services, pricing, and governance fundamentals.</p>
+      <div class="cert-meta"><div class="cert-meta-item">Questions: <span>40–60</span></div><div class="cert-meta-item">Domains: <span>3</span></div></div>
     </div>
-    <div class="cert-card soon">
-      <div class="soon-label">Coming Soon</div>
-      <div class="soon-name">AWS Solutions Architect</div>
-      <div class="soon-vendor">AMAZON WEB SERVICES</div>
+    <div class="cert-card" onclick="openCert('aws')">
+      <div class="cert-badge intermediate">Intermediate</div>
+      <div class="cert-name">AWS Solutions Architect</div>
+      <div class="cert-vendor">AMAZON WEB SERVICES</div>
+      <p class="cert-desc">Design and deploy scalable, fault-tolerant systems on AWS. The most sought-after cloud cert in enterprise hiring.</p>
+      <div class="cert-meta"><div class="cert-meta-item">Questions: <span>65</span></div><div class="cert-meta-item">Domains: <span>4</span></div></div>
     </div>
     <div class="cert-card soon">
       <div class="soon-label">Coming Soon</div>
@@ -671,6 +677,75 @@ function closeMobileNav(){document.getElementById('nav-hamburger').classList.rem
       ],
       why: 'Security+ is the <strong>most in-demand entry cybersecurity credential</strong> globally. It unlocks roles across government, finance, healthcare, and enterprise IT. Recommended prerequisite: CompTIA Network+ or two years of IT experience with a security focus.',
       jobs: ['Security Analyst', 'SOC Analyst', 'Systems Administrator', 'IT Auditor', 'Security Engineer', 'Penetration Tester (Junior)']
+    },
+    cism: {
+      name: 'ISACA CISM',
+      vendor: 'ISACA',
+      badge: 'advanced',
+      tagline: 'The management-level cybersecurity certification. Proves you can design, govern and lead a security programme — not just operate one.',
+      desc: 'The Certified Information Security Manager (CISM) is ISACA\'s premier certification for security managers and aspiring CISOs. Unlike technical certifications, CISM focuses on governance, risk management, programme development and incident response at a strategic level. It is one of the highest-paying certifications in the security industry.',
+      exam: [
+        { label: 'Exams Required', val: '1 (CISM)' },
+        { label: 'Questions', val: '150' },
+        { label: 'Duration', val: '4 hours' },
+        { label: 'Passing Score', val: '450 / 800' },
+        { label: 'Question Format', val: 'MCQ (scenario-based)' },
+        { label: 'Experience Required', val: '5 years in information security management' },
+        { label: 'Validity', val: '3 years (CPE required)' },
+      ],
+      domains: [
+        { name: 'Information Security Governance', pct: 17 },
+        { name: 'Information Risk Management', pct: 20 },
+        { name: 'Information Security Programme', pct: 33 },
+        { name: 'Incident Management', pct: 30 },
+      ],
+      why: 'CISM is the <strong>benchmark credential for security managers and CISOs</strong>. Employers hiring for security leadership roles — particularly in finance, government, and enterprise — treat CISM as equivalent in weight to CISSP. Recommended for professionals with at least five years of security experience moving into management.',
+      jobs: ['Information Security Manager', 'CISO', 'IT Risk Manager', 'Security Programme Manager', 'Security Consultant', 'Compliance Manager']
+    },
+    azure: {
+      name: 'Microsoft Azure AZ-900',
+      vendor: 'MICROSOFT',
+      badge: 'beginner',
+      tagline: 'Microsoft\'s foundational cloud certification. The fastest way to prove you understand cloud — and Azure in particular.',
+      desc: 'Azure Fundamentals (AZ-900) is Microsoft\'s entry point into cloud certification. It validates knowledge of core cloud concepts, Azure services, pricing models, SLAs, and governance fundamentals. No technical experience required — it is designed for anyone entering a cloud role or supporting cloud-based solutions.',
+      exam: [
+        { label: 'Exams Required', val: '1 (AZ-900)' },
+        { label: 'Questions', val: '40–60' },
+        { label: 'Duration', val: '45 minutes' },
+        { label: 'Passing Score', val: '700 / 1000' },
+        { label: 'Question Format', val: 'MCQ + Drag & Drop' },
+        { label: 'Validity', val: 'Does not expire' },
+      ],
+      domains: [
+        { name: 'Cloud Concepts', pct: 25 },
+        { name: 'Azure Architecture & Services', pct: 40 },
+        { name: 'Azure Management & Governance', pct: 35 },
+      ],
+      why: 'AZ-900 is the <strong>ideal starting point for any cloud journey</strong>. It signals Azure fluency to employers without requiring deep technical skills, making it valuable for IT support, sales, project management, and ops roles moving into cloud environments. It is also the required foundation before pursuing AZ-104, AZ-204, or AZ-500.',
+      jobs: ['Cloud Support Specialist', 'IT Administrator', 'Solutions Sales Specialist', 'Project Manager (Cloud)', 'Junior Cloud Engineer']
+    },
+    aws: {
+      name: 'AWS Solutions Architect',
+      vendor: 'AMAZON WEB SERVICES',
+      badge: 'intermediate',
+      tagline: 'The most recognised cloud certification in enterprise hiring. Validates that you can architect scalable, secure systems on AWS.',
+      desc: 'The AWS Certified Solutions Architect – Associate (SAA-C03) validates the ability to design distributed systems on AWS that are secure, resilient, high-performing, and cost-optimised. It is consistently ranked among the highest-value certifications in IT and is a standard requirement for cloud architect and cloud engineer roles globally.',
+      exam: [
+        { label: 'Exams Required', val: '1 (SAA-C03)' },
+        { label: 'Questions', val: '65' },
+        { label: 'Duration', val: '130 minutes' },
+        { label: 'Passing Score', val: '720 / 1000' },
+        { label: 'Question Format', val: 'MCQ + Multiple Response' },
+        { label: 'Validity', val: '3 years' },
+      ],
+      domains: [
+        { name: 'Design Secure Architectures', pct: 30 },
+        { name: 'Design Resilient Architectures', pct: 26 },
+        { name: 'Design High-Performing Architectures', pct: 24 },
+        { name: 'Design Cost-Optimised Architectures', pct: 20 },
+      ],
+      why: 'AWS SAA is the <strong>most requested cloud certification by employers worldwide</strong>. AWS holds over 30% of the global cloud market, and Solutions Architect roles are among the highest-paid in IT. Recommended for those with at least 1 year of hands-on AWS experience or completion of AZ-900 / cloud fundamentals training.',
+      jobs: ['Cloud Architect', 'Solutions Architect', 'DevOps Engineer', 'Cloud Engineer', 'Infrastructure Engineer', 'Platform Engineer']
     }
   };
 
